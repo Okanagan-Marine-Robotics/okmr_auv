@@ -13,7 +13,7 @@ root:
     - { name: surfacing }
 
   transitions:
-    - { trigger: initializing_done, source: initializing, dest: waiting_for_mission_start}
+    - { trigger: initialized, source: initializing, dest: waiting_for_mission_start}
     - { trigger: mission_start_received, source: waiting_for_mission_start, dest: enabling_subsystems }
     - { trigger: enabling_subsystems_done, source: enabling_subsystems, dest: sinking }
     #- { trigger: sinking_done, source: sinking, dest: finding_gate }
