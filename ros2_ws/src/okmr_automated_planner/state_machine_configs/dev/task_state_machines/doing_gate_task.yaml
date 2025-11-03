@@ -1,24 +1,31 @@
 doing_gate_task:
   states:
     - { name: approaching_gate }
+    - { name: finding_gate, config_path: "task_state_machines/finding_gate.yaml" }
     - { name: sideways_scan_gate, config_path: "task_state_machines/sideways_scan.yaml", timeout: 30 }
-    - { name: finding_shark }
-    - { name: looking_at_shark }
+    #- { name: finding_shark }
+    #- { name: looking_at_shark }
     - { name: passing_gate } #could be called passing_gate
-    - { name: barrel_rolling }
+    #- { name: barrel_rolling }
     - { name: readjusting_depth }
+    - { name: initialization }
 
   transitions:
-    - { trigger: initializing_done, source: initializing, dest: approaching_gate}
-    - { trigger: approaching_gate_done, source: approaching_gate, dest: sideways_scan_gate }
-    - { trigger: sideways_scan_gate_done, source: sideways_scan_gate, dest: finding_shark}
-    - { trigger: no_shark_found, source: finding_shark, dest: return_initial }
-    - { trigger: return_initial_done, source: return_initial, dest: sideways_scan_gate }
-    - { trigger: finding_shark_done, source: finding_shark, dest: looking_at_shark }  
-    - { trigger: looking_at_shark_done, source: looking_at_shark, dest: passing_gate }
-    - { trigger: passing_gate_done, source: passing_gate, dest: barrel_rolling}
-    - { trigger: barrel_roll_one_done, source: barrel_rolling, dest: readjusting_depth}
-    - { trigger: readjusting_depth_one_done, source: readjusting_depth, dest: barrel_rolling }
-    - { trigger: barrel_roll_two_done, source: barrel_rolling, dest: readjusting_depth}
-    - { trigger: readjusting_depth_two_done, source: readjusting_depth, dest: done }
+     - { trigger: initializing_done, source: initialization, dest: finding_gate }
+     - { trigger: finding_gate_done, source: finding_gate, dest: approaching_gate }
+     - { trigger: approaching_gate_done, source: approaching_gate, dest: passing_gate}
+     - { trigger: passing_gate_done, source: passing_gate, dest: done }
+# old code that was copied from shark task
+#    - { trigger: initializing_done, source: initializing, dest: approaching_gate}
+#    - { trigger: approaching_gate_done, source: approaching_gate, dest: sideways_scan_gate }
+#    - { trigger: sideways_scan_gate_done, source: sideways_scan_gate, dest: finding_shark}
+#    - { trigger: no_shark_found, source: finding_shark, dest: return_initial }
+#    - { trigger: return_initial_done, source: return_initial, dest: sideways_scan_gate }
+#    - { trigger: finding_shark_done, source: finding_shark, dest: looking_at_shark }  
+#    - { trigger: looking_at_shark_done, source: looking_at_shark, dest: passing_gate }
+#    - { trigger: passing_gate_done, source: passing_gate, dest: barrel_rolling}
+#    - { trigger: barrel_roll_one_done, source: barrel_rolling, dest: readjusting_depth}
+#    - { trigger: readjusting_depth_one_done, source: readjusting_depth, dest: barrel_rolling }
+#    - { trigger: barrel_roll_two_done, source: barrel_rolling, dest: readjusting_depth}
+#    - { trigger: readjusting_depth_two_done, source: readjusting_depth, dest: done }
     #plz commi9t this code

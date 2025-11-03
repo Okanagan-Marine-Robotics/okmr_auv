@@ -4,9 +4,9 @@ root:
     - { name: waiting_for_mission_start} 
     - { name: enabling_subsystems}
     - { name: sinking, timeout: 30}
-    - { name: finding_gate, config_path: "task_state_machines/finding_gate.yaml" }
+    #- { name: finding_gate, config_path: "task_state_machines/finding_gate.yaml" }
     - { name: doing_gate_task, config_path: "task_state_machines/doing_gate_task.yaml", timeout: 90 }
-    - { name: finding_slalom_marker, config_path: "task_state_machines/finding_marker.yaml", timeout: 60}
+    #- { name: finding_slalom_marker, config_path: "task_state_machines/finding_marker.yaml", timeout: 60}
     #- { name: doing_slalom_task, config_path: "task_state_machines/doing_slalom_task.yaml", timeout: 90}
     #- { name: finding_dropper_marker, config_path: "task_state_machines/finding_marker.yaml", timeout: 60}
     #- { name: doing_dropper_task, config_path: "task_state_machines/doing_dropper_task.yaml", timeout: 90}
@@ -16,9 +16,11 @@ root:
     - { trigger: initializing_done, source: initializing, dest: waiting_for_mission_start}
     - { trigger: mission_start_received, source: waiting_for_mission_start, dest: enabling_subsystems }
     - { trigger: enabling_subsystems_done, source: enabling_subsystems, dest: sinking }
-    - { trigger: sinking_done, source: sinking, dest: finding_gate }
-    - { trigger: finding_gate_done, source: finding_gate, dest: doing_gate_task }
-    - { trigger: doing_gate_task_done, source: doing_gate_task, dest: finding_slalom_marker }
+    #- { trigger: sinking_done, source: sinking, dest: finding_gate }
+    - { trigger: sinking_done, source: sinking, dest: doing_gate_task }
+    #- { trigger: finding_gate_done, source: finding_gate, dest: doing_gate_task }
+    - { trigger: doing_gate_task_done, source: doing_gate_task, dest: surfacing }
+    #- { trigger: doing_gate_task_done, source: doing_gate_task, dest: finding_slalom_marker }
     #- { trigger: finding_slalom_marker_done, source: finding_slalom_marker, dest:  doing_slalom_task} 
     #- { trigger: doing_slalom_task_done, source: doing_slalom_task, dest:  finding_dropper_marker} 
     #- { trigger: finding_dropper_marker_done, source: finding_dropper_marker, dest:  doing_dropper_task}
