@@ -16,15 +16,21 @@ class DoingGateTaskStateMachine(BaseStateMachine):
     #         "descriptor": 'threshold that decides if a shark detection is "good enough"',
     #     },
             {
-                "name": "distance_forward",
+                "name": "approaching_distance",
                 "value": 2.0,
-                "descriptor": "distance to move forward"
+                "descriptor": "distance for approaching_gate"
+            },
+            {
+                "name": "passing_distance",
+                "value": 0.2,
+                "descriptor": "distance for passing gate"
             }
     ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.distance_forward = self.get_local_parameter("distance_forward")
+        self.approaching_distance = self.get_local_parameter("distance_forward")
+        self.passing_distance = self.get_local_parameter("passing_distance")
             
     def on_enter_initializing(self):
         self.queued_method = self.initialized
@@ -33,7 +39,7 @@ class DoingGateTaskStateMachine(BaseStateMachine):
     def on_enter_approaching_gate(self):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
-        movement_msg.translation.x = self.distance_forward
+        movement_msg.translation.x = self.approaching_distance
 
         success = self.movement_client.send_movement_command(
             movement_msg,
@@ -48,7 +54,7 @@ class DoingGateTaskStateMachine(BaseStateMachine):
     def on_enter_passing_gate(self):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
-        movement_msg.translation.x = self.distance_forward
+        movement_msg.translation.x = self.passing_distance
 
         success = self.movement_client.send_movement_command(
             movement_msg,
