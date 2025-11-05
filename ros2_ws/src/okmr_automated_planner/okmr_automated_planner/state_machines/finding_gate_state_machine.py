@@ -49,6 +49,11 @@ class FindingGateStateMachine(BaseStateMachine):
             "value": 2.0,
             "descriptor": "maximum age of cached detection before considering it stale",
         },
+        {
+            "name": "movement_msg_timeout_sec",
+            "value": 15.0,
+            "descriptor": "maximum time to wait for movement to finish before considering it failed",
+        },
     ]
 
     def __init__(self, *args, **kwargs):
@@ -63,7 +68,9 @@ class FindingGateStateMachine(BaseStateMachine):
         self.centering_threshold_pixels = self.get_local_parameter("centering_threshold_pixels")
         self.min_box_size_pixels = self.get_local_parameter("min_box_size_pixels")
         self.detection_timeout_sec = self.get_local_parameter("detection_timeout_sec")
-
+        self.movement_msg_timeout_sec = self.get_local_parameter("movement_msg_timeout_sec")
+        
+        # internal state variables
         self.cached_gate_bounding_box = None
         self.last_detection_time = None
         self.image_center_x = self.image_width / 2.0
@@ -97,25 +104,31 @@ class FindingGateStateMachine(BaseStateMachine):
             lambda f: None
         )
 
+    def get_bbox_center(self, bbox):
+        """Calculate the center point of the bounding box"""
+        center_x = bbox.x_coordinate + bbox.box_width / 2.0
+        center_y = bbox.y_coordinate + bbox.box_height / 2.0
+        return center_x, center_y
+
     def detection_callback(self, msg):
         """Process incoming bounding box detections"""
-        # Validate bounding box dimensions
         if msg.box_width < self.min_box_size_pixels or msg.box_height < self.min_box_size_pixels:
             return
         
-        # Validate coordinates are within image bounds
-        if (msg.x_coordinate < 0 or msg.x_coordinate > self.image_width or
-            msg.y_coordinate < 0 or msg.y_coordinate > self.image_height):
+        center_x, center_y = self.get_bbox_center(msg)
+        
+        if (msg.x_coordinate < 0 or 
+            msg.y_coordinate < 0 or
+            msg.x_coordinate + msg.box_width > self.image_width or
+            msg.y_coordinate + msg.box_height > self.image_height):
             return
         
         self.cached_gate_bounding_box = msg
         self.last_detection_time = self.ros_node.get_clock().now()
         
-        # Calculate offset from image center
-        offset_x = abs(msg.x_coordinate - self.image_center_x)
-        offset_y = abs(msg.y_coordinate - self.image_center_y)
+        offset_x = abs(center_x - self.image_center_x)
+        offset_y = abs(center_y - self.image_center_y)
         
-        # If object is off-center and we're scanning, switch to following
         if offset_x > self.centering_threshold_pixels or offset_y > self.centering_threshold_pixels:
             if not self.is_following_detection():
                 self.follow_detection()
@@ -132,7 +145,6 @@ class FindingGateStateMachine(BaseStateMachine):
         return time_since_detection > self.detection_timeout_sec
 
     def on_enter_initializing(self):
-        """Initialize object detection for gate"""
         self.change_model(ChangeModel.Request.GATE)
         self.set_inference_camera(SetInferenceCamera.Request.FRONT_CAMERA)
         self.queued_method = self.initializing_done
@@ -186,9 +198,9 @@ class FindingGateStateMachine(BaseStateMachine):
             self.resume_scan()
             return
 
-        offset_x = self.cached_gate_bounding_box.x_coordinate - self.image_center_x
+        center_x, center_y = self.get_bbox_center(self.cached_gate_bounding_box)
+        offset_x = center_x - self.image_center_x
         
-        # Normalize offset to [-1, 1] range
         normalized_offset = offset_x / self.image_center_x
         
         # Calculate rotation angle based on camera FOV
@@ -199,7 +211,7 @@ class FindingGateStateMachine(BaseStateMachine):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
         movement_msg.rotation = Vector3(x=0.0, y=0.0, z=calculated_yaw_rotation)
-        movement_msg.timeout_sec = 15.0
+        movement_msg.timeout_sec = self.movement_msg_timeout_sec
 
         success = self.movement_client.send_movement_command(
             movement_msg,
@@ -218,11 +230,11 @@ class FindingGateStateMachine(BaseStateMachine):
             self.resume_scan()
             return
         
-        # Calculate current offset from center
-        offset_x = abs(self.cached_gate_bounding_box.x_coordinate - self.image_center_x)
-        offset_y = abs(self.cached_gate_bounding_box.y_coordinate - self.image_center_y)
+        center_x, center_y = self.get_bbox_center(self.cached_gate_bounding_box)
+
+        offset_x = abs(center_x - self.image_center_x)
+        offset_y = abs(center_y - self.image_center_y)
         
-        # Check if centered within threshold
         if offset_x < self.centering_threshold_pixels and offset_y < self.centering_threshold_pixels:
             self.ros_node.get_logger().info("Gate successfully centered")
             self.following_detection_done()
@@ -233,11 +245,9 @@ class FindingGateStateMachine(BaseStateMachine):
             self.resume_scan()
 
     def on_completion(self):
-        """Clean up when state machine completes"""
         self.set_inference_camera(SetInferenceCamera.Request.DISABLED)
         self.ros_node.get_logger().info("FindingGate state machine completed")
 
     def handle_movement_failure(self):
-        """Handle movement action failure"""
         self.ros_node.get_logger().error("Movement action failed")
         self.abort()
