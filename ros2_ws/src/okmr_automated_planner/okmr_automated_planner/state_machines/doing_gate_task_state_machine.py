@@ -9,22 +9,16 @@ from okmr_automated_planner.state_machines.sideways_scan_state_machine import Si
 class DoingGateTaskStateMachine(BaseStateMachine):
 
     PARAMETERS = [
-    #Copied from finding shark because shark object detection could be same as shark???????
-    #       {
-    #         "name": "frame_confidence_threshold",
-    #         "value": 0.8,
-    #         "descriptor": 'threshold that decides if a shark detection is "good enough"',
-    #     },
-            {
-                "name": "approaching_distance",
-                "value": 2.0,
-                "descriptor": "distance for approaching_gate"
-            },
-            {
-                "name": "passing_distance",
-                "value": 0.2,
-                "descriptor": "distance for passing gate"
-            }
+        {
+            "name": "approaching_distance",
+            "value": 2.0,
+            "descriptor": "distance for approaching_gate"
+        },
+        {
+            "name": "passing_distance",
+            "value": 0.2,
+            "descriptor": "distance for passing gate"
+        }
     ]
 
     def __init__(self, *args, **kwargs):
