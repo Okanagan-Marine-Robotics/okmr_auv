@@ -21,7 +21,7 @@ class MaskToBboxNode(Node):
 
         non_zero_coords = np.nonzero(mask_image)
 
-        #Get coords for top right corner and bottom right corner respectively
+        # Get coords for top-left (x_min, y_min) and bottom-right (x_max, y_max) corners respectively
         x_min, y_min = min(non_zero_coords[1]), min(non_zero_coords[0])
         x_max,y_max = max(non_zero_coords[1]), max(non_zero_coords[0])
 
