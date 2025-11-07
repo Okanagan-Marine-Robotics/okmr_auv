@@ -53,8 +53,16 @@ def generate_launch_description():
             output='screen'
         )
 
+    mask_to_bbox_node = Node(
+        package='okmr_object_detection',
+        executable='mask_to_bbox',
+        name='mask_to_bbox',
+        output='screen',
+    )
+
     return LaunchDescription(
         [
+            mask_to_bbox_node,
             mask_offset_node,
             color_output,
             debug_arg,
