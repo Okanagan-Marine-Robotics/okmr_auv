@@ -25,8 +25,8 @@ class MaskToBboxNode(Node):
         x_min, y_min = min(non_zero_coords[1]), min(non_zero_coords[0])
         x_max,y_max = max(non_zero_coords[1]), max(non_zero_coords[0])
 
-        width = x_max - x_min
-        height = y_max - y_min
+        width = x_max - x_min+1
+        height = y_max - y_min+1
 
         #initialize bounding box message
         bbox_msg = BoundingBox()
