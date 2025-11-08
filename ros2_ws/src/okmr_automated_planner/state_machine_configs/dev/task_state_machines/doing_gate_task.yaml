@@ -28,4 +28,3 @@ doing_gate_task:
 #    - { trigger: readjusting_depth_one_done, source: readjusting_depth, dest: barrel_rolling }
 #    - { trigger: barrel_roll_two_done, source: barrel_rolling, dest: readjusting_depth}
 #    - { trigger: readjusting_depth_two_done, source: readjusting_depth, dest: done }
-    #plz commi9t this code

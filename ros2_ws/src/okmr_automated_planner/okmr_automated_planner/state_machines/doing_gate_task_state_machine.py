@@ -23,7 +23,7 @@ class DoingGateTaskStateMachine(BaseStateMachine):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.approaching_distance = self.get_local_parameter("distance_forward")
+        self.approaching_distance = self.get_local_parameter("approaching_distance")
         self.passing_distance = self.get_local_parameter("passing_distance")
             
     def on_enter_initializing(self):

@@ -35,7 +35,7 @@ class SidewaysScanStateMachine(BaseStateMachine):
             self.ros_node.get_logger().error("Failed to send sideways movement command")
             self.queued_method = self.abort
     
-    def on_enter_return_to_center(self):
+    def on_enter_return_to_initial(self):
         # need to decide on code for saving position and calling it back
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_ABSOLUTE
