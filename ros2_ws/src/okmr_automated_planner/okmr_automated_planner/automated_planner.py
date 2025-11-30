@@ -1,78 +1,103 @@
 #!/usr/bin/env python3
 
-import rclpy
 import threading
+import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
-from okmr_automated_planner.state_machine_factory import StateMachineFactory
 from rcl_interfaces.msg import ParameterDescriptor
-from okmr_utils.logging import make_green_log
+
+from okmr_automated_planner.state_machine_factory import StateMachineFactory
+from okmr_utils.logging import make_green_log 
 
 class AutomatedPlannerNode(Node):
-    #hardcoded parameters to declare on startup
-    PARAMETERS = [
-        {'name': 'state_timeout_check_period', 'value': 0.5, 'descriptor': 'How often to check if the current state should timeout'},
-        {'name': 'config_base_path', 'value': '', 'descriptor': 'Base path for all configuration files, usually share directory/state_machine_configs/dev'},
-        {'name': 'root_config', 'value': 'root.yaml', 'descriptor': 'Root configuration file name (relative to config_base_path)'}
+    """
+    Main node for the Automated Planner.
+    Initializes the state machine based on YAML configuration.
+    """
+    
+    DEFAULT_PARAMS = [
+        {
+            'name': 'state_timeout_check_period', 
+            'value': 0.5, 
+            'descriptor': 'Frequency in seconds to check for state timeouts'
+        },
+        {
+            'name': 'config_base_path', 
+            'value': '', 
+            'descriptor': 'Base path for config files (e.g. share/state_machine_configs/dev)'
+        },
+        {
+            'name': 'root_config', 
+            'value': 'root.yaml', 
+            'descriptor': 'Root configuration file name'
+        }
     ]
 
     def __init__(self):
+        # allow_undeclared_parameters=True allows the state machines to dynamically declare their own parameters later
         super().__init__("automated_planner", allow_undeclared_parameters=True)
         
-        # Declare all parameters from the list
-        for param in self.PARAMETERS:
-            self.declare_ros2_parameter(param['name'], param['value'], param['descriptor'])
+        for param in self.DEFAULT_PARAMS:
+            self._declare_parameter_with_log(
+                param['name'], 
+                param['value'], 
+                param['descriptor']
+            )
 
-    def declare_ros2_parameter(self, name, value=None, description=None, ignore_override=False):
-        """
-        Declare a parameter and automatically create a getter method for it.
-        allows you to call get_{parameter_name}() to fetch value 
-        """
-        descriptor = ParameterDescriptor(type=Parameter.Type.from_parameter_value(value),
-                                                      description=description)
-        result = self.declare_parameter(name, value, descriptor, ignore_override)
-
-        self.get_logger().debug(f"Registering parameter: {name}")
-        
-        return result
-    
-def main():
-    rclpy.init()
-    master_node = AutomatedPlannerNode()
-    config_base_path = master_node.get_parameter("config_base_path").value
-    root_config = master_node.get_parameter("root_config").value
-    root_state_machine = None
-
-    master_node.get_logger().info(f"Using config base path: {config_base_path}")
-    master_node.get_logger().info(f"Using root config: {make_green_log(root_config)}")
-
-    try:
-        root_state_machine = StateMachineFactory.createMachineFromConfig(
-            root_config, 
-            master_node,
-            config_base_path
+    def _declare_parameter_with_log(self, name, value, description):
+        """Helper to declare a ROS 2 parameter with a descriptor and debug log."""
+        descriptor = ParameterDescriptor(
+            type=Parameter.Type.from_parameter_value(value),
+            description=description
         )
-        # root_state_machine.fail_callback =  
-        #root_state_machine.done_callback = lamda: 
-    except Exception as e:
-        master_node.get_logger().fatal(f"Error when parsing config: \n{str(e)}")
-        rclpy.shutdown()
-        return
-    
-    #used for drawing the graph
-    #dot_graph = robot.get_graph()
-    #dot_graph.draw('auv_fsm.dot', prog='dot')
+        self.declare_parameter(name, value, descriptor)
+        self.get_logger().debug(f"Registered parameter: {name}")
 
-    threading.Thread(target=root_state_machine.initialize, daemon=True).start()
-    master_node.get_logger().info(make_green_log("Started root state machine"))
-    master_done = False
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = AutomatedPlannerNode()
+    
     try:
-        while rclpy.ok() and not root_state_machine.is_aborted() and not root_state_machine.is_done():
-            rclpy.spin_once(master_node, timeout_sec=0.1)
-    except Exception as e:
-        master_node.get_logger().error(f"{str(e)}")
+        config_base_path = str(node.get_parameter("config_base_path").value)
+        root_config = str(node.get_parameter("root_config").value)
+
+        node.get_logger().info(f"Config Base Path: {config_base_path}")
+        node.get_logger().info(f"Root Config: {make_green_log(root_config)}")
+
+        try:
+            root_state_machine = StateMachineFactory.createMachineFromConfig(
+                root_config, 
+                node, 
+                config_base_path
+            )
+        except Exception as e:
+            node.get_logger().fatal(f"Failed to create state machine: {e}")
+            raise e
+
+        machine_thread = threading.Thread(
+            target=root_state_machine.initialize, 
+            daemon=True
+        )
+        machine_thread.start()
+        
+        node.get_logger().info(make_green_log("Root State Machine Started"))
+
+        while rclpy.ok():
+            # Check if machine has reached a terminal state
+            if root_state_machine.is_aborted() or root_state_machine.is_done():
+                node.get_logger().info("State machine finished or aborted. Exiting.")
+                break
+            
+            rclpy.spin_once(node, timeout_sec=0.1)
+
+    except KeyboardInterrupt:
         pass
+    except Exception as e:
+        node.get_logger().error(f"Unexpected error: {e}")
     finally:
+        if 'node' in locals():
+            node.destroy_node()
         rclpy.shutdown()
 
 if __name__ == "__main__":
