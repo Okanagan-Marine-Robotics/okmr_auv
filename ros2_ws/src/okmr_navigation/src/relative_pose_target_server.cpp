@@ -230,10 +230,16 @@ class RelativePoseTargetServer : public rclcpp::Node {
             relative_pose_target.translation.z = relative_translation.z;
         }
 
-        // relative_pose_target.rotation.x = (roll - current_eulers.x);
-        // relative_pose_target.rotation.y = (pitch - current_eulers.y);
-        relative_pose_target.rotation.x = -current_eulers.x;  // forced 0 on roll
-        relative_pose_target.rotation.y = -current_eulers.y;  // forced 0 on pitch
+        // Set rotation targets based on copy_orientation flag
+        if (current_goal_pose_msg_.copy_orientation) {
+            // Match goal orientation when copy_orientation is true
+            relative_pose_target.rotation.x = (roll - current_eulers.x);
+            relative_pose_target.rotation.y = (pitch - current_eulers.y);
+        } else {
+            // Force level attitude (roll=0, pitch=0) when copy_orientation is false
+            relative_pose_target.rotation.x = -current_eulers.x;
+            relative_pose_target.rotation.y = -current_eulers.y;
+        }
         relative_pose_target.rotation.z = yaw_error;
 
         relative_pose_pub_->publish (relative_pose_target);
