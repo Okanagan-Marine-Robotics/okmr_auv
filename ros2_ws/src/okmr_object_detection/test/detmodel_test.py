@@ -24,7 +24,8 @@
 #     bit mask (H x W), which is then compared with the model output.
 #
 # How to run:
-#   - Set the paths to your train/test folders below, e.g.:
+#   - Download the DepthT repo in to the same folder as this script, that should work
+#   - Otherwise, set your the paths to your train/test folders below, e.g.:
 #       train_image_folder = Path("/path/to/train/images")
 #       train_label_folder = Path("/path/to/train/labels")
 #       test_image_folder  = Path("/path/to/test/images")
@@ -67,13 +68,6 @@ from okmr_object_detection import onnx_segmentation_detector as detector
 # directory of THIS script
 p = Path(__file__).resolve().parent
 
-
-# Walk upward until we find "okmr_auv", go one folder outside of that
-while p.name != "okmr_auv" and p != p.parent:
-    p = p.parent
-
-p = p.parent
-print(p)
 
 
 
