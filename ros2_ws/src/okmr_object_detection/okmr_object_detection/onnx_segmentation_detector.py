@@ -361,14 +361,28 @@ class OnnxSegmentationDetector(ObjectDetectorNode):
             mask_logit = masks[i]
             mask = sigmoid(mask_logit)
 
-            # Handle aspect ratio correction
-            corrected_height = int(H0*1.333)
-            mask_resized = cv2.resize(mask, (W0, corrected_height))
+            # # Handle aspect ratio correction
+            # corrected_height = int(H0*1.333)
+            # mask_resized = cv2.resize(mask, (W0, corrected_height))
 
-            if corrected_height > H0:
-                start_y = (corrected_height - H0) // 2
-                end_y = start_y + H0
-                mask_resized = mask_resized[start_y:end_y, :]
+            # if corrected_height > H0:
+            #     start_y = (corrected_height - H0) // 2
+            #     end_y = start_y + H0
+            #     mask_resized = mask_resized[start_y:end_y, :]
+            
+            # upscale from 160x160 (model output) to 640x640 (input image)
+            mask_net = cv2.resize(mask, (self.input_size, self.input_size))
+
+            #remove the padding added
+            x0, y0 = pad_x, pad_y
+            scaled_w, scaled_h = int(W0 * scale), int(H0 * scale) #size of the image after scaling in preprocessing
+            y1 = pad_y + scaled_h
+            x1 = pad_x + scaled_w
+            mask_unpadded = mask_net[y0:y1, x0:x1]
+
+            # resize back to original image size
+            mask_resized = cv2.resize(mask_unpadded, (W0, H0))  
+
 
             # Create binary mask and add to combined mask
             # Using class ID + 1 to differentiate between classes (0 = background)

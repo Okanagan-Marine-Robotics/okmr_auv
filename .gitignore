@@ -25,6 +25,11 @@ datasets/
 .pcd
 .npy
 crl_parameter_gui/
+.venv/
 
 # ROS2 bag files
 rosbag2_*/
+
+
+# Ignore DepthT-main test data
+ros2_ws/src/okmr_object_detection/test/DepthT-main/
