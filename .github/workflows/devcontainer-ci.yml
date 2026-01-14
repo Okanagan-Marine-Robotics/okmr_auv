@@ -1,0 +1,69 @@
+name: Devcontainer CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache Stonefish Install
+        id: cache-stonefish
+        uses: actions/cache@v3
+        with:
+          path: ros2_ws/install
+          key: stonefish-lib-${{ hashFiles('third_party/stonefish/**') }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Test in Devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ghcr.io/${{ github.repository }}/devcontainer
+          push: filter
+          cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
+          
+          runCmd: |
+            source /opt/ros/jazzy/setup.bash
+            cd ros2_ws
+
+            sudo chown -R $(whoami) install/ || true
+
+            if [ -f "install/stonefish_vendor/lib/libStonefish.so" ]; then
+                echo "Cache Hit: Stonefish library found."
+                
+                if [ -f "install/setup.bash" ]; then
+                  source install/setup.bash
+                elif [ -f "install/stonefish_vendor/setup.bash" ]; then
+                  source install/stonefish_vendor/setup.bash
+                fi
+                
+                SKIP_ARG="--packages-skip stonefish_vendor"
+            else
+                echo "Cache Miss: Building Stonefish from scratch..."
+                colcon build --packages-select stonefish_vendor
+                source install/setup.bash
+                SKIP_ARG=""
+            fi
+
+            echo "Building workspace..."
+            colcon build $SKIP_ARG
