@@ -24,7 +24,7 @@ Check the specific README.md files inside each package for more details.
 
 ## Getting Started
 
-We use **VS Code Devcontainers** to manage dependencies. You do not need to manually install ROS 2 or Stonefish on your host machine.
+We use **VS Code Devcontainers** to manage dependencies. You do not need to manually install ROS 2 or Stonefish on your host machine. The environment handles everything automatically.
 
 ### Prerequisites
 1.  **VS Code**: [Download here](https://code.visualstudio.com/)
@@ -57,7 +57,7 @@ To view the Stonefish simulator window, you must run an X Server on Windows:
     code .
     ```
     * Press `F1` and select **"Dev Containers: Reopen in Container"**.
-    * *Note: The first launch will take 5-10 minutes to build the Docker image.*
+* *Note: The first launch will take a few minutes as it compiles the Stonefish simulator into the Docker image.*
 
 3.  **Build the Workspace**:
     Inside the VS Code integrated terminal:
@@ -72,18 +72,28 @@ To view the Stonefish simulator window, you must run an X Server on Windows:
 ### Running the Simulator
 To verify the build, launch the Stonefish simulator.
 
-**For WSL/Windows Users:**
-You must export the display variable first (run in the integrated terminal):
-```bash
-export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
-````
+1.  **Source the Workspace**:
+    ```bash
+    source install/setup.bash
+    ```
 
-**Launch Command:**
+2.  **For WSL/Windows Users:**
+    You must export the display variable to point to your X Server (VcXsrv):
+    ```bash
+    export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+    ```
 
-```bash
-ros2 launch okmr_stonefish sim.launch.py scenario_name:=simple.scn
-```
+    **Tip**: To avoid running this every time, add it to your bash config:
+    ```bash
+    echo "source /home/okmr/okmr_auv/install/setup.bash" >> ~/.bashrc
+    echo "export DISPLAY=\$(grep nameserver /etc/resolv.conf | awk '{print \$2}'):0" >> ~/.bashrc
+    source ~/.bashrc
+    ```
 
+3.  **Launch Command:**
+    ```bash
+    ros2 launch okmr_stonefish sim.launch.py scenario_name:=simple.scn
+    ```
 
 ## Controls Hierarchy
 

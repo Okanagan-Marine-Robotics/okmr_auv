@@ -17,7 +17,17 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
     && rm -rf /var/lib/apt/lists/*
 
-# Install system packages
+# Register Intel RealSense Repository
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    curl \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" \
+    | tee /etc/apt/sources.list.d/librealsense.list \
+    && apt-get update
+
+# Install system packages and ROS dependencies
 RUN apt-get update && apt-get install -y \
     python3-pip \
     build-essential \
@@ -36,8 +46,28 @@ RUN apt-get update && apt-get install -y \
     libopengl-dev \
     python3-scipy \
     python3-transitions \
+    librealsense2-dev \
+    ros-$ROS_DISTRO-pcl-conversions \
+    ros-$ROS_DISTRO-pcl-ros \
+    ros-$ROS_DISTRO-image-transport \
+    ros-$ROS_DISTRO-cv-bridge \
+    ros-$ROS_DISTRO-diagnostic-updater \
+    ros-$ROS_DISTRO-xacro \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Build and Install Stonefish Globally
+WORKDIR /tmp
+RUN git clone https://github.com/patrykcieslak/Stonefish.git \
+    && cd Stonefish \
+    && git checkout 7d52673791834caa743907dde83a1949134ef2f0 \
+    && mkdir build && cd build \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
+    && make -j$(nproc) \
+    && make install \
+    && mkdir -p /usr/local/share/Stonefish \
+    && find .. -type d -name "fonts" -exec cp -r {} /usr/local/share/Stonefish/ \; \
+    && cp -r ../Library/shaders /usr/local/share/Stonefish/ \
+    && cd /tmp && rm -rf Stonefish
 
 # Initialize rosdep
 RUN rosdep init || true

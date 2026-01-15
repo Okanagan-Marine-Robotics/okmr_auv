@@ -21,13 +21,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Cache Stonefish Install
-        id: cache-stonefish
-        uses: actions/cache@v3
-        with:
-          path: ros2_ws/install
-          key: stonefish-lib-${{ hashFiles('third_party/stonefish/**') }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -44,26 +37,14 @@ jobs:
           
           runCmd: |
             source /opt/ros/jazzy/setup.bash
-            cd ros2_ws
-
-            sudo chown -R $(whoami) install/ || true
-
-            if [ -f "install/stonefish_vendor/lib/libStonefish.so" ]; then
-                echo "Cache Hit: Stonefish library found."
-                
-                if [ -f "install/setup.bash" ]; then
-                  source install/setup.bash
-                elif [ -f "install/stonefish_vendor/setup.bash" ]; then
-                  source install/stonefish_vendor/setup.bash
-                fi
-                
-                SKIP_ARG="--packages-skip stonefish_vendor"
-            else
-                echo "Cache Miss: Building Stonefish from scratch..."
-                colcon build --packages-select stonefish_vendor
-                source install/setup.bash
-                SKIP_ARG=""
-            fi
+            
+            sudo chown -R $(whoami) .
+            rosdep update
+            
+            rosdep install --from-paths . --ignore-src -y --rosdistro jazzy --skip-keys 'pcl xacro'
+            find . -type d -name stonefish_vendor -exec touch {}/COLCON_IGNORE \;
 
             echo "Building workspace..."
-            colcon build $SKIP_ARG
+            colcon build --symlink-install
+
+            colcon test
