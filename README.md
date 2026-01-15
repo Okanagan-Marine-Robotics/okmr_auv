@@ -33,7 +33,7 @@ We use **VS Code Devcontainers** to manage dependencies. You do not need to manu
 
 #### Windows Users (WSL 2) - Graphics Setup
 To view the Stonefish simulator window, you must run an X Server on Windows:
-1.  Download and install **[VcXsrv](https://sourceforge.net/projects/vcxsrv/)**.
+1.  Download and install **[VcXsrv](https://github.com/marchaesen/vcxsrv/releases)**.
 2.  Launch **XLaunch** with these specific settings:
     * Display settings: **Multiple windows**
     * Display number: **0**
@@ -47,12 +47,15 @@ To view the Stonefish simulator window, you must run an X Server on Windows:
 
 1.  **Clone the Repository**:
     ```bash
-    git clone --recursive https://github.com/UBCO-Marine-Robotics/okmr_auv.git
+    git clone --recursive https://github.com/Okanagan-Marine-Robotics/okmr_auv.git
     cd okmr_auv
     ```
 
 2.  **Open in Devcontainer**:
-    * Open the folder in VS Code.
+    * Open the folder in VS Code:
+    ```bash
+    code .
+    ```
     * Press `F1` and select **"Dev Containers: Reopen in Container"**.
     * *Note: The first launch will take 5-10 minutes to build the Docker image.*
 
