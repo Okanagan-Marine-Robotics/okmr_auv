@@ -1,17 +1,3 @@
-name: Devcontainer CI
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,12 +14,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase Registry Details
+        id: registry_case
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('LOWERCASE_REPO', process.env.GITHUB_REPOSITORY.toLowerCase())
+
       - name: Build and Test in Devcontainer
         uses: devcontainers/ci@v0.3
         with:
-          imageName: ghcr.io/${{ github.repository }}/devcontainer
+          imageName: ghcr.io/${{ env.LOWERCASE_REPO }}/devcontainer
           push: filter
-          cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
+          cacheFrom: ghcr.io/${{ env.LOWERCASE_REPO }}/devcontainer
           
           runCmd: |
             source /opt/ros/jazzy/setup.bash
