@@ -7,7 +7,10 @@
         "args": {
             "USERNAME": "okmr",
             "ROS_DISTRO": "jazzy"
-        }
+        },
+        "cacheFrom": [
+            "ghcr.io/okanagan-marine-robotics/okmr_auv/devcontainer:latest"
+        ]
     },
     "workspaceFolder": "/home/okmr_auv",
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/okmr_auv,type=bind",

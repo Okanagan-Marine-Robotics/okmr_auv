@@ -2,7 +2,8 @@
     "name": "ROS 2 CI Container",
     "privileged": true,
     "build": {
-        "dockerfile": "Dockerfile",
+        "dockerfile": "../Dockerfile",
+        "context": "..",
         "args": {
             "USERNAME": "okmr",
             "ROS_DISTRO": "jazzy"
