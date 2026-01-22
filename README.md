@@ -49,22 +49,39 @@ We use **VS Code Devcontainers** to manage dependencies. This ensures a consiste
 ### Installation
 
 #### Windows Users
-1. Open your WSL terminal (e.g., Ubuntu).
-2. Clone the repository into your WSL home directory.
+1. **Open your WSL terminal (e.g., Ubuntu).**
+2. **Clone the repository into your WSL home directory.**
 
 ```bash
 cd ~
 git clone --recursive https://github.com/Okanagan-Marine-Robotics/okmr_auv.git
 cd okmr_auv
 
-Linux/Mac Users
-
-1. Clone the Repository:
-
-```bash
-git clone --recursive https://github.com/Okanagan-Marine-Robotics/okmr_auv.git
-cd okmr_auv
 ```
+
+3. **Open in Devcontainer**:
+* Open the folder in VS Code:
+```bash
+code .
+
+```
+
+* Press `F1` and select **"Dev Containers: Reopen in Container"**.
+
+*Note: The first launch will take a few minutes as it compiles the Stonefish simulator into the Docker image.*
+
+3. **Build the Workspace**:
+Inside the VS Code integrated terminal:
+```bash
+# Build all packages
+colcon build --symlink-install
+
+# Source the environment
+source install/setup.bash
+
+```
+
+#### Linux Users
 
 1. **Clone the Repository**:
 ```bash
