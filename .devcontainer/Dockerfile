@@ -21,9 +21,10 @@ RUN groupadd --gid $USER_GID $USERNAME \
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     curl \
+    gnupg \
     && mkdir -p /etc/apt/keyrings \
-    && curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null \
-    && echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" \
+    && curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | gpg --dearmor | tee /etc/apt/keyrings/librealsense. gpg > /dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/librealsense. gpg] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" \
     | tee /etc/apt/sources.list.d/librealsense.list \
     && apt-get update
 
@@ -79,4 +80,5 @@ WORKDIR /home/$USERNAME
 ENV SHELL=/bin/bash
 
 # Setup environment
+
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /home/$USERNAME/.bashrc
