@@ -45,6 +45,7 @@ RUN apt-get update && apt-get install -y \
     ros-$ROS_DISTRO-diagnostic-updater \
     ros-$ROS_DISTRO-xacro \
     && pip3 install onnx onnxruntime --break-system-packages \
+    && pip3 install onnx onnxruntime ultralytics --break-system-packages \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Build and Install Stonefish Globally

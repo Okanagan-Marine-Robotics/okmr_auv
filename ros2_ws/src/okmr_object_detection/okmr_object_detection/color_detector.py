@@ -1,3 +1,4 @@
+import os
 import object_detection.detector 
 from okmr_object_detection.detector import ObjectDetectorNode 
 import rclpy
@@ -36,8 +37,9 @@ class ExampleDetector(ObjectDetectorNode):
         binary_mask = cv2.bitwise_or(mask1, mask2) // 255
 
         # Optional: Display results for testing
-        cv2.imshow('Binary Mask', binary_mask * 255)  # Display as 0 and 255
-        cv2.imshow('rgbimage', rgb)
+        if os.environ.get('DISPLAY'):
+            cv2.imshow('Binary Mask', binary_mask * 255)  # Display as 0 and 255
+            cv2.imshow('rgbimage', rgb)
         cv2.waitKey(1)  # Display result continuously on one window
 
         # Return the binary mask for further processing
