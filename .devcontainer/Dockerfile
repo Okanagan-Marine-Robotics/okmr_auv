@@ -17,17 +17,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
     && rm -rf /var/lib/apt/lists/*
 
-# Register Intel RealSense Repository
-RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    curl \
-    gnupg \
-    && mkdir -p /etc/apt/keyrings \
-    && curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | gpg --dearmor | tee /etc/apt/keyrings/librealsense. gpg > /dev/null \
-    && echo "deb [signed-by=/etc/apt/keyrings/librealsense. gpg] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" \
-    | tee /etc/apt/sources.list.d/librealsense.list \
-    && apt-get update
-
 # Install system packages and ROS dependencies
 RUN apt-get update && apt-get install -y \
     python3-pip \
@@ -47,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     libopengl-dev \
     python3-scipy \
     python3-transitions \
-    librealsense2-dev \
+    ros-$ROS_DISTRO-librealsense2 \
     ros-$ROS_DISTRO-pcl-conversions \
     ros-$ROS_DISTRO-pcl-ros \
     ros-$ROS_DISTRO-image-transport \
@@ -80,5 +69,4 @@ WORKDIR /home/$USERNAME
 ENV SHELL=/bin/bash
 
 # Setup environment
-
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /home/$USERNAME/.bashrc
