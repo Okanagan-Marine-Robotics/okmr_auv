@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y \
     libopengl-dev \
     python3-scipy \
     python3-transitions \
+    ccache \
     ros-$ROS_DISTRO-librealsense2 \
     ros-$ROS_DISTRO-pcl-conversions \
     ros-$ROS_DISTRO-pcl-ros \
@@ -70,3 +71,6 @@ ENV SHELL=/bin/bash
 
 # Setup environment
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /home/$USERNAME/.bashrc
+
+# Enable ccache
+ENV PATH="/usr/lib/ccache:$PATH"

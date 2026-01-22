@@ -35,6 +35,14 @@ jobs:
           script: |
             core.exportVariable('LOWERCASE_REPO', process.env.GITHUB_REPOSITORY.toLowerCase())
 
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-
+
       - name: Build and Test in Devcontainer
         uses: devcontainers/ci@v0.3
         with:
@@ -45,6 +53,12 @@ jobs:
           runCmd: |
             source /opt/ros/jazzy/setup.bash
             
+            export CCACHE_DIR=$PWD/.ccache
+            export CCACHE_MAXSIZE=500M
+            mkdir -p $CCACHE_DIR
+            
+            rm -rf build install log
+
             sudo chown -R $(whoami) .
             rosdep update
             
@@ -52,6 +66,11 @@ jobs:
             find . -type d -name stonefish_vendor -exec touch {}/COLCON_IGNORE \;
 
             echo "Building workspace..."
-            colcon build --symlink-install
+            ccache -z
+            
+            colcon build --symlink-install --cmake-args -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+            # Print ccache stats to verify hits
+            ccache -s
 
             colcon test
