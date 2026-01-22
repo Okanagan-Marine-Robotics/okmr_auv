@@ -48,6 +48,24 @@ We use **VS Code Devcontainers** to manage dependencies. This ensures a consiste
 
 ### Installation
 
+#### Windows Users
+1. Open your WSL terminal (e.g., Ubuntu).
+2. Clone the repository into your WSL home directory.
+
+```bash
+cd ~
+git clone --recursive https://github.com/Okanagan-Marine-Robotics/okmr_auv.git
+cd okmr_auv
+
+Linux/Mac Users
+
+1. Clone the Repository:
+
+```bash
+git clone --recursive https://github.com/Okanagan-Marine-Robotics/okmr_auv.git
+cd okmr_auv
+```
+
 1. **Clone the Repository**:
 ```bash
 git clone --recursive https://github.com/Okanagan-Marine-Robotics/okmr_auv.git
