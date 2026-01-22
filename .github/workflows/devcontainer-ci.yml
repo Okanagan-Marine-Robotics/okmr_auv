@@ -46,8 +46,8 @@ jobs:
       - name: Build and Test in Devcontainer
         uses: devcontainers/ci@v0.3
         with:
-          configFile: .devcontainer/devcontainer-ci.json
-          
+          configFile: .devcontainer/ci/devcontainer.json
+
           imageName: ghcr.io/${{ env.LOWERCASE_REPO }}/devcontainer
           push: filter
           cacheFrom: ghcr.io/${{ env.LOWERCASE_REPO }}/devcontainer
