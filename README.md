@@ -43,7 +43,7 @@ We use **VS Code Devcontainers** to manage dependencies. This ensures a consiste
 
 #### Linux Users
 
-1. Install the **[NVIDIA Container Toolkit](https://www.google.com/search?q=https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)** on your host machine.
+1. Install the **[NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)** on your host machine.
 2. Restart Docker: `sudo systemctl restart docker`
 
 ### Installation
