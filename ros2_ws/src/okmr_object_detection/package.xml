@@ -7,8 +7,14 @@
   <maintainer email="erykhalicki0@gmail.com">eryk</maintainer>
   <license>TODO: License declaration</license>
 
-
   <depend>okmr_msgs</depend>
+  
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_geometry</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

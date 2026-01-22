@@ -1,0 +1,38 @@
+{
+    "name": "ROS 2 CI Container",
+    "privileged": true,
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": "..",
+        "args": {
+            "USERNAME": "okmr",
+            "ROS_DISTRO": "jazzy"
+        }
+    },
+    "workspaceFolder": "/home/okmr_auv",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/okmr_auv,type=bind",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-themes",
+                "twxs.cmake",
+                "donjayamanne.python-extension-pack",
+                "ranch-hand-robotics.rde-ros-2"
+            ]
+        }
+    },
+    "containerEnv": {
+        "ROS_LOCALHOST_ONLY": "1",
+        "ROS_DOMAIN_ID": "42",
+        "ROS_DISTRO": "jazzy",
+        "CMAKE_PREFIX_PATH": "/home/okmr_auv/install",
+        "LD_LIBRARY_PATH": "/home/okmr_auv/install/lib"
+    },
+    "runArgs": [
+        "--net=host",
+        "--pid=host",
+        "--ipc=host"
+    ],
+    "postCreateCommand": "sudo rosdep init || true && rosdep update && sudo apt-get update && rosdep install --from-paths . --ignore-src -y --rosdistro $ROS_DISTRO --skip-keys 'pcl xacro' && sudo chown -R $(whoami) . && find . -type d -name stonefish_vendor -exec touch {}/COLCON_IGNORE \\;"
+}

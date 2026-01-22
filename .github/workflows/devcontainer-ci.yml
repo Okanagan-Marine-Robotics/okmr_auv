@@ -21,13 +21,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Cache Stonefish Install
-        id: cache-stonefish
-        uses: actions/cache@v3
-        with:
-          path: ros2_ws/install
-          key: stonefish-lib-${{ hashFiles('third_party/stonefish/**') }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -35,35 +28,51 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase Registry Details
+        id: registry_case
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('LOWERCASE_REPO', process.env.GITHUB_REPOSITORY.toLowerCase())
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-
+
       - name: Build and Test in Devcontainer
         uses: devcontainers/ci@v0.3
         with:
-          imageName: ghcr.io/${{ github.repository }}/devcontainer
+          configFile: .devcontainer/ci/devcontainer.json
+
+          imageName: ghcr.io/${{ env.LOWERCASE_REPO }}/devcontainer
           push: filter
-          cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
+          cacheFrom: ghcr.io/${{ env.LOWERCASE_REPO }}/devcontainer
           
           runCmd: |
             source /opt/ros/jazzy/setup.bash
-            cd ros2_ws
+            
+            export CCACHE_DIR=$PWD/.ccache
+            export CCACHE_MAXSIZE=500M
+            mkdir -p $CCACHE_DIR
+            
+            rm -rf build install log
 
-            sudo chown -R $(whoami) install/ || true
-
-            if [ -f "install/stonefish_vendor/lib/libStonefish.so" ]; then
-                echo "Cache Hit: Stonefish library found."
-                
-                if [ -f "install/setup.bash" ]; then
-                  source install/setup.bash
-                elif [ -f "install/stonefish_vendor/setup.bash" ]; then
-                  source install/stonefish_vendor/setup.bash
-                fi
-                
-                SKIP_ARG="--packages-skip stonefish_vendor"
-            else
-                echo "Cache Miss: Building Stonefish from scratch..."
-                colcon build --packages-select stonefish_vendor
-                source install/setup.bash
-                SKIP_ARG=""
-            fi
+            sudo chown -R $(whoami) .
+            rosdep update
+            
+            rosdep install --from-paths . --ignore-src -y --rosdistro jazzy --skip-keys 'pcl xacro'
+            find . -type d -name stonefish_vendor -exec touch {}/COLCON_IGNORE \;
 
             echo "Building workspace..."
-            colcon build $SKIP_ARG
+            ccache -z
+            
+            colcon build --symlink-install --cmake-args -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+            # Print ccache stats to verify hits
+            ccache -s
+
+            colcon test --pytest-args -k "not flake8 and not pep257 and not copyright"
