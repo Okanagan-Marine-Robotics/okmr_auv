@@ -26,16 +26,18 @@
         "ROS_LOCALHOST_ONLY": "1",
         "ROS_DOMAIN_ID": "42",
         "ROS_DISTRO": "jazzy",
-        "CMAKE_PREFIX_PATH": "/home/okmr_auv/install", 
-        "LD_LIBRARY_PATH": "/home/okmr_auv/install/lib"
+        "CMAKE_PREFIX_PATH": "/home/okmr_auv/install",
+        "LD_LIBRARY_PATH": "/home/okmr_auv/install/lib",
+        "NVIDIA_VISIBLE_DEVICES": "all",
+        "NVIDIA_DRIVER_CAPABILITIES": "all"
     },
     "runArgs": [
         "--net=host",
         "--pid=host",
         "--ipc=host",
+        "--gpus", "all",
         "-e", "DISPLAY=${env:DISPLAY}"
     ],
-        
     "postCreateCommand": "sudo rosdep init || true && rosdep update && sudo apt-get update && rosdep install --from-paths . --ignore-src -y --rosdistro $ROS_DISTRO --skip-keys 'pcl xacro' && sudo chown -R $(whoami) . && find . -type d -name stonefish_vendor -exec touch {}/COLCON_IGNORE \\;",
     "updateContentCommand": "colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 }

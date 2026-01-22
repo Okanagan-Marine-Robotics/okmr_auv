@@ -85,7 +85,7 @@ To verify the build, launch the Stonefish simulator.
 
     **Tip**: To avoid running this every time, add it to your bash config:
     ```bash
-    echo "source /home/okmr/okmr_auv/install/setup.bash" >> ~/.bashrc
+    echo "source /home/okmr_auv/install/setup.bash" >> ~/.bashrc
     echo "export DISPLAY=\$(grep nameserver /etc/resolv.conf | awk '{print \$2}'):0" >> ~/.bashrc
     source ~/.bashrc
     ```
