@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.interpolate import CublicSpline
+from scipy.interpolate import CubicSpline
 from okmr_msgs.msg import GoalPose
 from okmr_msgs.srv import DistanceFromGoal
 from okmr_navigation.handlers.freeze_handler import execute_freeze
@@ -7,9 +7,6 @@ from okmr_navigation.navigator_action_server import NavigatorActionServer
 from okmr_navigation.handlers.movement_execution_common import (
     execute_movement_with_monitoring,
     execute_test_movement_common,
-    call_distance_service,
-    is_translation_close_enough,
-    is_orientation_close_enough,
 )
 from okmr_navigation.handlers.set_control_mode import set_control_mode
 from okmr_msgs.msg import ControlMode
@@ -54,7 +51,7 @@ def _generate_smooth_waypoints(goal_handle, node, num_waypoints = 10):
     start_pos = [0.0, 0.0, 0.0]
 
     target_pose = goal_handle.request.command_msg.goal_pose.pose
-    end_pos = [target_pose.position.x, target_pose.position.y, target_pose.position]
+    end_pos = [target_pose.position.x, target_pose.position.y, target_pose.position.z]
 
     # Create an intermediate point in the spline
 
@@ -63,10 +60,12 @@ def _generate_smooth_waypoints(goal_handle, node, num_waypoints = 10):
     
     points = np.array([start_pos, mid_pos, end_pos])
     t = np.linspace(0, 1, len(points))
-    cs = CublicSpline(t, points)
+    cs = CubicSpline(t, points)
 
-    t_new = np.linspace(0, 2, num_waypoints)
+    t_new = np.linspace(0, 1, num_waypoints)
     smooth_path = cs(t_new)
+    
+    #print(f"DEBUG: Start={start_pos}, Mid={mid_pos}, End={end_pos}") # temp
 
     waypoint_poses = []
     for pos in smooth_path:
@@ -77,6 +76,7 @@ def _generate_smooth_waypoints(goal_handle, node, num_waypoints = 10):
         p.position.z = max(float(pos[2]), node.min_altitude)
         # Don't change orientation for MVP
         p.orientation = target_pose.orientation
+        waypoint_poses.append(p)
 
     return waypoint_poses
 
