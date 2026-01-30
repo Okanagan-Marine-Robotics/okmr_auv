@@ -4,12 +4,12 @@ const int maxThrottle = 1900; // Maximum throttle in microseconds (2ms)
 float throttle[8] = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500};
 
 #define NUM_SERVOS 1
-#define NUM_ACTUATORS 3
+#define NUM_ACTUATORS 2
 
 int pins[] = {12, 13, 14, 25, 26, 27, 32, 2}; 
-int servo_pins[] = {21};
+int servo_pins[] = {4};
 int servo_inits[] = {1500};
-int actuator_pins[] = {4, 4, 4};
+int actuator_pins[] = {34, 35};
 //note: add servo and actuator commands
 //100<1500\n for servo command on servo_pins[0] (pwm same as motors)
 //200<1\n for actuator command on actuaotr_pins[0] (digital high or low)
