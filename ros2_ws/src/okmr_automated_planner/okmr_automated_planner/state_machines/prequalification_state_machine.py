@@ -90,7 +90,7 @@ class PrequalificationStateMachine(BaseStateMachine):
     def on_enter_turn(self):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
-        movement_msg.rotation.z = self.distance_forward
+        movement_msg.rotation.z = self.rotation
 
         success = self.movement_client.send_movement_command(
             movement_msg,
