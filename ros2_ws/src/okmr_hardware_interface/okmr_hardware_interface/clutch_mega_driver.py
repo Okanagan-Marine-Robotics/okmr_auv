@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from okmr_msgs.msg import MotorThrottle, MissionCommand, ControlMode, ServoCommand
+from okmr_msgs.msg import MotorThrottle, MissionCommand, ControlMode, ServoCommand, ActuatorCommand
 import serial  # Import pyserial
 import time
 
@@ -47,6 +47,10 @@ class SerialOutputNode(Node):
             ServoCommand, "/servo_command", self.servo_command_callback, 10
         )
 
+        self.actuator_subscription = self.create_subscription(
+            ActuatorCommand, "/actuator_command", self.actuator_command_callback, 10
+        )
+
         self.mission_publisher = self.create_publisher(
             MissionCommand, "/mission_command", 10
         )
@@ -69,6 +73,19 @@ class SerialOutputNode(Node):
             self.serial_port.write(serial_msg.encode("utf-8"))
         except serial.SerialException as e:
             self.get_logger().error(f"Error writing servo command to serial port: {e}")
+
+    def actuator_command_callback(self, msg):
+        if not self.serial_port or not self.serial_port.is_open:
+            self.get_logger().error("Serial port is not open.")
+            return
+
+        try:
+            actuator_index = msg.index + 200
+            state_value = 1 if msg.state else 0
+            serial_msg = f"{actuator_index}<{state_value}\n"
+            self.serial_port.write(serial_msg.encode("utf-8"))
+        except serial.SerialException as e:
+            self.get_logger().error(f"Error writing actuator command to serial port: {e}")
 
     def throttle_callback(self, msg):
         if not self.serial_port or not self.serial_port.is_open:
