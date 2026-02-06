@@ -2,7 +2,7 @@ velocity_control_layer:
     ros__parameters:
         SAVE_LOCATION: /home/jetson/okmr_auv/ros2_ws/src/okmr_controls/params/temp/velocity_control.yaml
         update_frequency: 100.0
-        x_angular.p_gain: 0.22
+        x_angular.p_gain: 0.17
         x_linear.p_gain: 2.0
         y_angular.p_gain: 0.2
         y_linear.p_gain: 0.5

@@ -175,7 +175,7 @@ def generate_launch_description():
             param_file_arg,
             root_config_arg,
             debug_arg,
-            automated_planner_node,
+            # automated_planner_node,
             control_stack_launch,
             cameras_launch,
             # object_detection_launch,
