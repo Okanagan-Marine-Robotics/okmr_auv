@@ -1,0 +1,13 @@
+#in this file define the parameters that the state machines actually use
+#ex. speed setpoints, confidence thresholds, etc
+#root_path and base_config_path are defined inside the automated_planner.launch.py
+
+automated_planner:
+  ros__parameters:
+
+    state_timeout_check_period: 0.1
+    
+    qualifying:
+      distance_forward: 13.0 # distance to gate = 3m, dist from gate to marker = 10m
+      distance_down: 1.0
+      distancer_small: 0.5 # actually have no idea how large it will need to be
