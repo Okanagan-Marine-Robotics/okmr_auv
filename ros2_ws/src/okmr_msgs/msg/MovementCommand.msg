@@ -46,6 +46,9 @@ int8 MOVE_ABSOLUTE = 2
     #this plan defintely has some flaws and will need to be better defined
     #maybe this method will never need to be implemented who knows
 
+int8 SMOOTH_MOVE_ABSOLUTE = 9
+    # wrapper of move absolute but with cubic spline curved path
+
 
 int8 SET_VELOCITY = 3 #uses goal_velocity to request a velocity based movement, not looking at pose
 

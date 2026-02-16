@@ -6,6 +6,7 @@ from rclpy.executors import MultiThreadedExecutor
 from okmr_navigation.handlers.freeze_handler import *
 from okmr_navigation.handlers.move_relative_handler import *
 from okmr_navigation.handlers.move_absolute_handler import *
+from okmr_navigation.handlers.smooth_move_absolute_handler import *
 from okmr_navigation.handlers.set_velocity_handler import *
 from okmr_navigation.handlers.look_at_handler import *
 from okmr_navigation.handlers.surface_passive_handler import *
@@ -22,6 +23,7 @@ COMMAND_HANDLERS = {
     MovementCommand.FREEZE: handle_freeze,
     MovementCommand.MOVE_RELATIVE: handle_move_relative,
     MovementCommand.MOVE_ABSOLUTE: handle_move_absolute,
+    MovementCommand.SMOOTH_MOVE_ABSOLUTE: handle_smooth_move_absolute,
     MovementCommand.SET_VELOCITY: handle_set_velocity,
     MovementCommand.LOOK_AT: handle_look_at,
     MovementCommand.SURFACE_PASSIVE: handle_surface_passive,
@@ -33,6 +35,7 @@ TEST_COMMAND_HANDLERS = {
     MovementCommand.FREEZE: execute_test_movement_common,
     MovementCommand.MOVE_RELATIVE: execute_test_movement_common,
     MovementCommand.MOVE_ABSOLUTE: execute_test_movement_common,
+    # MovementCommand.SMOOTH_MOVE_ABSOLUTE: execute_test_movement_common, TBD
     MovementCommand.SET_VELOCITY: execute_test_movement_common,
     MovementCommand.SET_ALTITUDE: execute_test_movement_common,
     MovementCommand.LOOK_AT: execute_test_movement_common,
