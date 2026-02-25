@@ -25,7 +25,7 @@ def generate_launch_description():
                 package="okmr_navigation",
                 executable="dead_reckoning",
                 remappings=[
-                    ("/camera1/camera1/imu", "/stonefish/imu")
+                    ("/stonefish/imu", "/camera1/camera1/imu")
                 ],
                 parameters=[],
             ),
