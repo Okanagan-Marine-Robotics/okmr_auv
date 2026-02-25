@@ -1,3 +1,4 @@
+SCRIPT_DIR="$(pwd)"
 read -p "THIS IS NOT INSTALL/SETUP.BASH. If you want that, press n RIGHT NOW!!!! (y/n): " response
 
 case $response in
@@ -55,8 +56,9 @@ case $response in
         find .. -type d -name "fonts" -exec sudo cp -r {} /usr/local/share/Stonefish/ \;
         sudo cp -r ../Library/shaders /usr/local/share/Stonefish/
         cd /tmp && rm -rf Stonefish
+        sudo ldconfig
 
-        cd "$(realpath "$(dirname "$0")")/ros2_ws"
+        cd "$SCRIPT_DIR/ros2_ws"
         colcon build
         ;;
     *)
