@@ -42,6 +42,20 @@ case $response in
             ros-jazzy-xacro \
             ros-jazzy-foxglove-bridge
 
+        # Build and install Stonefish from source
+        cd /tmp
+        git clone https://github.com/patrykcieslak/Stonefish.git
+        cd Stonefish
+        git checkout 7d52673791834caa743907dde83a1949134ef2f0
+        mkdir build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
+        make -j$(nproc)
+        sudo make install
+        sudo mkdir -p /usr/local/share/Stonefish
+        find .. -type d -name "fonts" -exec sudo cp -r {} /usr/local/share/Stonefish/ \;
+        sudo cp -r ../Library/shaders /usr/local/share/Stonefish/
+        cd /tmp && rm -rf Stonefish
+
         cd "$(dirname "$0")/ros2_ws"
         colcon build
         ;;
