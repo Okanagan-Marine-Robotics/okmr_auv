@@ -13,6 +13,12 @@ case $response in
 
         source /opt/ros/jazzy/setup.bash
 
+        # Add Intel RealSense apt repo
+        sudo mkdir -p /etc/apt/keyrings
+        curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null
+        echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/librealsense.list
+        sudo apt update
+
         sudo apt install -y \
             python3-colcon-common-extensions \
             python3-rosdep \
@@ -23,8 +29,11 @@ case $response in
             libopengl-dev \
             python3-scipy \
             python3-transitions \
+            librealsense2 \
+            librealsense2-dev \
+            librealsense2-gl \
             librealsense2-udev-rules \
-            ros-jazzy-librealsense2 \
+            librealsense2-utils \
             ros-jazzy-pcl-conversions \
             ros-jazzy-pcl-ros \
             ros-jazzy-image-transport \
