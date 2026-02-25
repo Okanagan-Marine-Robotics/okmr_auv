@@ -1,0 +1,19 @@
+# Check what DHCP leases have been assigned
+sudo cat /var/lib/NetworkManager/dnsmasq-enp0s31f6.leases 2>/dev/null || sudo journalctl -u NetworkManager | grep -i dnsmasq | tail -20
+
+# Check routing and interface status
+ip addr show enp0s31f6
+ip route
+
+# Check ARP table
+arp -a
+
+# Check Jetson's IP and interface
+ip addr
+ip route
+
+# Check ARP table
+arp -a
+
+# Check if DVL packets are reaching the Jetson
+sudo tcpdump -i any port 9010 -n
