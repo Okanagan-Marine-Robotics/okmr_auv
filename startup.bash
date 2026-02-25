@@ -1,4 +1,3 @@
-SCRIPT_DIR="$(pwd)"
 read -p "THIS IS NOT INSTALL/SETUP.BASH. If you want that, press n RIGHT NOW!!!! (y/n): " response
 
 case $response in
@@ -58,8 +57,6 @@ case $response in
         cd /tmp && rm -rf Stonefish
         sudo ldconfig
 
-        cd "$SCRIPT_DIR/ros2_ws"
-        colcon build
         ;;
     *)
         exit
