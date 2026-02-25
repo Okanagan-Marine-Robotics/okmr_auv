@@ -1,8 +1,8 @@
 sideways_scan:
-states:
-{name: rotating_scan, config_path: "task_state_machines/rotating_scan.yaml", timeout: 30}
-{name: return_to_initial}
-{name: moving_sideways}
+  states:
+    - {name: rotating_scan, config_path: "task_state_machines/rotating_scan.yaml", timeout: 30}
+    - {name: return_to_initial}
+    - {name: moving_sideways}
 
 transitions:
     - { trigger: initializing_done, source: initializing, dest: rotating_scan}

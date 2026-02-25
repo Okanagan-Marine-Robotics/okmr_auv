@@ -1,13 +1,13 @@
 rotating_scan:
-states:
-{name: rotating_cw}
-{name: return_to_center_cw}
-{name: return_to_center_ccw}
-{name: rotating_ccw}
+  states:
+    - {name: rotating_cw}
+    - {name: return_to_center_cw}
+    - {name: return_to_center_ccw}
+    - {name: rotating_ccw}
 
-transitions:
-{trigger: initializing_done, source: initializing, dest: rotating_cw}
-{trigger: rotating_cw_done, source: rotating_cw, dest: return_to_center_cw}
-{trigger: return_to_center_cw_done, source: return_to_center_cw, dest: rotating_ccw}
-{trigger: rotating_ccw_done, source: rotating_ccw, dest: return_to_center_ccw}
-{trigger: return_to_center_ccw_done, source: return_to_center, dest: done} 
+  transitions:
+    - {trigger: initializing_done, source: initializing, dest: rotating_cw}
+    - {trigger: rotating_cw_done, source: rotating_cw, dest: return_to_center_cw}
+    - {trigger: return_to_center_cw_done, source: return_to_center_cw, dest: rotating_ccw}
+    - {trigger: rotating_ccw_done, source: rotating_ccw, dest: return_to_center_ccw}
+    - {trigger: return_to_center_ccw_done, source: return_to_center_ccw, dest: done} 

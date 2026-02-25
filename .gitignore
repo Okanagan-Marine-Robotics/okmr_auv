@@ -28,3 +28,4 @@ crl_parameter_gui/
 
 # ROS2 bag files
 rosbag2_*/
+ros2_ws/src/tune_gui

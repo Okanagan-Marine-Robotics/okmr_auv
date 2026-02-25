@@ -1,15 +1,17 @@
 from okmr_automated_planner.base_state_machine import BaseStateMachine
 from okmr_automated_planner.state_machines.rotating_scan_state_machine import RotatingScanStateMachine
 from okmr_utils.logging import make_green_log
-from okmr_msgs.msg import MissionCommand
+from okmr_msgs.msg import MissionCommand, MovementCommand
 
 
 class SidewaysScanStateMachine(BaseStateMachine):
     
     PARAMETERS = [
-        {'name': 'moving_sideways_distance',
-         'value': 1,
-         'descriptor': 'distance to move sideways in meters'},
+        {
+            'name': 'moving_sideways_distance',
+            'value': 1,
+            'descriptor': 'distance to move sideways in meters',
+        }
     ]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,7 +35,7 @@ class SidewaysScanStateMachine(BaseStateMachine):
             self.ros_node.get_logger().error("Failed to send sideways movement command")
             self.queued_method = self.abort
     
-    def on_enter_return_to_center(self):
+    def on_enter_return_to_initial(self):
         # need to decide on code for saving position and calling it back
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_ABSOLUTE
