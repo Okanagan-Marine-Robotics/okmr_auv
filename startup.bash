@@ -56,7 +56,7 @@ case $response in
         sudo cp -r ../Library/shaders /usr/local/share/Stonefish/
         cd /tmp && rm -rf Stonefish
 
-        cd "$(dirname "$0")/ros2_ws"
+        cd "$(realpath "$(dirname "$0")")/ros2_ws"
         colcon build
         ;;
     *)
