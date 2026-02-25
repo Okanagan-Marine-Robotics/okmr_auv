@@ -4,7 +4,13 @@ case $response in
     [yY])
         echo "Commencing startup"
 
-        # Source ROS to get $ROS_DISTRO
+        if [ ! -f /opt/ros/jazzy/setup.bash ]; then
+            echo "ERROR: ROS Jazzy is not installed."
+            echo "Install it first: https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html"
+            echo "You got this."
+            exit 1
+        fi
+
         source /opt/ros/jazzy/setup.bash
 
         sudo apt install -y \
@@ -18,14 +24,14 @@ case $response in
             python3-scipy \
             python3-transitions \
             librealsense2-udev-rules \
-            ros-$ROS_DISTRO-librealsense2 \
-            ros-$ROS_DISTRO-pcl-conversions \
-            ros-$ROS_DISTRO-pcl-ros \
-            ros-$ROS_DISTRO-image-transport \
-            ros-$ROS_DISTRO-cv-bridge \
-            ros-$ROS_DISTRO-diagnostic-updater \
-            ros-$ROS_DISTRO-xacro \
-            ros-$ROS_DISTRO-foxglove-bridge
+            ros-jazzy-librealsense2 \
+            ros-jazzy-pcl-conversions \
+            ros-jazzy-pcl-ros \
+            ros-jazzy-image-transport \
+            ros-jazzy-cv-bridge \
+            ros-jazzy-diagnostic-updater \
+            ros-jazzy-xacro \
+            ros-jazzy-foxglove-bridge
 
         cd "$(dirname "$0")/ros2_ws"
         colcon build
