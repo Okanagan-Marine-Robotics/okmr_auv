@@ -44,6 +44,7 @@ RUN apt-get update && apt-get install -y \
     ros-$ROS_DISTRO-cv-bridge \
     ros-$ROS_DISTRO-diagnostic-updater \
     ros-$ROS_DISTRO-xacro \
+    ros-$ROS_DISTRO-foxglove-bridge \
     && pip3 install --break-system-packages --ignore-installed onnx onnxruntime ultralytics \
     && pip3 uninstall -y setuptools --break-system-packages \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
