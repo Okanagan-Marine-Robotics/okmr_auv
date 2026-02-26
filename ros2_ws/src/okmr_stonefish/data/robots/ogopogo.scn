@@ -59,7 +59,7 @@
         <origin xyz="0.15 0.0 0.0" rpy="0.0 0.0 0.0"/>
         <noise angle="0.0 0.0 0.0" angular_velocity="0.005" yaw_drift="0.001" linear_acceleration="0.005"/>
         <link name="Base"/>
-        <ros_publisher topic="/stonefish/imu"/>
+        <ros_publisher topic="/ogopogo/front/imu"/>
     </sensor>
 
     <sensor name="Pressure" rate="8.0" type="pressure">

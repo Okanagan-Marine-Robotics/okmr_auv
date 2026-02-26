@@ -26,7 +26,7 @@ def generate_launch_description():
                
         # Launch the full navigation stack
         IncludeLaunchDescription(
-            PathJoinSubstitution([navigation_dir, 'stonefish_navigation_stack.launch.py'])
+            PathJoinSubstitution([navigation_dir, 'full_navigation_stack.launch.py'])
         ),
         
         # Launch the automated planner with test state machine
@@ -34,8 +34,8 @@ def generate_launch_description():
             PathJoinSubstitution([automated_planning_dir, 'automated_planner.launch.py']),
             launch_arguments={
                 'debug': 'true',
-                'root_config': 'root.yaml',
-                'config_folder': 'dev',
+                'root_config': 'test.yaml',
+                'config_folder': 'testing',
                 'param_file': 'params.yaml'
             }.items()
         ),
