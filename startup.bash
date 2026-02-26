@@ -44,10 +44,11 @@ case $response in
 
         # Build and install Stonefish from source
         cd /tmp
+        rm -rf Stonefish
         git clone https://github.com/patrykcieslak/Stonefish.git
         cd Stonefish
         git checkout 7d52673791834caa743907dde83a1949134ef2f0
-        mkdir build && cd build
+        mkdir -p build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
         make -j$(nproc)
         sudo make install
