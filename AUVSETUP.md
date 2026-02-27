@@ -12,7 +12,7 @@ Make sure the profile is activated before connecting!!!
 
 ## Step 1
 
-Plug in the vehicle (red first, then black). Wait for Jetson to initialize (observable through onboard lights + maybe the bendy screen ..??)
+Plug in the batteries to the vehicle (red first, then black). Wait for Jetson to initialize (observable through onboard lights + maybe the bendy screen ..??)
 
 ## Step 2
 
