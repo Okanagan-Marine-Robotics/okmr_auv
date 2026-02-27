@@ -8,12 +8,12 @@ from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
     realsense_launch_dir = PathJoinSubstitution(
-        [FindPackageShare("realsense2_camera"), "launch"]
+        [FindPackageShare("realsense2_camera"), "multi_camera_launch"]
     )
     hardware_interface_launch_dir = PathJoinSubstitution(
         [FindPackageShare("okmr_hardware_interface"), "launch"]
     )
-
+    
     ogopogo_dir = PathJoinSubstitution([FindPackageShare("ogopogo"), "launch"])
 
     controls_dir = PathJoinSubstitution([FindPackageShare("okmr_controls"), "launch"])
@@ -48,6 +48,10 @@ def generate_launch_description():
             IncludeLaunchDescription(navigation_launch),
             IncludeLaunchDescription(
                 ogopogo_hardware_interface_launch,
+            ),
+            Node(
+                package='foxglove_bridge',
+                executable='foxglove_bridge'
             ),
         ]
     )

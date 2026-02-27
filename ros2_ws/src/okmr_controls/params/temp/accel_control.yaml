@@ -1,0 +1,14 @@
+accel_control_layer:
+    ros__parameters:
+        SAVE_LOCATION: /home/jetson/okmr_auv/ros2_ws/src/okmr_controls/params/temp/accel_control.yaml
+        kbuoyancy: 0.07
+        kdrag_x: 1.0
+        kdrag_y: 0.0
+        kdrag_yaw: 0.0
+        kdrag_z: 0.0
+        kmass_pitch: 0.12
+        kmass_roll: 0.15
+        kmass_x: 5.0
+        kmass_y: 8.0
+        kmass_yaw: 0.05
+        kmass_z: 5.0

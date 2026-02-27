@@ -9,7 +9,7 @@ float throttle[8] = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500};
 int pins[] = {12, 13, 14, 25, 26, 27, 32, 2}; 
 int servo_pins[] = {4};
 int servo_inits[] = {1500};
-int actuator_pins[] = {34, 35};
+int actuator_pins[] = {5, 21};
 //note: add servo and actuator commands
 //100<1500\n for servo command on servo_pins[0] (pwm same as motors)
 //200<1\n for actuator command on actuaotr_pins[0] (digital high or low)

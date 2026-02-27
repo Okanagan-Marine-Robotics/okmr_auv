@@ -1,0 +1,785 @@
+jetson@ubuntu:~/okmr_auv/ros2_ws$ ros2 launch ogopogo 08-12-25-navigation.launch.py
+[INFO] [launch]: All log files can be found below /home/jetson/.ros/log/2026-02-06-13-33-18-015969-ubuntu-3704
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [realsense2_camera_node-1]: process started with pid [3707]
+[INFO] [dvl_driver-2]: process started with pid [3709]
+[INFO] [thrust_to_pwm_node-3]: process started with pid [3711]
+[INFO] [clutch_mega_driver-4]: process started with pid [3713]
+[INFO] [temp_sensor-5]: process started with pid [3715]
+[INFO] [static_transform_publisher-6]: process started with pid [3717]
+[INFO] [static_transform_publisher-7]: process started with pid [3719]
+[INFO] [dead_reckoning-8]: process started with pid [3727]
+[INFO] [navigator_action_server-9]: process started with pid [3731]
+[INFO] [relative_pose_target_server-10]: process started with pid [3743]
+[INFO] [velocity_target_server-11]: process started with pid [3749]
+[INFO] [pose_control_layer_node-12]: process started with pid [3761]
+[INFO] [velocity_control_layer_node-13]: process started with pid [3763]
+[INFO] [accel_control_layer_node-14]: process started with pid [3769]
+[INFO] [thrust_allocator_node-15]: process started with pid [3774]
+[INFO] [foxglove_bridge-16]: process started with pid [3785]
+[thrust_to_pwm_node-3] [INFO] [1770413598.319819692] [thrust_to_pwm]: Loaded thrust curve with 6 voltage levels
+[thrust_to_pwm_node-3] [INFO] [1770413598.350310888] [thrust_to_pwm]: ThrustToPwm node initialized
+[static_transform_publisher-6] [WARN] [1770413598.260309130] []: Old-style arguments are deprecated; see --help for
+new-style arguments
+[static_transform_publisher-6] [INFO] [1770413598.334472604] [camera_imu_to_base_link]: Spinning until stopped - pub
+lishing transform
+[static_transform_publisher-6] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-6] rotation: ('0.500000', '-0.500000', '0.500000', '0.500000')
+[static_transform_publisher-6] from 'front_imu_optical_frame' to 'base_link'
+[static_transform_publisher-7] [WARN] [1770413598.331861193] []: Old-style arguments are deprecated; see --help for
+new-style arguments
+[velocity_target_server-11] [INFO] [1770413598.511043068] [velocity_target_server]: VelocityTargetServer initialized
+[dead_reckoning-8] [INFO] [1770413598.560927515] [dead_reckoning_node]: DeadReckoningNode initialized with 200.00000
+0 Hz update rate
+[static_transform_publisher-7] [INFO] [1770413598.587924061] [dvl_to_base_link]: Spinning until stopped - publishing
+ transform
+[static_transform_publisher-7] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-7] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-7] from 'base_link' to 'dvl'
+[thrust_allocator_node-15] [INFO] [1770413598.658001511] [thrust_allocator]: Allocation matrix setup complete
+[thrust_allocator_node-15] [INFO] [1770413598.658349821] [thrust_allocator]: Thrust allocator initialized. Use enabl
+e service to start.
+[foxglove_bridge-16] [INFO] [1770413598.931067366] [foxglove_bridge_component_manager]: Load Library: /opt/ros/iron/
+lib/libfoxglove_bridge_component.so
+[foxglove_bridge-16] [INFO] [1770413598.971477244] [foxglove_bridge_component_manager]: Found class: rclcpp_componen
+ts::NodeFactoryTemplate<foxglove_bridge::FoxgloveBridge>
+[foxglove_bridge-16] [INFO] [1770413598.971615288] [foxglove_bridge_component_manager]: Instantiate class: rclcpp_co
+mponents::NodeFactoryTemplate<foxglove_bridge::FoxgloveBridge>
+[foxglove_bridge-16] [INFO] [1770413598.988744446] [foxglove_bridge]: Starting foxglove_bridge (iron, 0.8.1@) with W
+ebSocket++/0.8.2
+[foxglove_bridge-16] [INFO] [1770413598.989929563] [foxglove_bridge]: [WS] Server running without TLS
+[foxglove_bridge-16] [INFO] [1770413598.991760389] [foxglove_bridge]: [WS] WebSocket server listening at ws://0.0.0.
+0:8765
+[foxglove_bridge-16] [INFO] [1770413599.006238265] [foxglove_bridge]: [WS] WebSocket server run loop started
+[realsense2_camera_node-1] [INFO] [1770413599.286777892] [camera.camera]: RealSense ROS v4.55.1
+[realsense2_camera_node-1] [INFO] [1770413599.287041245] [camera.camera]: Built with LibRealSense v2.56.3
+[realsense2_camera_node-1] [INFO] [1770413599.287079675] [camera.camera]: Running with LibRealSense v2.56.3
+[navigator_action_server-9] /usr/lib/python3/dist-packages/scipy/__init__.py:146: UserWarning: A NumPy version >=1.1
+7.3 and <1.25.0 is required for this version of SciPy (detected version 1.26.4
+[navigator_action_server-9]   warnings.warn(f"A NumPy version >={np_minversion} and <{np_maxversion}"
+[clutch_mega_driver-4] [INFO] [1770413599.953209579] [clutch_mega_driver]: Serial port opened successfully.
+[realsense2_camera_node-1] [INFO] [1770413599.972564909] [camera.camera]: Device with serial number 234322306161 was
+ found.
+[realsense2_camera_node-1]
+[realsense2_camera_node-1] [INFO] [1770413599.972845765] [camera.camera]: Device with physical ID 1-1.2-6 was found.
+[realsense2_camera_node-1] [INFO] [1770413599.981572803] [camera.camera]: Device with name Intel RealSense D455 was
+found.
+[realsense2_camera_node-1] [INFO] [1770413599.982407146] [camera.camera]: Device with port number 1-1.2 was found.
+[realsense2_camera_node-1] [INFO] [1770413599.982660578] [camera.camera]: Device USB type: 2.1
+[realsense2_camera_node-1] [WARN] [1770413599.982938042] [camera.camera]: Device 234322306161 is connected using a 2
+.1 port. Reduced performance is expected.
+[realsense2_camera_node-1] [INFO] [1770413599.984057593] [camera.camera]: getParameters...
+[realsense2_camera_node-1] [INFO] [1770413600.020361380] [camera.camera]: JSON file is not provided
+[realsense2_camera_node-1] [INFO] [1770413600.020942867] [camera.camera]: Device Name: Intel RealSense D455
+[realsense2_camera_node-1] [INFO] [1770413600.021946837] [camera.camera]: Device Serial No: 234322306161
+[realsense2_camera_node-1] [INFO] [1770413600.022599234] [camera.camera]: Device physical port: 1-1.2-6
+[realsense2_camera_node-1] [INFO] [1770413600.022957207] [camera.camera]: Device FW version: 5.13.0.55
+[realsense2_camera_node-1] [INFO] [1770413600.023282606] [camera.camera]: Device Product ID: 0x0B5C
+[realsense2_camera_node-1] [INFO] [1770413600.023590276] [camera.camera]: Sync Mode: Off
+[clutch_mega_driver-4] [ERROR] [1770413600.071604051] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.111373174] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.214442177] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.313090159] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.411652992] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.511918495] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[navigator_action_server-9] [INFO] [1770413600.583922276] [navigator_action_server]: Navigator Action Server started
+ (test_mode: False)
+[clutch_mega_driver-4] [ERROR] [1770413600.613465335] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.712365278] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.812095309] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413600.911400008] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413601.011590599] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413601.112173653] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413601.213459117] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413601.312054645] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413601.411522243] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413601.512022995] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[clutch_mega_driver-4] [ERROR] [1770413601.612193804] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+^C[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[realsense2_camera_node-1] [INFO] [1770413601.618551791] [rclcpp]: signal_handler(signum=2)
+[foxglove_bridge-16] [INFO] [1770413601.618424626] [rclcpp]: signal_handler(signum=2)
+[thrust_allocator_node-15] [INFO] [1770413601.618420275] [rclcpp]: signal_handler(signum=2)
+[relative_pose_target_server-10] [INFO] [1770413601.618428018] [rclcpp]: signal_handler(signum=2)
+[accel_control_layer_node-14] [INFO] [1770413601.618424946] [rclcpp]: signal_handler(signum=2)
+[velocity_control_layer_node-13] [INFO] [1770413601.618438898] [rclcpp]: signal_handler(signum=2)
+[static_transform_publisher-6] [INFO] [1770413601.618483889] [rclcpp]: signal_handler(signum=2)
+[static_transform_publisher-7] [INFO] [1770413601.618596845] [rclcpp]: signal_handler(signum=2)
+[pose_control_layer_node-12] [INFO] [1770413601.618595981] [rclcpp]: signal_handler(signum=2)
+[thrust_to_pwm_node-3] [INFO] [1770413601.618607117] [rclcpp]: signal_handler(signum=2)
+[dvl_driver-2] Traceback (most recent call last):
+[dvl_driver-2]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_hardware_interface/lib/okmr_hardware_interface/dvl
+_driver", line 164, in <module>
+[dvl_driver-2]     main()
+[dvl_driver-2]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_hardware_interface/lib/okmr_hardware_interface/dvl
+_driver", line 158, in main
+[dvl_driver-2]     node.udp_server()
+[dvl_driver-2]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_hardware_interface/lib/okmr_hardware_interface/dvl
+_driver", line 44, in udp_server
+[dvl_driver-2]     data, dvl_addr = sock_bottom.recvfrom(1024)  # buffer size is 1024 bytes
+[dvl_driver-2] KeyboardInterrupt
+[velocity_target_server-11] [INFO] [1770413601.623136390] [rclcpp]: signal_handler(signum=2)
+[foxglove_bridge-16] [INFO] [1770413601.633808520] [foxglove_bridge]: Shutting down foxglove_bridge
+[foxglove_bridge-16] [INFO] [1770413601.664638002] [foxglove_bridge]: [WS] Stopping WebSocket server
+[foxglove_bridge-16] [INFO] [1770413601.664761711] [foxglove_bridge]: [WS] All WebSocket connections closed
+[foxglove_bridge-16] [INFO] [1770413601.664768847] [foxglove_bridge]: [WS] Waiting for WebSocket server run loop to
+terminate
+[foxglove_bridge-16] [INFO] [1770413601.664847980] [foxglove_bridge]: [WS] asio handle_accept error: asio.system:125
+ (Operation aborted.)
+[foxglove_bridge-16] [INFO] [1770413601.664898123] [foxglove_bridge]: [WS] Error getting remote endpoint: asio.syste
+m:9 (Bad file descriptor)
+[foxglove_bridge-16] [INFO] [1770413601.665055814] [foxglove_bridge]: [WS] asio async_shutdown error: asio.system:9
+(Bad file descriptor)
+[foxglove_bridge-16] [ERROR] [1770413601.665070854] [foxglove_bridge]: [WS] handle_accept error: Operation aborted.
+[foxglove_bridge-16] [INFO] [1770413601.665074949] [foxglove_bridge]: [WS] Stopping acceptance of new connections be
+cause the underlying transport is no longer listening.
+[foxglove_bridge-16] [INFO] [1770413601.665141891] [foxglove_bridge]: [WS] WebSocket server run loop stopped
+[foxglove_bridge-16] [INFO] [1770413601.665310974] [foxglove_bridge]: [WS] WebSocket server run loop terminated
+[foxglove_bridge-16] [INFO] [1770413601.665336862] [foxglove_bridge]: Shutdown complete
+[dead_reckoning-8] [INFO] [1770413601.644349423] [rclcpp]: signal_handler(signum=2)
+[navigator_action_server-9] Traceback (most recent call last):
+[navigator_action_server-9]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_navigation/lib/okmr_navigation/naviga
+tor_action_server", line 63, in <module>
+[navigator_action_server-9]     main()
+[navigator_action_server-9]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_navigation/lib/okmr_navigation/naviga
+tor_action_server", line 59, in main
+[navigator_action_server-9]     rclpy.shutdown()
+[navigator_action_server-9]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/__init__.py", line 130, in shut
+down
+[navigator_action_server-9]     _shutdown(context=context)
+[navigator_action_server-9]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/utilities.py", line 82, in shut
+down
+[navigator_action_server-9]     context.shutdown()
+[navigator_action_server-9]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/context.py", line 102, in shutd
+own
+[navigator_action_server-9]     self.__context.shutdown()
+[navigator_action_server-9] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the g
+iven context, at ./src/rcl/init.c:333
+[INFO] [static_transform_publisher-6]: process has finished cleanly [pid 3717]
+[temp_sensor-5] Traceback (most recent call last):
+[temp_sensor-5]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_hardware_interface/lib/okmr_hardware_interface/te
+mp_sensor", line 60, in <module>
+[temp_sensor-5]     main()
+[temp_sensor-5]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_hardware_interface/lib/okmr_hardware_interface/te
+mp_sensor", line 57, in main
+[temp_sensor-5]     rclpy.shutdown()
+[temp_sensor-5]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/__init__.py", line 130, in shutdown
+[temp_sensor-5]     _shutdown(context=context)
+[temp_sensor-5]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/utilities.py", line 82, in shutdown
+[temp_sensor-5]     context.shutdown()
+[temp_sensor-5]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/context.py", line 102, in shutdown
+[temp_sensor-5]     self.__context.shutdown()
+[temp_sensor-5] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context
+, at ./src/rcl/init.c:333
+[INFO] [thrust_allocator_node-15]: process has finished cleanly [pid 3774]
+[INFO] [velocity_target_server-11]: process has finished cleanly [pid 3749]
+[INFO] [accel_control_layer_node-14]: process has finished cleanly [pid 3769]
+[INFO] [static_transform_publisher-7]: process has finished cleanly [pid 3719]
+[INFO] [pose_control_layer_node-12]: process has finished cleanly [pid 3761]
+[INFO] [thrust_to_pwm_node-3]: process has finished cleanly [pid 3711]
+[clutch_mega_driver-4] Traceback (most recent call last):
+[clutch_mega_driver-4]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_hardware_interface/lib/okmr_hardware_inter
+face/clutch_mega_driver", line 205, in <module>
+[clutch_mega_driver-4]     main()
+[clutch_mega_driver-4]   File "/home/jetson/okmr_auv/ros2_ws/install/okmr_hardware_interface/lib/okmr_hardware_inter
+face/clutch_mega_driver", line 201, in main
+[clutch_mega_driver-4]     rclpy.shutdown()
+[clutch_mega_driver-4]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/__init__.py", line 130, in shutdown
+[clutch_mega_driver-4]     _shutdown(context=context)
+[clutch_mega_driver-4]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/utilities.py", line 82, in shutdown
+[clutch_mega_driver-4]     context.shutdown()
+[clutch_mega_driver-4]   File "/opt/ros/iron/lib/python3.10/site-packages/rclpy/context.py", line 102, in shutdown
+[clutch_mega_driver-4]     self.__context.shutdown()
+[clutch_mega_driver-4] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given
+context, at ./src/rcl/init.c:333
+[INFO] [foxglove_bridge-16]: process has finished cleanly [pid 3785]
+[ERROR] [dvl_driver-2]: process has died [pid 3709, exit code -2, cmd '/home/jetson/okmr_auv/ros2_ws/install/okmr_ha
+rdware_interface/lib/okmr_hardware_interface/dvl_driver --ros-args'].
+[INFO] [velocity_control_layer_node-13]: process has finished cleanly [pid 3763]
+[INFO] [relative_pose_target_server-10]: process has finished cleanly [pid 3743]
+[INFO] [dead_reckoning-8]: process has finished cleanly [pid 3727]
+[ERROR] [temp_sensor-5]: process has died [pid 3715, exit code 1, cmd '/home/jetson/okmr_auv/ros2_ws/install/okmr_ha
+rdware_interface/lib/okmr_hardware_interface/temp_sensor --ros-args'].
+[ERROR] [clutch_mega_driver-4]: process has died [pid 3713, exit code 1, cmd '/home/jetson/okmr_auv/ros2_ws/install/
+okmr_hardware_interface/lib/okmr_hardware_interface/clutch_mega_driver --ros-args --params-file /home/jetson/okmr_au
+v/ros2_ws/install/okmr_hardware_interface/share/okmr_hardware_interface/params/mega_params.yaml'].
+[ERROR] [navigator_action_server-9]: process has died [pid 3731, exit code 1, cmd '/home/jetson/okmr_auv/ros2_ws/ins
+tall/okmr_navigation/lib/okmr_navigation/navigator_action_server --ros-args'].
+[realsense2_camera_node-1] [INFO] [1770413604.627303515] [camera.camera]: Set ROS param depth_module.depth_profile t
+o default: 640x480x15
+[realsense2_camera_node-1] [INFO] [1770413604.628734928] [camera.camera]: Set ROS param depth_module.infra_profile t
+o default: 640x480x15
+[realsense2_camera_node-1] [INFO] [1770413605.369300322] [camera.camera]: Set ROS param rgb_camera.color_profile to
+default: 640x480x15
+[realsense2_camera_node-1] [INFO] [1770413605.370175400] [camera.camera]: Set ROS param gyro_fps to default: 200
+[realsense2_camera_node-1] [INFO] [1770413605.370286820] [camera.camera]: Set ROS param accel_fps to default: 100
+[realsense2_camera_node-1] [INFO] [1770413605.377050841] [camera.camera]: Stopping Sensor: Depth Module
+[realsense2_camera_node-1] [INFO] [1770413605.377252371] [camera.camera]: Stopping Sensor: RGB Camera
+[realsense2_camera_node-1] [ERROR] [1770413605.385042152] [camera.camera]: Failed to load plugin image_transport/raw
+_pub, error string: could not create publisher: rcl node's context is invalid, at ./src/rcl/node.c:446
+[realsense2_camera_node-1]
+[realsense2_camera_node-1] [ERROR] [1770413605.385478907] [camera.camera]: /home/jetson/okmr_auv/ros2_ws/src/realsen
+se-ros/realsense2_camera/src/rs_node_setup.cpp:487:An exception has been thrown: No plugins found! Does `rospack plu
+gins --attrib=plugin image_transport` find any packages?
+[realsense2_camera_node-1] [ERROR] [1770413605.385570520] [camera.camera]: /home/jetson/okmr_auv/ros2_ws/src/realsen
+se-ros/realsense2_camera/src/rs_node_setup.cpp:369:An exception has been thrown: No plugins found! Does `rospack plu
+gins --attrib=plugin image_transport` find any packages?
+[realsense2_camera_node-1] [ERROR] [1770413605.385654582] [camera.camera]: Error starting device: No plugins found!
+Does `rospack plugins --attrib=plugin image_transport` find any packages?
+[realsense2_camera_node-1] [INFO] [1770413605.385776370] [camera.camera]: Stopping Sensor: Depth Module
+[realsense2_camera_node-1] [INFO] [1770413605.385896302] [camera.camera]: Stopping Sensor: RGB Camera
+[realsense2_camera_node-1] [ERROR] [1770413605.386509628] [camera.camera]: Failed to load plugin image_transport/raw
+_pub, error string: could not create publisher: rcl node's context is invalid, at ./src/rcl/node.c:446
+[realsense2_camera_node-1]
+[realsense2_camera_node-1] [ERROR] [1770413605.386601401] [camera.camera]: /home/jetson/okmr_auv/ros2_ws/src/realsen
+se-ros/realsense2_camera/src/rs_node_setup.cpp:487:An exception has been thrown: No plugins found! Does `rospack plu
+gins --attrib=plugin image_transport` find any packages?
+[realsense2_camera_node-1] [ERROR] [1770413605.386635992] [camera.camera]: /home/jetson/okmr_auv/ros2_ws/src/realsen
+se-ros/realsense2_camera/src/rs_node_setup.cpp:369:An exception has been thrown: No plugins found! Does `rospack plu
+gins --attrib=plugin image_transport` find any packages?
+[realsense2_camera_node-1] [ERROR] [1770413605.386659064] [camera.camera]: Error updating the sensors: No plugins fo
+und! Does `rospack plugins --attrib=plugin image_transport` find any packages?
+[ERROR] [realsense2_camera_node-1]: process[realsense2_camera_node-1] failed to terminate '5' seconds after receivin
+g 'SIGINT', escalating to 'SIGTERM'
+[INFO] [realsense2_camera_node-1]: sending signal 'SIGTERM' to process[realsense2_camera_node-1]
+[realsense2_camera_node-1] [INFO] [1770413606.696405680] [rclcpp]: signal_handler(signum=15)
+^C[WARNING] [launch]: user interrupted with ctrl-c (SIGINT) again, ignoring...
+[ERROR] [realsense2_camera_node-1]: process has died [pid 3707, exit code -2, cmd '/home/jetson/okmr_auv/ros2_ws/ins
+tall/realsense2_camera/lib/realsense2_camera/realsense2_camera_node --ros-args --log-level info --ros-args -r __node
+:=camera -r __ns:=/camera --params-file /tmp/launch_params_ojs2_adg --params-file /tmp/launch_params_79msv20x'].
+jetson@ubuntu:~/okmr_auv/ros2_ws$ ros2 launch ogopogo 08-12-25-navigation.launch.py
+[INFO] [launch]: All log files can be found below /home/jetson/.ros/log/2026-02-06-13-33-29-254936-ubuntu-4975
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [realsense2_camera_node-1]: process started with pid [4978]
+[INFO] [dvl_driver-2]: process started with pid [4980]
+[INFO] [thrust_to_pwm_node-3]: process started with pid [4982]
+[INFO] [clutch_mega_driver-4]: process started with pid [4984]
+[INFO] [temp_sensor-5]: process started with pid [4986]
+[INFO] [static_transform_publisher-6]: process started with pid [4988]
+[INFO] [static_transform_publisher-7]: process started with pid [4994]
+[INFO] [dead_reckoning-8]: process started with pid [4996]
+[INFO] [navigator_action_server-9]: process started with pid [5004]
+[INFO] [relative_pose_target_server-10]: process started with pid [5014]
+[INFO] [velocity_target_server-11]: process started with pid [5036]
+[INFO] [pose_control_layer_node-12]: process started with pid [5042]
+[INFO] [velocity_control_layer_node-13]: process started with pid [5055]
+[INFO] [accel_control_layer_node-14]: process started with pid [5057]
+[INFO] [thrust_allocator_node-15]: process started with pid [5073]
+[INFO] [foxglove_bridge-16]: process started with pid [5082]
+[thrust_to_pwm_node-3] [INFO] [1770413609.586050141] [thrust_to_pwm]: Loaded thrust curve with 6 voltage levels
+[thrust_to_pwm_node-3] [INFO] [1770413609.624831043] [thrust_to_pwm]: ThrustToPwm node initialized
+[static_transform_publisher-6] [WARN] [1770413609.480441320] []: Old-style arguments are deprecated; see --help for
+new-style arguments
+[static_transform_publisher-6] [INFO] [1770413609.590034116] [camera_imu_to_base_link]: Spinning until stopped - pub
+lishing transform
+[static_transform_publisher-6] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-6] rotation: ('0.500000', '-0.500000', '0.500000', '0.500000')
+[static_transform_publisher-6] from 'front_imu_optical_frame' to 'base_link'
+[static_transform_publisher-7] [WARN] [1770413609.503881439] []: Old-style arguments are deprecated; see --help for
+new-style arguments
+[static_transform_publisher-7] [INFO] [1770413609.594313442] [dvl_to_base_link]: Spinning until stopped - publishing
+ transform
+[static_transform_publisher-7] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-7] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-7] from 'base_link' to 'dvl'
+[velocity_target_server-11] [INFO] [1770413609.798238955] [velocity_target_server]: VelocityTargetServer initialized
+[thrust_allocator_node-15] [INFO] [1770413609.887155164] [thrust_allocator]: Allocation matrix setup complete
+[thrust_allocator_node-15] [INFO] [1770413609.890968744] [thrust_allocator]: Thrust allocator initialized. Use enabl
+e service to start.
+[dead_reckoning-8] [INFO] [1770413610.191442956] [dead_reckoning_node]: DeadReckoningNode initialized with 200.00000
+0 Hz update rate
+[foxglove_bridge-16] [INFO] [1770413610.211200434] [foxglove_bridge_component_manager]: Load Library: /opt/ros/iron/
+lib/libfoxglove_bridge_component.so
+[foxglove_bridge-16] [INFO] [1770413610.279829926] [foxglove_bridge_component_manager]: Found class: rclcpp_componen
+ts::NodeFactoryTemplate<foxglove_bridge::FoxgloveBridge>
+[foxglove_bridge-16] [INFO] [1770413610.279988386] [foxglove_bridge_component_manager]: Instantiate class: rclcpp_co
+mponents::NodeFactoryTemplate<foxglove_bridge::FoxgloveBridge>
+[foxglove_bridge-16] [INFO] [1770413610.338174100] [foxglove_bridge]: Starting foxglove_bridge (iron, 0.8.1@) with W
+ebSocket++/0.8.2
+[foxglove_bridge-16] [INFO] [1770413610.339918143] [foxglove_bridge]: [WS] Server running without TLS
+[foxglove_bridge-16] [INFO] [1770413610.340975839] [foxglove_bridge]: [WS] WebSocket server listening at ws://0.0.0.
+0:8765
+[foxglove_bridge-16] [INFO] [1770413610.346548693] [foxglove_bridge]: [WS] WebSocket server run loop started
+[realsense2_camera_node-1] [INFO] [1770413610.392031403] [camera.camera]: RealSense ROS v4.55.1
+[realsense2_camera_node-1] [INFO] [1770413610.392287011] [camera.camera]: Built with LibRealSense v2.56.3
+[realsense2_camera_node-1] [INFO] [1770413610.392328866] [camera.camera]: Running with LibRealSense v2.56.3
+[navigator_action_server-9] /usr/lib/python3/dist-packages/scipy/__init__.py:146: UserWarning: A NumPy version >=1.1
+7.3 and <1.25.0 is required for this version of SciPy (detected version 1.26.4
+[navigator_action_server-9]   warnings.warn(f"A NumPy version >={np_minversion} and <{np_maxversion}"
+[realsense2_camera_node-1] [INFO] [1770413611.017749773] [camera.camera]: Device with serial number 234322306161 was
+ found.
+[realsense2_camera_node-1]
+[realsense2_camera_node-1] [INFO] [1770413611.030006775] [camera.camera]: Device with physical ID 1-1.2-6 was found.
+[realsense2_camera_node-1] [INFO] [1770413611.030170354] [camera.camera]: Device with name Intel RealSense D455 was
+found.
+[realsense2_camera_node-1] [INFO] [1770413611.030575557] [camera.camera]: Device with port number 1-1.2 was found.
+[realsense2_camera_node-1] [INFO] [1770413611.030641539] [camera.camera]: Device USB type: 2.1
+[realsense2_camera_node-1] [WARN] [1770413611.030686018] [camera.camera]: Device 234322306161 is connected using a 2
+.1 port. Reduced performance is expected.
+[realsense2_camera_node-1] [INFO] [1770413611.030877596] [camera.camera]: getParameters...
+[realsense2_camera_node-1] [INFO] [1770413611.031609830] [camera.camera]: JSON file is not provided
+[realsense2_camera_node-1] [INFO] [1770413611.031675972] [camera.camera]: Device Name: Intel RealSense D455
+[realsense2_camera_node-1] [INFO] [1770413611.031717187] [camera.camera]: Device Serial No: 234322306161
+[realsense2_camera_node-1] [INFO] [1770413611.031752513] [camera.camera]: Device physical port: 1-1.2-6
+[realsense2_camera_node-1] [INFO] [1770413611.031787712] [camera.camera]: Device FW version: 5.13.0.55
+[realsense2_camera_node-1] [INFO] [1770413611.031827487] [camera.camera]: Device Product ID: 0x0B5C
+[realsense2_camera_node-1] [INFO] [1770413611.031866782] [camera.camera]: Sync Mode: Off
+[clutch_mega_driver-4] [INFO] [1770413611.329148676] [clutch_mega_driver]: Serial port opened successfully.
+[clutch_mega_driver-4] [ERROR] [1770413611.448240525] [clutch_mega_driver]: Error decoding serial data: 'utf-8' code
+c can't decode byte 0x80 in position 4: invalid start byte
+[navigator_action_server-9] [INFO] [1770413611.530583930] [navigator_action_server]: Navigator Action Server started
+ (test_mode: False)
+[realsense2_camera_node-1] [INFO] [1770413614.462275280] [camera.camera]: Set ROS param depth_module.depth_profile t
+o default: 640x480x15
+[realsense2_camera_node-1] [INFO] [1770413614.465571179] [camera.camera]: Set ROS param depth_module.infra_profile t
+o default: 640x480x15
+[foxglove_bridge-16] [INFO] [1770413614.488916860] [foxglove_bridge]: [WS] Client 192.168.2.1:40968 connected via /
+[realsense2_camera_node-1] [INFO] [1770413615.378102457] [camera.camera]: Set ROS param rgb_camera.color_profile to
+default: 640x480x15
+[realsense2_camera_node-1] [INFO] [1770413615.385458742] [camera.camera]: Set ROS param gyro_fps to default: 200
+[realsense2_camera_node-1] [INFO] [1770413615.386728623] [camera.camera]: Set ROS param accel_fps to default: 100
+[realsense2_camera_node-1] [INFO] [1770413615.432924957] [camera.camera]: Stopping Sensor: Depth Module
+[realsense2_camera_node-1] [INFO] [1770413615.433242420] [camera.camera]: Stopping Sensor: RGB Camera
+[realsense2_camera_node-1] [INFO] [1770413615.562888500] [camera.camera]: Starting Sensor: Depth Module
+[realsense2_camera_node-1] [INFO] [1770413615.649932566] [camera.camera]: Open profile: stream_type: Depth(0), Forma
+t: Z16, Width: 640, Height: 480, FPS: 15
+[realsense2_camera_node-1]  06/02 13:33:35,659 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,670 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,681 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,692 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,703 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,714 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,724 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,736 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,746 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:35,757 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1] [INFO] [1770413615.771620364] [camera.camera]: Starting Sensor: RGB Camera
+[realsense2_camera_node-1] [INFO] [1770413615.790923896] [camera.camera]: Open profile: stream_type: Color(0), Forma
+t: RGB8, Width: 640, Height: 480, FPS: 15
+[realsense2_camera_node-1] [INFO] [1770413615.802377623] [camera.camera]: RealSense Node Is Up!
+[realsense2_camera_node-1]  06/02 13:33:36,075 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,086 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,096 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,108 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,119 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,334 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,345 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,355 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,366 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,377 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,388 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,399 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,409 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,420 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,431 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,442 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,453 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,464 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,475 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,486 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,497 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,507 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,518 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,529 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,949 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,960 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,971 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,982 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:36,993 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,004 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,014 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,025 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,036 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,047 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,058 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,069 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,079 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,090 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,203 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,214 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,225 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,235 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,246 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,257 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,268 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,279 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,290 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,301 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,414 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,424 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,435 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,446 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,457 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,468 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,479 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,490 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[realsense2_camera_node-1]  06/02 13:33:37,500 WARNING [281472351003072] (messenger-libusb.cpp:42) control_transfer
+returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[foxglove_bridge-16] [ERROR] [1770413619.680250068] [foxglove_bridge]: Exception when getting parameters: Failed to
+retrieve parameter names for node '/dvl_driver'
+[foxglove_bridge-16] [INFO] [1770413619.683004638] [foxglove_bridge]: [WS] Subscribing to connection graph updates.
+[foxglove_bridge-16] [INFO] [1770413619.688847848] [foxglove_bridge]: Subscribing to topic "/relative_pose_target" (
+okmr_msgs/msg/RelativePose) on channel 5
+[foxglove_bridge-16] [INFO] [1770413619.700553276] [foxglove_bridge]: Subscribing to topic "/pose" (geometry_msgs/ms
+g/PoseStamped) on channel 6
+[foxglove_bridge-16] [INFO] [1770413619.709005652] [foxglove_bridge]: Subscribing to topic "/dvl" (okmr_msgs/msg/Dvl
+) on channel 18
+[foxglove_bridge-16] [INFO] [1770413619.715469867] [foxglove_bridge]: Subscribing to topic "/tf" (tf2_msgs/msg/TFMes
+sage) on channel 4
+[foxglove_bridge-16] [INFO] [1770413619.723054911] [foxg
+g/TFMessage) on channel 9
+[foxglove_bridge-16] [INFO] [1770413619.726720908] [foxg
+t" (okmr_msgs/msg/RelativePose) on channel 5
+[foxglove_bridge-16] [INFO] [1770413619.727179710] [foxg
+s/msg/PoseStamped) on channel 6
+[foxglove_bridge-16] [INFO] [1770413619.727588209] [foxg
+/Dvl) on channel 18
+[foxglove_bridge-16] [INFO] [1770413619.727708526] [foxg
+FMessage) on channel 4
+[foxglove_bridge-16] [INFO] [1770413619.734996459] [foxg
+s/msg/TFMessage) on channel 9
+[foxglove_bridge-16] [INFO] [1770413619.736399807] [foxg
+okmr_msgs/msg/RelativePose) on channel 5
+[foxglove_bridge-16] [INFO] [1770413619.744056400] [foxg
+g/PoseStamped) on channel 6
+[foxglove_bridge-16] [INFO] [1770413619.751897212] [foxg
+_base_simple/goal" (geometry_msgs/PoseStamped) on channe
+[foxglove_bridge-16] [INFO] [1770413619.754906462] [foxg
+ked_point" (geometry_msgs/PointStamped) on channel 2 wit
+[foxglove_bridge-16] [INFO] [1770413619.758419249] [foxg
+ialpose" (geometry_msgs/PoseWithCovarianceStamped) on ch
+^C[WARNING] [launch]: user interrupted with ctrl-c (SIGI
+NT)
+[realsense2_camera_node-1] [INFO] [1770413645.186861774]
+ [rclcpp]: signal_handler(signum=2)
+[foxglove_bridge-16] [INFO] [1770413645.186538905] [rclc
+pp]: signal_handler(signum=2)
+[thrust_allocator_node-15] [INFO] [1770413645.186559736]
+ [rclcpp]: signal_handler(signum=2)
+[static_transform_publisher-7] [INFO] [1770413645.186588
+023] [rclcpp]: signal_handler(signum=2)
+[accel_control_layer_node-14] [INFO] [1770413645.1865596
+40] [rclcpp]: signal_handler(signum=2)
+[static_transform_publisher-6] [INFO] [1770413645.186636
+213] [rclcpp]: signal_handler(signum=2)
+[relative_pose_target_server-10] [INFO] [1770413645.1866
+88404] [rclcpp]: signal_handler(signum=2)
+[thrust_to_pwm_node-3] [INFO] [1770413645.186791536] [rc
+lcpp]: signal_handler(signum=2)
+[velocity_target_server-11] [INFO] [1770413645.186918316
+] [rclcpp]: signal_handler(signum=2)
+[dvl_driver-2] Traceback (most recent call last):
+[dvl_driver-2]   File "/home/jetson/okmr_auv/ros2_ws/ins
+tall/okmr_hardware_interface/lib/okmr_hardware_interface
+/dvl_driver", line 164, in <module>
+[dvl_driver-2]     main()
+[dvl_driver-2]   File "/home/jetson/okmr_auv/ros2_ws/ins
+tall/okmr_hardware_interface/lib/okmr_hardware_interface
+/dvl_driver", line 158, in main
+[dvl_driver-2]     node.udp_server()
+[dvl_driver-2]   File "/home/jetson/okmr_auv/ros2_ws/ins
+tall/okmr_hardware_interface/lib/okmr_hardware_interface
+/dvl_driver", line 44, in udp_server
+[dvl_driver-2]     data, dvl_addr = sock_bottom.recvfrom
+(1024)  # buffer size is 1024 bytes
+[dvl_driver-2] KeyboardInterrupt
+[realsense2_camera_node-1] [INFO] [1770413645.196534191]
+ [camera.camera]: Stop Sensor: Depth Module
+[realsense2_camera_node-1] [INFO] [1770413645.196606509]
+ [camera.camera]: Close Sensor.
+[velocity_control_layer_node-13] [INFO] [1770413645.1865
+50744] [rclcpp]: signal_handler(signum=2)
+[pose_control_layer_node-12] [INFO] [1770413645.19760574
+0] [rclcpp]: signal_handler(signum=2)
+[dead_reckoning-8] [INFO] [1770413645.199072891] [rclcpp
+]: signal_handler(signum=2)
+[foxglove_bridge-16] [INFO] [1770413645.220200803] [foxg
+love_bridge]: Shutting down foxglove_bridge
+[foxglove_bridge-16] [INFO] [1770413645.220277984] [foxg
+love_bridge]: [WS] Stopping WebSocket server
+[foxglove_bridge-16] [INFO] [1770413645.220361053] [foxg
+love_bridge]: [WS] Closing 1 client connection(s)
+[foxglove_bridge-16] [INFO] [1770413645.220393436] [foxg
+love_bridge]: [WS] asio handle_accept error: asio.system
+:125 (Operation aborted.)
+[foxglove_bridge-16] [INFO] [1770413645.220455866] [foxg
+love_bridge]: [WS] Error getting remote endpoint: asio.s
+ystem:9 (Bad file descriptor)
+[foxglove_bridge-16] [INFO] [1770413645.220486841] [foxg
+love_bridge]: [WS] asio async_shutdown error: asio.syste
+m:9 (Bad file descriptor)
+[foxglove_bridge-16] [ERROR] [1770413645.220499801] [fox
+glove_bridge]: [WS] handle_accept error: Operation abort
+ed.
+[foxglove_bridge-16] [INFO] [1770413645.220505849] [foxg
+love_bridge]: [WS] Stopping acceptance of new connection
+s because the underlying transport is no longer listenin
+g.
+[foxglove_bridge-16] [INFO] [1770413645.221644723] [foxg
+love_bridge]: [WS] WebSocket server run loop stopped
+[foxglove_bridge-16] [INFO] [1770413645.221672338] [foxg
+love_bridge]: [WS] Client 192.168.2.1:40968 disconnected
+[foxglove_bridge-16] [INFO] [1770413645.221722641] [foxg
+love_bridge]: [WS] Client 192.168.2.1:40968 unadvertisin
+g channel 3 due to disconnect
+[foxglove_bridge-16] [INFO] [1770413645.221786830] [foxg
+love_bridge]: Client 192.168.2.1:40968 is no longer adve
+rtising /initialpose (0 subscribers) on channel 3
+[foxglove_bridge-16] [ERROR] [1770413645.224063747] [fox
+glove_bridge]: [WS] Exception caught when closing connec
+tion: Couldn't initialize rcl timer handle: the given co
+ntext is not valid, either rcl_init() was not called or
+rcl_shutdown() was called., at ./src/rcl/guard_condition
+.c:67
+[foxglove_bridge-16] [INFO] [1770413645.224113314] [foxg
+love_bridge]: [WS] Client 192.168.2.1:40968 unadvertisin
+g channel 2 due to disconnect
+[foxglove_bridge-16] [INFO] [1770413645.224150657] [foxg
+love_bridge]: [WS] Error getting remote endpoint: asio.s
+ystem:107 (Transport endpoint is not connected)
+[foxglove_bridge-16] [INFO] [1770413645.224158624] [foxg
+love_bridge]: Client Unknown is no longer advertising /c
+licked_point (0 subscribers) on channel 2
+[foxglove_bridge-16] [ERROR] [1770413645.227744426] [fox
+glove_bridge]: [WS] Exception caught when closing connec
+tion: Couldn't initialize rcl timer handle: the given co
+ntext is not valid, either rcl_init() was not called or
+rcl_shutdown() was called., at ./src/rcl/guard_condition
+.c:67
+[foxglove_bridge-16] [INFO] [1770413645.227795016] [foxg
+love_bridge]: [WS] Client 192.168.2.1:40968 unadvertisin
+g channel 1 due to disconnect
+[foxglove_bridge-16] [INFO] [1770413645.227838503] [foxg
+love_bridge]: [WS] Error getting remote endpoint: asio.s
+ystem:107 (Transport endpoint is not connected)
+[foxglove_bridge-16] [INFO] [1770413645.227846823] [foxg
+love_bridge]: Client Unknown is no longer advertising /m
+ove_base_simple/goal (0 subscribers) on channel 1
+[foxglove_bridge-16] [INFO] [1770413645.230494543] [foxg
+love_bridge]: [WS] All WebSocket connections closed
+[foxglove_bridge-16] [INFO] [1770413645.230533262] [foxg
+love_bridge]: [WS] Waiting for WebSocket server run loop
+ to terminate
+[foxglove_bridge-16] [INFO] [1770413645.230618987] [foxg
+love_bridge]: [WS] WebSocket server run loop terminated
+[foxglove_bridge-16] [INFO] [1770413645.230753767] [foxg
+love_bridge]: Shutdown complete
+[foxglove_bridge-16] [ERROR] [1770413645.235955515] [fox
+glove_bridge]: [WS] Exception caught when closing connec
+tion: Couldn't initialize rcl timer handle: the given co
+ntext is not valid, either rcl_init() was not called or
+rcl_shutdown() was called., at ./src/rcl/guard_condition
+.c:67
+[foxglove_bridge-16] [INFO] [1770413645.236015161] [foxg
+love_bridge]: Unsubscribing from topic "/pose" (geometry
+_msgs/msg/PoseStamped) on channel 6
+[foxglove_bridge-16] [INFO] [1770413645.273238702] [foxg
+love_bridge]: Unsubscribing from topic "�����" ('����) o
+n channel 5
+[navigator_action_server-9] Traceback (most recent call
+last):
+[navigator_action_server-9]   File "/home/jetson/okmr_au
+v/ros2_ws/install/okmr_navigation/lib/okmr_navigation/na
+vigator_action_server", line 63, in <module>
+[navigator_action_server-9]     main()
+[navigator_action_server-9]   File "/home/jetson/okmr_au
+v/ros2_ws/install/okmr_navigation/lib/okmr_navigation/na
+vigator_action_server", line 59, in main
+[INFO] [thrust_to_pwm_node-3]: process has finished clea
+nly [pid 4982]
+[navigator_action_server-9]     rclpy.shutdown()
+[navigator_action_server-9]   File "/opt/ros/iron/lib/py
+thon3.10/site-packages/rclpy/__init__.py", line 130, in
+shutdown
+[navigator_action_server-9]     _shutdown(context=contex
+t)
+[navigator_action_server-9]   File "/opt/ros/iron/lib/py
+thon3.10/site-packages/rclpy/utilities.py", line 82, in
+shutdown
+[navigator_action_server-9]     context.shutdown()
+[navigator_action_server-9]   File "/opt/ros/iron/lib/py
+thon3.10/site-packages/rclpy/context.py", line 102, in s
+hutdown
+[navigator_action_server-9]     self.__context.shutdown(
+)
+[navigator_action_server-9] rclpy._rclpy_pybind11.RCLErr
+or: failed to shutdown: rcl_shutdown already called on t
+he given context, at ./src/rcl/init.c:333
+[INFO] [static_transform_publisher-7]: process has finis
+hed cleanly [pid 4994]
+[INFO] [static_transform_publisher-6]: process has finis
+hed cleanly [pid 4988]
+[INFO] [velocity_target_server-11]: process has finished
+ cleanly [pid 5036]
+[INFO] [velocity_control_layer_node-13]: process has fin
+ished cleanly [pid 5055]
+[temp_sensor-5] Traceback (most recent call last):
+[temp_sensor-5]   File "/home/jetson/okmr_auv/ros2_ws/in
+stall/okmr_hardware_interface/lib/okmr_hardware_interfac
+e/temp_sensor", line 60, in <module>
+[temp_sensor-5]     main()
+[temp_sensor-5]   File "/home/jetson/okmr_auv/ros2_ws/in
+stall/okmr_hardware_interface/lib/okmr_hardware_interfac
+e/temp_sensor", line 57, in main
+[temp_sensor-5]     rclpy.shutdown()
+[temp_sensor-5]   File "/opt/ros/iron/lib/python3.10/sit
+e-packages/rclpy/__init__.py", line 130, in shutdown
+[INFO] [pose_control_layer_node-12]: process has finishe
+d cleanly [pid 5042]
+[temp_sensor-5]     _shutdown(context=context)
+[temp_sensor-5]   File "/opt/ros/iron/lib/python3.10/sit
+e-packages/rclpy/utilities.py", line 82, in shutdown
+[temp_sensor-5]     context.shutdown()
+[temp_sensor-5]   File "/opt/ros/iron/lib/python3.10/sit
+e-packages/rclpy/context.py", line 102, in shutdown
+[temp_sensor-5]     self.__context.shutdown()
+[temp_sensor-5] rclpy._rclpy_pybind11.RCLError: failed t
+o shutdown: rcl_shutdown already called on the given con
+text, at ./src/rcl/init.c:333
+[clutch_mega_driver-4] Traceback (most recent call last)
+:
+[clutch_mega_driver-4]   File "/home/jetson/okmr_auv/ros
+2_ws/install/okmr_hardware_interface/lib/okmr_hardware_i
+nterface/clutch_mega_driver", line 205, in <module>
+[clutch_mega_driver-4]     main()
+[clutch_mega_driver-4]   File "/home/jetson/okmr_auv/ros
+2_ws/install/okmr_hardware_interface/lib/okmr_hardware_i
+nterface/clutch_mega_driver", line 201, in main
+[clutch_mega_driver-4]     rclpy.shutdown()
+[clutch_mega_driver-4]   File "/opt/ros/iron/lib/python3
+.10/site-packages/rclpy/__init__.py", line 130, in shutd
+own
+[INFO] [relative_pose_target_server-10]: process has fin
+ished cleanly [pid 5014]
+[clutch_mega_driver-4]     _shutdown(context=context)
+[clutch_mega_driver-4]   File "/opt/ros/iron/lib/python3
+.10/site-packages/rclpy/utilities.py", line 82, in shutd
+own
+[clutch_mega_driver-4]     context.shutdown()
+[clutch_mega_driver-4]   File "/opt/ros/iron/lib/python3
+.10/site-packages/rclpy/context.py", line 102, in shutdo
+wn
+[INFO] [accel_control_layer_node-14]: process has finish
+ed cleanly [pid 5057]
+[clutch_mega_driver-4]     self.__context.shutdown()
+[clutch_mega_driver-4] rclpy._rclpy_pybind11.RCLError: f
+ailed to shutdown: rcl_shutdown already called on the gi
+ven context, at ./src/rcl/init.c:333
+[INFO] [thrust_allocator_node-15]: process has finished
+cleanly [pid 5073]
+[ERROR] [dvl_driver-2]: process has died [pid 4980, exit
+ code -2, cmd '/home/jetson/okmr_auv/ros2_ws/install/okm
+r_hardware_interface/lib/okmr_hardware_interface/dvl_dri
+ver --ros-args'].
+[INFO] [dead_reckoning-8]: process has finished cleanly
+[pid 4996]
+[ERROR] [temp_sensor-5]: process has died [pid 4986, exi
+t code 1, cmd '/home/jetson/okmr_auv/ros2_ws/install/okm
+r_hardware_interface/lib/okmr_hardware_interface/temp_se
+nsor --ros-args'].
+[ERROR] [clutch_mega_driver-4]: process has died [pid 49
+84, exit code 1, cmd '/home/jetson/okmr_auv/ros2_ws/inst
+all/okmr_hardware_interface/lib/okmr_hardware_interface/
+clutch_mega_driver --ros-args --params-file /home/jetson
+/okmr_auv/ros2_ws/install/okmr_hardware_interface/share/
+okmr_hardware_interface/params/mega_params.yaml'].
+[ERROR] [navigator_action_server-9]: process has died [p
+id 5004, exit code 1, cmd '/home/jetson/okmr_auv/ros2_ws
+/install/okmr_navigation/lib/okmr_navigation/navigator_a
+ction_server --ros-args'].
+[realsense2_camera_node-1] [INFO] [1770413646.332127544]
+ [camera.camera]: Close Sensor - Done.
+[realsense2_camera_node-1] [INFO] [1770413646.332203701]
+ [camera.camera]: Stop Sensor: RGB Camera
+[realsense2_camera_node-1] [INFO] [1770413646.332222133]
+ [camera.camera]: Close Sensor.
+[ERROR] [foxglove_bridge-16]: process has died [pid 5082
+, exit code -11, cmd '/opt/ros/iron/lib/foxglove_bridge/
+foxglove_bridge --ros-args'].
+[realsense2_camera_node-1] [INFO] [1770413646.897718778]
+ [camera.camera]: Close Sensor - Done.
+[INFO] [realsense2_camera_node-1]: process has finished
+cleanly [pid 4978]
+jetson@ubuntu:~/okmr_auv/ros2_ws$

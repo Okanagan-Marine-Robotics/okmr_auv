@@ -230,10 +230,10 @@ class RelativePoseTargetServer : public rclcpp::Node {
             relative_pose_target.translation.z = relative_translation.z;
         }
 
-        // relative_pose_target.rotation.x = (roll - current_eulers.x);
-        // relative_pose_target.rotation.y = (pitch - current_eulers.y);
-        relative_pose_target.rotation.x = -current_eulers.x;  // forced 0 on roll
-        relative_pose_target.rotation.y = -current_eulers.y;  // forced 0 on pitch
+        relative_pose_target.rotation.x = (roll - current_eulers.x);
+        relative_pose_target.rotation.y = (pitch - current_eulers.y);
+        //relative_pose_target.rotation.x = -current_eulers.x;  // forced 0 on roll
+        //relative_pose_target.rotation.y = -current_eulers.y;  // forced 0 on pitch
         relative_pose_target.rotation.z = yaw_error;
 
         relative_pose_pub_->publish (relative_pose_target);
