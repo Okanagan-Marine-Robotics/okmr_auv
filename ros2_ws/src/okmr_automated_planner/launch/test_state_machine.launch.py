@@ -26,7 +26,7 @@ def generate_launch_description():
                
         # Launch the full navigation stack
         IncludeLaunchDescription(
-            PathJoinSubstitution([navigation_dir, 'stonefish_navigation_stack.launch.py'])
+            PathJoinSubstitution([navigation_dir, 'full_navigation_stack.launch.py'])
         ),
         
         # Launch the automated planner with test state machine
