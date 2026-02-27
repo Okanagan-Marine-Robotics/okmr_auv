@@ -2,9 +2,12 @@
 
 import socket
 import re
+import time
 import rclpy
 from rclpy.node import Node
+from rcl_interfaces.msg import SetParametersResult
 from okmr_msgs.msg import Dvl
+from okmr_msgs.msg import DvlHealth  # type: ignore[attr-defined]
 from sensor_msgs.msg import FluidPressure
 
 
@@ -12,11 +15,12 @@ class DvlDriverNode(Node):
     def __init__(self):
         super().__init__("dvl_driver")
         self.dvl_publisher = self.create_publisher(Dvl, "/dvl", 10)
+        self.dvl_health_pub = self.create_publisher(DvlHealth, "/dvl_health", 10)
 
         # Declare ROS2 parameter for beam range threshold
         self.declare_parameter("beam_range_threshold", 0.8)
         self.beam_range_threshold = 0.8
-        
+
         # Register the beam range threshold param callback
         self.add_on_set_parameters_callback(self.parameter_callback)
 
@@ -31,6 +35,10 @@ class DvlDriverNode(Node):
         self.last_d3 = 0.0
         self.last_d4 = 0.0
 
+        # Health tracking
+        self.last_status = 0
+        self._last_health_pub_time = 0.0
+
     def udp_server(self):
         # Create a UDP socket
         sock_bottom = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -38,11 +46,11 @@ class DvlDriverNode(Node):
         sock_bottom.bind(("0.0.0.0", 9010))
         # Create timeout so loop isn't blocked indefinately
         sock_bottom.settimeout(15.0)
-        
+
         while rclpy.ok():
             try:
                 # Receive data from the client
-                data, dvl_addr = sock_bottom.recvfrom(1024)  # buffer size is 1024 bytes
+                data, _ = sock_bottom.recvfrom(1024)  # buffer size is 1024 bytes
                 data = data.decode("ASCII")
 
                 # Regular expression to match the PNORBT8 message format
@@ -53,9 +61,6 @@ class DvlDriverNode(Node):
 
                 if matches:
                     # Extracting values from regex groups
-                    time_val = float(matches.group(1))
-                    dt1 = float(matches.group(2))
-                    dt2 = float(matches.group(3))
                     vx = float(matches.group(4))
                     vy = float(matches.group(5))
                     vz = float(matches.group(6))
@@ -69,15 +74,16 @@ class DvlDriverNode(Node):
                     pressure = float(matches.group(14))
                     temperature = float(matches.group(15))
                     status = int(matches.group(16), 16)  # Convert hex string to int
-                    
+
                     self.decode_status(status)
-                    
+                    self.last_status = status
+
                     # Note: If bit 0 is 0 then measurement is in mm/s NOT m/s so must scale down
                     if status & 0x01:
                         scale = 1.0
                     else:
-                        scale - 0.001
-                        
+                        scale = 0.001
+
                     vx *= scale
                     vy *= scale
                     vz *= scale
@@ -154,54 +160,62 @@ class DvlDriverNode(Node):
                         f"DVL data parsed successfully - VX: {vx:.3f}, VY: {vy:.3f}, VZ: {vz:.3f}, FOM: {fom:.3f}"
                     )
 
-                    # Output the extracted variables
-                    # print(f"VX: {vx}, VY: {vy}, VZ: {vz}")
-                    # print(f"D1: {d1}, D2: {d2}, D3: {d3}, D4: {d4}")
                     # https://support.nortekgroup.com/hc/en-us/article_attachments/19558106638620
                     # mode 358
                 else:
                     self.get_logger().debug(
                         f"DVL packet parsing failed - no regex matches found"
                     )
-                
+
+                # Publish health at 1 Hz regardless of parse success
+                now = time.monotonic()
+                if now - self._last_health_pub_time >= 1.0:
+                    health_msg = DvlHealth()
+                    health_msg.header.stamp = self.get_clock().now().to_msg()
+                    health_msg.header.frame_id = "dvl"
+                    health_msg.status = self.last_status
+                    self.dvl_health_pub.publish(health_msg)
+                    self._last_health_pub_time = now
+
             except socket.timeout:
-               self.get_logger().error("DVL sensor is disconnected or not sending data/data not being received")     
-                
+                self.get_logger().error(
+                    "DVL sensor is disconnected or not sending data/data not being received"
+                )
+
             except Exception as e:
                 self.get_logger().error(f"General error: {e}")
-              
-                
-def parameter_callback(self, params):
-    # Notify ros of a sucessful parameter update
-    from rcl_interfaces.msg import SetParametersResult
-    result = SetParametersResult(successful=True)
-        
-    for param in params:
-        if param.name == "beam_range_threshold":
-            self.beam_range_threshold = param.value
-            self.get_logger().info(f"Updated beam range threshold to: {self.beam_range_threshold}")
 
-    return result
+    def parameter_callback(self, params):
+        result = SetParametersResult(successful=True)
 
+        for param in params:
+            if param.name == "beam_range_threshold":
+                self.beam_range_threshold = param.value
+                self.get_logger().info(
+                    f"Updated beam range threshold to: {self.beam_range_threshold}"
+                )
 
-def decode_status(self, status_int):
-    # Run diagnostics on dvl sensor STAT codes
-    # Codes from https://support.nortekgroup.com/hc/en-us/article_attachments/19558106638620
-    if status_int & 0x01:
-        # Scaling: If 0, velocity is mm/s. If 1, velocity is m/s.
-        self.get_logger.info(f"Bottom track lost! Velocity is lost")
-        
-    if status_int & 0x02:
-        # Pressure: 1 if there is a pressure sensor hardware error.
-        self.get_logger.info(f"Pressure sensor error detected")
-        
-    if status_int & 0x20:
-        # Bottom Track: 0 if OK, 1 if the DVL cannot see the floor.
-        self.get_logger.info(f"Speed of sound (acoustic calculation) error dectected")
+        return result
 
-    if status_int & 0x40:
-        #Status: 0 if OK, 1 if a general system fault occurred.
-        self.get_logger.info(f"General error")
+    def decode_status(self, status_int):
+        # Run diagnostics on dvl sensor STAT codes
+        # Codes from https://support.nortekgroup.com/hc/en-us/article_attachments/19558106638620
+        if status_int & 0x01:
+            # Scaling: If 0, velocity is mm/s. If 1, velocity is m/s.
+            self.get_logger().info("Bottom track lost! Velocity is lost")
+
+        if status_int & 0x02:
+            # Pressure: 1 if there is a pressure sensor hardware error.
+            self.get_logger().info("Pressure sensor error detected")
+
+        if status_int & 0x20:
+            # Bottom Track: 0 if OK, 1 if the DVL cannot see the floor.
+            self.get_logger().info("Speed of sound (acoustic calculation) error detected")
+
+        if status_int & 0x40:
+            # Status: 0 if OK, 1 if a general system fault occurred.
+            self.get_logger().info("General error")
+
 
 def main(args=None):
     rclpy.init(args=args)
