@@ -23,6 +23,11 @@ AccelControlLayer::AccelControlLayer ()
         "/velocity", 10,
         std::bind (&AccelControlLayer::velocity_actual_callback, this, std::placeholders::_1));
 
+    // Target may help
+    velocity_target_sub_ = this->create_subscription<geometry_msgs::msg::TwistStamped> (
+        "/velocity_target", 10,
+        std::bind (&AccelControlLayer::velocity_target_callback, this, std::placeholders::_1));
+
     // Publisher for wrench target
     wrench_target_pub_ =
         this->create_publisher<geometry_msgs::msg::WrenchStamped> ("/wrench_target", 10);
@@ -95,6 +100,11 @@ void AccelControlLayer::velocity_actual_callback (
     velocity_actual_ = *msg;
 }
 
+voic AccelControlLayer::velocity_target_callback (
+    const geometry_msgs::msg::TwistStamped:SharedPtr msg) {
+        velocity_target_ = *msg;
+    }
+
 void AccelControlLayer::gravity_callback (const geometry_msgs::msg::AccelStamped::SharedPtr msg) {
     gravity_ = *msg;
 }
@@ -109,7 +119,7 @@ geometry_msgs::msg::Vector3 AccelControlLayer::calculate_feedforward (
     feedforward.y =
         kmass_y_ * acceleration.y + kdrag_y_ * velocity.y + kbuoyancy_ * gravity_.accel.linear.y;
     feedforward.z =
-        kmass_z_ * acceleration.z + kdrag_z_ * velocity.z + kbuoyancy_ * gravity_.accel.linear.z;
+        kmass_z_ * acceleration.z + kdrag_z_ * velocity.z - kbuoyancy_ * gravity_.accel.linear.z;
 
     return feedforward;
 }
@@ -148,7 +158,7 @@ void AccelControlLayer::update () {
 
     // Calculate feedforward terms
     auto linear_feedforward =
-        calculate_feedforward (velocity_actual_.twist.linear, accel_target_.accel.linear);
+        calculate_feedforward (velocity_target_.twist.linear, accel_target_.accel.linear);
     auto angular_feedforward =
         calculate_angular_feedforward (velocity_actual_.twist.angular, accel_target_.accel.angular);
 
