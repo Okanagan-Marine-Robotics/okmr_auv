@@ -20,6 +20,7 @@ class AccelControlLayer : public ControlLayerBase {
     void accel_actual_callback (const geometry_msgs::msg::AccelStamped::SharedPtr msg);
     void gravity_callback (const geometry_msgs::msg::AccelStamped::SharedPtr msg);
     void velocity_actual_callback (const geometry_msgs::msg::TwistStamped::SharedPtr msg);
+    void velocity_target_callback (const geometry_msgs::msg::TwistStamped::SharedPtr msg);
 
     // Feedforward calculation
     geometry_msgs::msg::Vector3 calculate_feedforward (
@@ -35,6 +36,7 @@ class AccelControlLayer : public ControlLayerBase {
     rclcpp::Subscription<geometry_msgs::msg::AccelStamped>::SharedPtr accel_actual_sub_;
     rclcpp::Subscription<geometry_msgs::msg::AccelStamped>::SharedPtr gravity_sub_;
     rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr velocity_actual_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr velocity_target_sub_;
 
     // Publisher
     rclcpp::Publisher<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_target_pub_;
@@ -44,6 +46,7 @@ class AccelControlLayer : public ControlLayerBase {
     geometry_msgs::msg::AccelStamped accel_actual_;
     geometry_msgs::msg::AccelStamped gravity_;
     geometry_msgs::msg::TwistStamped velocity_actual_;
+    geometry_msgs::msg::TwistStamped velocity_target_;
 
     // Feedforward parameters (Kmass and Kdrag for each axis)
     double kbuoyancy_;

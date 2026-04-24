@@ -23,7 +23,6 @@ AccelControlLayer::AccelControlLayer ()
         "/velocity", 10,
         std::bind (&AccelControlLayer::velocity_actual_callback, this, std::placeholders::_1));
 
-    // Target may help
     velocity_target_sub_ = this->create_subscription<geometry_msgs::msg::TwistStamped> (
         "/velocity_target", 10,
         std::bind (&AccelControlLayer::velocity_target_callback, this, std::placeholders::_1));
@@ -47,6 +46,11 @@ AccelControlLayer::AccelControlLayer ()
         velocity_actual_.twist.linear.z = 0.0;
     velocity_actual_.twist.angular.x = velocity_actual_.twist.angular.y =
         velocity_actual_.twist.angular.z = 0.0;
+
+    velocity_target_.twist.linear.x = velocity_target_.twist.linear.y =
+        velocity_target_.twist.linear.z = 0.0;
+    velocity_target_.twist.angular.x = velocity_target_.twist.angular.y =
+        velocity_target_.twist.angular.z = 0.0;
 
     // Declare feedforward parameters
     this->declare_parameter ("kmass_x", 0.0);
@@ -100,10 +104,10 @@ void AccelControlLayer::velocity_actual_callback (
     velocity_actual_ = *msg;
 }
 
-voic AccelControlLayer::velocity_target_callback (
-    const geometry_msgs::msg::TwistStamped:SharedPtr msg) {
-        velocity_target_ = *msg;
-    }
+void AccelControlLayer::velocity_target_callback (
+    const geometry_msgs::msg::TwistStamped::SharedPtr msg) {
+    velocity_target_ = *msg;
+}
 
 void AccelControlLayer::gravity_callback (const geometry_msgs::msg::AccelStamped::SharedPtr msg) {
     gravity_ = *msg;
@@ -113,13 +117,12 @@ geometry_msgs::msg::Vector3 AccelControlLayer::calculate_feedforward (
     const geometry_msgs::msg::Vector3& velocity, const geometry_msgs::msg::Vector3& acceleration) {
     geometry_msgs::msg::Vector3 feedforward;
 
-    // Feedforward = Kmass * acceleration + Kdrag * velocity + KBuoyancy * gravity
-    feedforward.x =
-        kmass_x_ * acceleration.x + kdrag_x_ * velocity.x + kbuoyancy_ * gravity_.accel.linear.x;
-    feedforward.y =
-        kmass_y_ * acceleration.y + kdrag_y_ * velocity.y + kbuoyancy_ * gravity_.accel.linear.y;
-    feedforward.z =
-        kmass_z_ * acceleration.z + kdrag_z_ * velocity.z - kbuoyancy_ * gravity_.accel.linear.z;
+    // Predictive Feedforward logic:
+    // We SUBTRACT the kbuoyancy and kdrag terms so that the controller 
+    // actively OPPOSES the physical forces of weight and friction.
+    feedforward.x = (kmass_x_ * acceleration.x) + (kdrag_x_ * velocity.x) - (kbuoyancy_ * gravity_.accel.linear.x);
+    feedforward.y = (kmass_y_ * acceleration.y) + (kdrag_y_ * velocity.y) - (kbuoyancy_ * gravity_.accel.linear.y);
+    feedforward.z = (kmass_z_ * acceleration.z) + (kdrag_z_ * velocity.z) - (kbuoyancy_ * gravity_.accel.linear.z);
 
     return feedforward;
 }
@@ -156,11 +159,11 @@ void AccelControlLayer::update () {
     // Compute PID control output
     auto pid_output = compute_layer_command (linear_error, angular_error);
 
-    // Calculate feedforward terms
+    // Calculate feedforward terms using TARGET velocity (Predictive)
     auto linear_feedforward =
         calculate_feedforward (velocity_target_.twist.linear, accel_target_.accel.linear);
     auto angular_feedforward =
-        calculate_angular_feedforward (velocity_actual_.twist.angular, accel_target_.accel.angular);
+        calculate_angular_feedforward (velocity_target_.twist.angular, accel_target_.accel.angular);
 
     // Combine PID output with feedforward
     geometry_msgs::msg::WrenchStamped wrench_target;
