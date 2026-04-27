@@ -347,7 +347,7 @@ class DeadReckoningNode : public rclcpp::Node {
 
         // Modified to always set the orientation. 
         tf2::Quaternion q;
-        q.setRPY (rotation_estimate.x, rotation_estimate.y, rotation_estimate.z)
+        q.setRPY (rotation_estimate.x, rotation_estimate.y, rotation_estimate.z);
         current_pose.pose.orientation = tf2::toMsg (q);
     
         if (is_dead_reckoning_enabled) {
