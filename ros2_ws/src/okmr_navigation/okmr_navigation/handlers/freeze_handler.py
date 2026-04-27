@@ -57,12 +57,12 @@ def handle_freeze(goal_handle):
         time.sleep(1.0 / node.feedback_rate)
 
 
-def execute_freeze():
-    """
+"""def execute_freeze(): Commented out to test new freeze handler hopefully fix race condition
+    
     Common freeze implementation:
     1. Put vehicle into position mode
     2. Send absolute movement request at current location
-    """
+    
     node = NavigatorActionServer.get_instance()
     
     set_control_mode(ControlMode.POSE)
@@ -85,6 +85,38 @@ def execute_freeze():
     
     node.get_logger().info("Freeze command sent - vehicle will hold current position")
     return True
+"""
+
+def execute_freeze():
+    
+    node = NavigatorActionServer.get_instance()
+    
+    # Get the current pose
+    current_pose = get_current_pose()
+    if current_pose is None:
+        node.get_logger().error("Cannot get pose for freeze command")
+        return False
+    
+    # Publish the pose right away so there is no accumulated error to correct
+    freeze_goal_pose = GoalPose()
+    freeze_goal_pose.header.stamp = node.get_clock().now().to_msg()
+    freeze_goal_pose.pose = current_pose
+    freeze_goal_pose.copy_orientation = True
+    
+    goal_publisher = node.get_publisher('/current_goal_pose', GoalPose, 10)
+    
+    goal_publisher.publish(freeze_goal_pose)
+    
+    # BUffer time for PID
+    time.sleep(0.05)
+    
+    # Enable control mode now
+    set_control_mode(ControlMode.POSE)
+    
+    node.get_logger().info("Freeze command sent. AUV will hold position")
+    
+    return True
+
 
 def check_velocities_under_threshold():
     """Check if all velocities are under the freeze threshold"""

@@ -343,8 +343,13 @@ class DeadReckoningNode : public rclcpp::Node {
         // Process IMU data and update angular velocities
         process_imu_data ();
 
-        update_attitude_estimation (dt);
+        update_attitude_estimation (dt); 
 
+        // Modified to always set the orientation. 
+        tf2::Quaternion q;
+        q.setRPY (rotation_estimate.x, rotation_estimate.y, rotation_estimate.z)
+        current_pose.pose.orientation = tf2::toMsg (q);
+    
         if (is_dead_reckoning_enabled) {
             // Process pose integration if enabled
             integrate_pose (dt);
@@ -490,7 +495,7 @@ class DeadReckoningNode : public rclcpp::Node {
         }
 
         // Update pose message
-        current_pose.pose.orientation = tf2::toMsg (q);
+        // current_pose.pose.orientation = tf2::toMsg (q); Handled in update loop now
         current_pose.pose.position.x = translation_estimate.x;
         current_pose.pose.position.y = translation_estimate.y;
         current_pose.pose.position.z = translation_estimate.z;
