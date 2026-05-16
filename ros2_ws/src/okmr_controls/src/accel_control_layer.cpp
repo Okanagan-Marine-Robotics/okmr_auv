@@ -147,11 +147,11 @@ void AccelControlLayer::update () {
     auto pid_output = compute_layer_command (linear_error, angular_error);
 
     // Calculate feedforward terms
-    auto linear_feedforward =
+    /*auto linear_feedforward =
         calculate_feedforward (velocity_actual_.twist.linear, accel_target_.accel.linear);
     auto angular_feedforward =
         calculate_angular_feedforward (velocity_actual_.twist.angular, accel_target_.accel.angular);
-    
+    */
     // Combine PID output with feedforward
     geometry_msgs::msg::WrenchStamped wrench_target;
     wrench_target.header.stamp = this->now ();
