@@ -151,19 +151,19 @@ void AccelControlLayer::update () {
         calculate_feedforward (velocity_actual_.twist.linear, accel_target_.accel.linear);
     auto angular_feedforward =
         calculate_angular_feedforward (velocity_actual_.twist.angular, accel_target_.accel.angular);
-
+    
     // Combine PID output with feedforward
     geometry_msgs::msg::WrenchStamped wrench_target;
     wrench_target.header.stamp = this->now ();
     wrench_target.header.frame_id = "base_link";
 
-    wrench_target.wrench.force.x = pid_output.first.x + linear_feedforward.x;
-    wrench_target.wrench.force.y = pid_output.first.y + linear_feedforward.y;
-    wrench_target.wrench.force.z = pid_output.first.z + linear_feedforward.z;
+    wrench_target.wrench.force.x = pid_output.first.x; //+ linear_feedforward.x;
+    wrench_target.wrench.force.y = pid_output.first.y; //+ linear_feedforward.y;
+    wrench_target.wrench.force.z = pid_output.first.z; //+ linear_feedforward.z;
 
-    wrench_target.wrench.torque.x = pid_output.second.x + angular_feedforward.x;
-    wrench_target.wrench.torque.y = pid_output.second.y + angular_feedforward.y;
-    wrench_target.wrench.torque.z = pid_output.second.z + angular_feedforward.z;
+    wrench_target.wrench.torque.x = pid_output.second.x; //+ angular_feedforward.x;
+    wrench_target.wrench.torque.y = pid_output.second.y; //+ angular_feedforward.y;
+    wrench_target.wrench.torque.z = pid_output.second.z; //+ angular_feedforward.z;
 
     wrench_target_pub_->publish (wrench_target);
 }
