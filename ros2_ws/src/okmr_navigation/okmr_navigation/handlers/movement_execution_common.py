@@ -6,6 +6,7 @@ from okmr_msgs.srv import DistanceFromGoal
 from okmr_navigation.navigator_action_server import NavigatorActionServer
 from okmr_navigation.handlers.freeze_handler import execute_freeze
 
+import math
 import time
 
 
@@ -143,11 +144,12 @@ def is_translation_close_enough(translation_vector, threshold=0.1):
 
 
 def is_orientation_close_enough(rpy_diff, threshold=5.0):
-    """Check if orientation difference is within threshold (degrees)"""
+    """Check if orientation difference is within threshold (degrees). rpy_diff values are in radians."""
+    threshold_rad = math.radians(threshold)
     roll = rpy_diff.x
     pitch = rpy_diff.y
     yaw = rpy_diff.z
-    return abs(roll) < threshold and abs(pitch) < threshold and abs(yaw) < threshold
+    return abs(roll) < threshold_rad and abs(pitch) < threshold_rad and abs(yaw) < threshold_rad
 
 
 def is_goal_reached(goal_distances, goal_handle):

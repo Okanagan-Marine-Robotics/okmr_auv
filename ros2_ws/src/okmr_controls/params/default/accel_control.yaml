@@ -12,9 +12,10 @@ accel_control_layer:
     kmass_x: 1.0
     kmass_y: 1.0
     kmass_z: 1.0
-    kmass_roll: 0.05
-    kmass_pitch: 0.2
-    kmass_yaw: 0.1
+    # Increased from 0.05/0.2/0.1: need more angular authority with correct velocity targets.
+    kmass_roll: 0.3
+    kmass_pitch: 0.3
+    kmass_yaw: 0.15
 
     # Production PID Tuning
     z_linear:
@@ -31,9 +32,12 @@ accel_control_layer:
       p_gain: 2.0
     y_linear:
       p_gain: 2.0
+
+    # Angular accel feedback (/acceleration.angular) is differentiated gyro — too noisy (~500 rad/s²)
+    # to use as PID feedback directly. Rely on feedforward (kmass) instead.
     x_angular:
-      p_gain: 1.0
+      p_gain: 0.0
     y_angular:
-      p_gain: 1.0
+      p_gain: 0.0
     z_angular:
-      p_gain: 1.0
+      p_gain: 0.0

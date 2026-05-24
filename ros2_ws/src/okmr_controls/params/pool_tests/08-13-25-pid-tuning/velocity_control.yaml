@@ -1,10 +1,13 @@
 velocity_control_layer:
   ros__parameters:
     update_frequency: 100.0
-    x_angular.p_gain: 0.1
+
     x_linear.p_gain: 2.0
-    y_angular.p_gain: 0.1
     y_linear.p_gain: 2.0
-    z_angular.p_gain: 0.1
     z_linear.p_gain: 2.0
-    
+
+    # Increased from 0.1: previously undertuned to fight the 57x velocity errors
+    # from the degrees/radians bug. With correct radian inputs, 1.0 is appropriate.
+    x_angular.p_gain: 1.0
+    y_angular.p_gain: 1.0
+    z_angular.p_gain: 1.0

@@ -4,11 +4,14 @@ accel_control_layer:
         kbuoyancy: 0.17
         kdrag_x: 0.0
         kdrag_y: 0.0
-        kdrag_yaw: 0.0
         kdrag_z: 0.0
-        kmass_pitch: 0.1
-        kmass_roll: 0.1
+        kdrag_roll: 0.0
+        kdrag_pitch: 0.0
+        kdrag_yaw: 0.0
         kmass_x: 5.0
         kmass_y: 5.0
-        kmass_yaw: 0.2
         kmass_z: 5.0
+        # Increased from 0.1: need more authority now that velocity targets are correct
+        kmass_roll: 0.3
+        kmass_pitch: 0.3
+        kmass_yaw: 0.2
