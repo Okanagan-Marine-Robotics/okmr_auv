@@ -17,7 +17,7 @@ def generate_launch_description():
         [FindPackageShare("okmr_navigation"), "launch"]
     )
     control_launch_dir = PathJoinSubstitution(
-        [FindPackageShare("okmr_control"), "launch"]
+        [FindPackageShare("okmr_controls"), "launch"]
     )
 
 

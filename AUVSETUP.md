@@ -11,8 +11,13 @@ Create a network profile on your main testing computer with these parameters:
 Make sure the profile is activated before connecting!!!
 
 ## Step 1
+IF TESTING SERVROS: open canister and locate the yellow green battery plug. Plug a battery of less than 7.6 V to the connector. a green light should emit.
 
-Plug in the vehicle (red first, then black). Wait for Jetson to initialize (observable through onboard lights + maybe the bendy screen ..??)
+Plug in the batteries (2) to one or each side of the vehicle (black first, then red). 
+
+
+Wait for Jetson to initialize (observable through onboard lights + maybe the bendy screen ..??)
+
 
 ## Step 2
 

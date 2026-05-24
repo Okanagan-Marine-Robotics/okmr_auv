@@ -1,0 +1,79 @@
+semifinal:
+  states:
+    - { name: moving_forward1 }
+    - { name: moving_forward2 }
+    - { name: moving_forward3 }
+    - { name: moving_forward4 }
+    - { name: moving_down }
+    - { name: finding_gate, config_path: "task_state_machines/finding_gate.yaml" }
+    - { name: turning1 }
+    - { name: turning2 }
+    - { name: turning3 }
+    - { name: turning4 }
+    - { name: surfacing }
+    - { name: waiting_for_mission_start }
+    - { name: enabling_subsystems }
+    - { name: barrel_roll}
+
+  transitions:
+    - {
+        trigger: initialized,
+        source: initializing,
+        dest: waiting_for_mission_start,
+      }
+    - {
+        trigger: mission_start_received,
+        source: waiting_for_mission_start,
+        dest: enabling_subsystems,
+      }
+    - {
+        trigger: enabling_subsystems_done,
+        source: enabling_subsystems,
+        dest: moving_down,
+      }
+    - { 
+        trigger: moving_down_done, 
+        source: moving_down, 
+        dest: finding_gate,
+      }
+    - { 
+        trigger: finding_gate_done, 
+        source: finding_gate, 
+        dest: moving_forward1,
+      }
+
+    - { 
+        trigger: moving_forward1_done, 
+        source: moving_forward1, 
+        dest: barrel_roll,
+      }
+    - { 
+        trigger: barrel_roll_done,
+        source: barrel_roll,
+        dest: turning1,
+      }
+    - { 
+        trigger: turning1_done, 
+        source: turning1, 
+        dest: moving_forward2,
+      }
+    - { 
+        trigger: moving_forward2_done, 
+        source: moving_forward2, 
+        dest: turning2,
+      }
+    - { 
+        trigger: turning2_done, 
+        source: turning2, 
+        dest: moving_forward3,
+      }
+    - { 
+        trigger: moving_forward3_done, 
+        source: moving_forward3, 
+        dest: surfacing,
+      }
+    - { 
+        trigger: surfacing_done, 
+        source: surfacing, 
+        dest: done 
+      }
