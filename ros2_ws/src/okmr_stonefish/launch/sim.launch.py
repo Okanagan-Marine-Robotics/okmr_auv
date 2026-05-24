@@ -29,7 +29,7 @@ def generate_launch_description():
             ],
             output='log',
             remappings=[
-                ('/stonefish/imu', '/camera1/camera1/imu'),
+                ('/stonefish/imu', '/imu'),
                 ('/stonefish/front_camera/image_raw/image_color', '/camera1/camera1/image_raw'),
                 ('/stonefish/front_camera/image_raw/camera_info', '/camera1/camera1/camera_info'),
                 ('/stonefish/front_depth_camera/depth/image_depth', '/camera1/camera1/image_depth'),
