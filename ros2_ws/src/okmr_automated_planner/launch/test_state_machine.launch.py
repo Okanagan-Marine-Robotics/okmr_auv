@@ -34,8 +34,8 @@ def generate_launch_description():
             PathJoinSubstitution([automated_planning_dir, 'automated_planner.launch.py']),
             launch_arguments={
                 'debug': 'true',
-                'root_config': 'test.yaml',
-                'config_folder': 'testing',
+                'root_config': 'root.yaml',
+                'config_folder': 'dev',
                 'param_file': 'params.yaml'
             }.items()
         ),

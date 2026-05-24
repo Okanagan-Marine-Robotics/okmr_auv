@@ -137,9 +137,9 @@ class RelativePoseTargetServer : public rclcpp::Node {
         tf2::Matrix3x3 (quat).getRPY (roll, pitch, yaw);
 
         geometry_msgs::msg::Vector3 eulers;
-        eulers.x = roll * (180.0 / M_PI);
-        eulers.y = pitch * (180.0 / M_PI);
-        eulers.z = yaw * (180.0 / M_PI);
+        eulers.x = roll;
+        eulers.y = pitch;
+        eulers.z = yaw;
         return eulers;
     }
 
@@ -206,8 +206,7 @@ class RelativePoseTargetServer : public rclcpp::Node {
         } else {
             yaw =
                 atan2 (current_goal_pose_msg_.pose.position.y - current_pose_msg_.pose.position.y,
-                       current_goal_pose_msg_.pose.position.x - current_pose_msg_.pose.position.x) *
-                (180.0 / M_PI);
+                       current_goal_pose_msg_.pose.position.x - current_pose_msg_.pose.position.x);
         }
 
         // Create and publish RelativePose target message
@@ -217,11 +216,11 @@ class RelativePoseTargetServer : public rclcpp::Node {
         auto current_eulers = euler_from_quaternion (current_pose_msg_.pose.orientation);
         double yaw_error = (yaw - current_eulers.z);
 
-        // Normalize yaw error to [-180, 180]
-        while (yaw_error > 180.0) yaw_error -= 360.0;
-        while (yaw_error < -180.0) yaw_error += 360.0;
+        // Normalize yaw error to [-pi, pi]
+        while (yaw_error > M_PI) yaw_error -= 2.0 * M_PI;
+        while (yaw_error < -M_PI) yaw_error += 2.0 * M_PI;
 
-        bool yaw_on_target = std::abs (yaw_error) <= yaw_tolerance_;
+        bool yaw_on_target = std::abs (yaw_error) <= yaw_tolerance_ * M_PI / 180.0;
 
         // Translation target - only publish if yaw is on target
         if (yaw_on_target || xy_trig_dist < holding_radius_) {
