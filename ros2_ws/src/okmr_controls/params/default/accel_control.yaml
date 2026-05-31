@@ -1,43 +1,16 @@
 accel_control_layer:
-  ros__parameters:
-    update_frequency: 50.0
-    SAVE_LOCATION: /home/jetson/okmr_auv/ros2_ws/src/okmr_controls/params/temp/accel_control.yaml
-    
-    # Production Physical Constants
-    kbuoyancy: 0.07
-    kdrag_x: 0.5
-    kdrag_y: 0.5
-    kdrag_z: 1.0
-    
-    kmass_x: 1.0
-    kmass_y: 1.0
-    kmass_z: 1.0
-    # Increased from 0.05/0.2/0.1: need more angular authority with correct velocity targets.
-    kmass_roll: 0.3
-    kmass_pitch: 0.3
-    kmass_yaw: 0.15
+    ros__parameters:
+        SAVE_LOCATION: /home/jetson/okmr_auv/ros2_ws/src/okmr_controls/params/temp/accel_control.yaml
+        update_frequency: 50.0
+        kbuoyancy: 0.07
+        kdrag_x: 1.0
+        kdrag_y: 0.0
+        kdrag_yaw: 0.0
+        kdrag_z: 0.0
+        kmass_pitch: 0.12
+        kmass_roll: 0.12
+        kmass_x: 5.0
+        kmass_y: 8.0
+        kmass_yaw: 0.05
+        kmass_z: 5.0
 
-    # Production PID Tuning
-    z_linear:
-      p_gain: 5.0
-      i_gain: 0.2
-      d_gain: 0.5
-      i_max: 10.0
-      i_min: -10.0
-      u_max: 20.0
-      u_min: -20.0
-      clamp_values: true
-
-    x_linear:
-      p_gain: 2.0
-    y_linear:
-      p_gain: 2.0
-
-    # Angular accel feedback (/acceleration.angular) is differentiated gyro — too noisy (~500 rad/s²)
-    # to use as PID feedback directly. Rely on feedforward (kmass) instead.
-    x_angular:
-      p_gain: 0.0
-    y_angular:
-      p_gain: 0.0
-    z_angular:
-      p_gain: 0.0
