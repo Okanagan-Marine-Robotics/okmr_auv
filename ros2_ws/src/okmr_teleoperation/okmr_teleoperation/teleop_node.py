@@ -1,84 +1,128 @@
-#!/usr/bin/env python3
-
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
-from geometry_msgs.msg import TwistStamped
-from okmr_msgs.msg import ControlMode
-
-DEADZONE = 0.05
-
+from std_msgs.msg import Header
+from okmr_msgs.msg import SensorReading
 
 class TeleopNode(Node):
     def __init__(self):
         super().__init__('teleop_node')
 
-        # Velocity scales applied to normalized joystick input [-1, 1]
-        self.declare_parameter('surge_scale', 0.5)   # m/s
-        self.declare_parameter('sway_scale', 0.5)    # m/s
-        self.declare_parameter('heave_scale', 0.3)   # m/s
-        self.declare_parameter('yaw_scale', 0.5)     # rad/s
-        self.declare_parameter('roll_scale', 0.3)    # rad/s
-        self.declare_parameter('pitch_scale', 0.3)   # rad/s
+        self.declare_parameter('yaw_multiplier', 20.0)
+        self.declare_parameter('roll_multiplier', 45.0)
+        self.declare_parameter('pitch_multiplier', 45.0)
 
-        self.joy_sub = self.create_subscription(Joy, '/joy', self.joy_callback, 10)
-        self.velocity_pub = self.create_publisher(TwistStamped, '/velocity_target', 10)
-        self.control_mode_pub = self.create_publisher(ControlMode, '/control_mode', 10)
+        # Subscribe to the joystick topic
+        self.joy_subscriber = self.create_subscription(Joy, '/joy', self.joy_callback, 10)
 
-        self.get_logger().info("Teleop Node started")
+        # Publisher for motor throttle
+        self.surge = self.create_publisher(SensorReading, '/PID/surge/target', 10)
+        self.sway = self.create_publisher(SensorReading, '/PID/sway/target', 10)
+        self.heave = self.create_publisher(SensorReading, '/PID/heave/target', 10)
+        self.yaw = self.create_publisher(SensorReading, '/PID/yaw/target', 10)
+        self.roll = self.create_publisher(SensorReading, '/PID/roll/target', 10)
+        self.pitch = self.create_publisher(SensorReading, '/PID/pitch/target', 10)
+
+        # Initialize motor values
+        self.values = {
+            "surge": 0.0,
+            "sway": 0.0,
+            "yaw": 0.0,
+            "heave": 0.0,
+            "roll": 0.0,
+            "pitch": 0.0
+        }
+
+        # Initialize previous timestamp
+        self.prev_time = self.get_clock().now()
 
     def joy_callback(self, msg):
-        surge_scale = self.get_parameter('surge_scale').get_parameter_value().double_value
-        sway_scale  = self.get_parameter('sway_scale').get_parameter_value().double_value
-        heave_scale = self.get_parameter('heave_scale').get_parameter_value().double_value
-        yaw_scale   = self.get_parameter('yaw_scale').get_parameter_value().double_value
-        roll_scale  = self.get_parameter('roll_scale').get_parameter_value().double_value
-        pitch_scale = self.get_parameter('pitch_scale').get_parameter_value().double_value
+        """Process joystick input and update motor throttle values."""
 
-        # Xbox controller axis mapping (see params/joy_teleop.yaml)
-        surge = self._deadzone(msg.axes[1])   # Left stick Y  (forward/back)
-        sway  = self._deadzone(msg.axes[0])   # Left stick X  (strafe left/right)
-        yaw   = self._deadzone(msg.axes[2])   # Right stick X (rotate)
-        pitch = self._deadzone(msg.axes[3])   # Right stick Y (nose up/down)
-        # Triggers rest at 1.0 and reach -1.0 when fully pressed
-        heave_up   = msg.axes[4]              # Right trigger → ascend
-        heave_down = msg.axes[5]              # Left trigger  → descend
-        heave = self._deadzone((heave_down - heave_up) / 2.0)
-        roll  = msg.axes[6]                   # D-pad X (binary ±1)
+        # Calculate delta time
+        current_time = self.get_clock().now()
+        delta_time = (current_time - self.prev_time).nanoseconds / 1e9  # Convert to seconds
+        self.prev_time = current_time
+        
+        # Get parameter values
+        yaw_multiplier = self.get_parameter('yaw_multiplier').get_parameter_value().double_value
+        roll_multiplier = self.get_parameter('roll_multiplier').get_parameter_value().double_value
+        pitch_multiplier = self.get_parameter('pitch_multiplier').get_parameter_value().double_value
 
-        # Keep the velocity control layer active
-        control_mode_msg = ControlMode()
-        control_mode_msg.control_mode = ControlMode.VELOCITY
-        control_mode_msg.header.stamp = self.get_clock().now().to_msg()
-        self.control_mode_pub.publish(control_mode_msg)
+        # Joystick Axes: (normalized between -1 and 1)
+        surge = msg.axes[1]   # Left stick Y-axis (up/down)
+        sway  = msg.axes[0]  # Left stick X-axis (left/right)
+        yaw   = msg.axes[2] * yaw_multiplier # Right stick X-axis (left/right)
+        
+        # Trigger for heave
+        heaveUp   = msg.axes[4] # Right trigger resting at 1.0, depressed to -1.0
+        heaveDown = msg.axes[5] # Left trigger resting at 1.0
+        heave     = heaveDown - heaveUp 
+        # D-pad for pitch, roll
+        roll  = msg.axes[6] * roll_multiplier# Left is positive
+        pitch = msg.axes[7] * pitch_multiplier # Up is positive
 
-        twist = TwistStamped()
-        twist.header.stamp = self.get_clock().now().to_msg()
-        twist.header.frame_id = 'base_link'
-        twist.twist.linear.x  = surge * surge_scale
-        twist.twist.linear.y  = sway * sway_scale
-        twist.twist.linear.z  = heave * heave_scale
-        twist.twist.angular.x = roll * roll_scale
-        twist.twist.angular.y = pitch * pitch_scale
-        twist.twist.angular.z = yaw * yaw_scale
+        # Button Presses: TODO kill switch button, button for going to the surface, button for leveling out roll pitch, button for firing torpedos, button for enabling arm
+        dummy = msg.buttons[0] # A button
+        dummy = msg.buttons[1] # B button
 
-        self.velocity_pub.publish(twist)
+        
+        # Compute motor values based on joystick input and delta time
+        self.values["surge"] = surge
+        self.values["sway"] = sway
+        self.values["yaw"] += yaw * delta_time
+        self.values["heave"] = heave
+        self.values["roll"] = roll
+        self.values["pitch"] = pitch
 
-    def _deadzone(self, val, threshold=DEADZONE):
-        return val if abs(val) > threshold else 0.0
+        # Wrap yaw angle to [-180, 180] degrees
+        if self.values["yaw"] > 180:
+            self.values["yaw"] -= 360
+        elif self.values["yaw"] < -180:
+            self.values["yaw"] += 360
+        # Publish the sensor readings
+        surge_msg = SensorReading()
+        surge_msg.data = self.values["surge"]
+        surge_msg.header = Header()
+        surge_msg.header.stamp = self.get_clock().now().to_msg()
+        self.surge.publish(surge_msg)
 
+        sway_msg = SensorReading()
+        sway_msg.data = self.values["sway"]
+        sway_msg.header = Header()
+        sway_msg.header.stamp = self.get_clock().now().to_msg()
+        self.sway.publish(sway_msg)
+
+        heave_msg = SensorReading()
+        heave_msg.data = self.values["heave"]
+        heave_msg.header = Header()
+        heave_msg.header.stamp = self.get_clock().now().to_msg()
+        self.heave.publish(heave_msg)
+
+        yaw_msg = SensorReading()
+        yaw_msg.data = self.values["yaw"]
+        yaw_msg.header = Header()
+        yaw_msg.header.stamp = self.get_clock().now().to_msg()
+        self.yaw.publish(yaw_msg)
+
+        roll_msg = SensorReading()
+        roll_msg.data = self.values["roll"]
+        roll_msg.header = Header()
+        roll_msg.header.stamp = self.get_clock().now().to_msg()
+        self.roll.publish(roll_msg)
+
+        pitch_msg = SensorReading()
+        pitch_msg.data = self.values["pitch"]
+        pitch_msg.header = Header()
+        pitch_msg.header.stamp = self.get_clock().now().to_msg()
+        self.pitch.publish(pitch_msg)
 
 def main(args=None):
     rclpy.init(args=args)
     node = TeleopNode()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
-
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
