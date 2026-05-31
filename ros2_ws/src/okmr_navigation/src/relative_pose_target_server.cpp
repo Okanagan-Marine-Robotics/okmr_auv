@@ -222,11 +222,14 @@ class RelativePoseTargetServer : public rclcpp::Node {
 
         bool yaw_on_target = std::abs (yaw_error) <= yaw_tolerance_ * M_PI / 180.0;
 
-        // Translation target - only publish if yaw is on target
+        // Always correct Z (depth) regardless of yaw -- gating it caused buoyancy-driven rise
+        // during yaw correction phases when Z error was zeroed.
+        relative_pose_target.translation.z = relative_translation.z;
+
+        // Only command XY translation once yaw is aligned (avoids crabbing sideways to goal)
         if (yaw_on_target || xy_trig_dist < holding_radius_) {
             relative_pose_target.translation.x = relative_translation.x;
             relative_pose_target.translation.y = relative_translation.y;
-            relative_pose_target.translation.z = relative_translation.z;
         }
 
         relative_pose_target.rotation.x = (roll - current_eulers.x);
