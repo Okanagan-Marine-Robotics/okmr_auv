@@ -6,6 +6,25 @@ from okmr_msgs.msg import MovementCommand, MissionCommand
 
 class PrequalificationStateMachine(BaseStateMachine):
 
+    PARAMETERS = [
+        {"name": "distance_forward",
+         "value": 1.0,
+         "description": "E"
+         },
+         {"name": "distance_small",
+         "value": 0.5,
+         "description": "E"
+         },
+         {"name": "distance_down",
+         "value": 1.0,
+         "description": "E"
+         },
+         {"name": "turn",
+         "value": 90.0,
+         "description": "E"
+         }
+    ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.distance_forward = self.get_local_parameter("distance_forward")
