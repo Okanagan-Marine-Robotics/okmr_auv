@@ -228,10 +228,13 @@ class RelativePoseTargetServer : public rclcpp::Node {
         relative_pose_target.translation.z = relative_translation.z;
 
         // Only command XY translation once yaw is aligned (avoids crabbing sideways to goal)
-        if (yaw_on_target || xy_trig_dist < holding_radius_) {
+        /*if (yaw_on_target || xy_trig_dist < holding_radius_) {
             relative_pose_target.translation.x = relative_translation.x;
             relative_pose_target.translation.y = relative_translation.y;
-        }
+        } Trying something diff */
+
+        relative_pose_target.translation.x = relative_translation.x * std::max(0.0f, cos(yaw_error * M_PI / 180.0 )) // surely?
+        relative_pose_target.translation.y = relative_translation.y * std::max(0.0f, cos(yaw_error * M_PI / 180.0 ))
 
         relative_pose_target.rotation.x = (roll - current_eulers.x);
         relative_pose_target.rotation.y = (pitch - current_eulers.y);
