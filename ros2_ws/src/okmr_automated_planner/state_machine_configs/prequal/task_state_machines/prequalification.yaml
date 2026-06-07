@@ -18,6 +18,5 @@ qualifying:
     - { trigger: turn_done, source: turn_1, dest: moving_small }
     - { trigger: moving_small_done, source: moving_small, dest: turn_2 }
     - { trigger: turn_done, source: turn_2, dest: moving_forward_2 }
-    - { trigger: moving_forward_done, source: moving_forward_2, dest: surfacing }
-    - { trigger: surfacing_done, source: surfacing, dest: prequalification_done }
+    - { trigger: moving_forward_done, source: moving_forward_2, dest: done }
 
