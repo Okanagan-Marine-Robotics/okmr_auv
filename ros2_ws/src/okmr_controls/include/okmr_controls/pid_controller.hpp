@@ -26,6 +26,15 @@ class PidController {
     void get_gains (double& p_gain, double& i_gain, double& d_gain, double& i_min, double& i_max,
                     double& u_min, double& u_max, bool& clamp_values) const;
 
+    struct PidState {
+        double error;
+        double p_term;
+        double i_term;
+        double d_term;
+        double output;
+    };
+    PidState get_state () const;
+
    private:
     double p_gain_;
     double i_gain_;
