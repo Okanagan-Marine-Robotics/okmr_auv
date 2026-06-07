@@ -2,36 +2,20 @@ pose_control_layer:
     ros__parameters:
         update_frequency: 100.0
         SAVE_LOCATION: /home/jetson/okmr_auv/ros2_ws/src/okmr_controls/params/temp/pose_control.yaml
+        x_angular.p_gain: 0.5
         x_linear.p_gain: 0.75
         x_linear.u_max: 0.8
         x_linear.u_min: -0.2
-        x_linear.clamp_values: true
-
+        y_angular.p_gain: 2.0
         y_linear.p_gain: 0.35
         y_linear.u_max: 0.2
         y_linear.u_min: -0.2
-        y_linear.clamp_values: true
-
+        z_angular.p_gain: 2.2
+        z_angular.d_gain: 0.01
         z_linear.p_gain: 2.0
         z_linear.u_max: 0.5
         z_linear.u_min: -0.5
         z_linear.clamp_values: true
-
-        # Angular errors now arrive in radians (degrees/radians bug fixed in relative_pose_target_server).
-        # P=2.0 produces ~0.17 rad/s command for a 5 deg error. Clamps prevent large startup transients.
-        x_angular.p_gain: 0.5
-        x_angular.u_max: 0.3
-        x_angular.u_min: -0.3
-        x_angular.clamp_values: true
-
-        y_angular.p_gain: 2.0
-        y_angular.u_max: 0.5
-        y_angular.u_min: -0.5
-        y_angular.clamp_values: true
-
-        z_angular.p_gain: 2.0
-        z_angular.d_gain: 0.01
-        z_angular.u_max: 0.5
-        z_angular.u_min: -0.5
-        z_angular.clamp_values: true
+        y_linear.clamp_values: true
+        x_linear.clamp_values: true
 
