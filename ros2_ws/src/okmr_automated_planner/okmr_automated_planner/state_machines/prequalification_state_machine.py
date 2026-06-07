@@ -6,8 +6,6 @@ from okmr_msgs.msg import MovementCommand, MissionCommand
 
 class PrequalificationStateMachine(BaseStateMachine):
 
-    ]
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.distance_forward = self.get_local_parameter("distance_forward")
@@ -19,6 +17,9 @@ class PrequalificationStateMachine(BaseStateMachine):
         self.rotation = self.get_local_parameter("turn")
         
         self.distance_small = self.get_local_parameter("distance_small")
+
+    def on_enter_initializing(self):
+        self.queued_method = self.initialized
 
     def on_enter_moving_down(self):
         movement_msg = MovementCommand()
