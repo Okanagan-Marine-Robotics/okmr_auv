@@ -180,5 +180,9 @@ def generate_launch_description():
             cameras_launch,
             #object_detection_launch,
             hardware_interface_launch,
+            Node(
+                package='foxglove_bridge',
+                executable='foxglove_bridge'
+            ),
         ]
     )
