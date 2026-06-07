@@ -1,4 +1,4 @@
-qualifying:
+prequalification:
   states:
     - { name: initializing }
     - { name: moving_small }
