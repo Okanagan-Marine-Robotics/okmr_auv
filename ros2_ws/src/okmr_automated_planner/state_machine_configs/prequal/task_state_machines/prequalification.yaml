@@ -5,10 +5,10 @@ qualifying:
     - { name: moving_down }
     - { name: turn }
     - { name: surfacing }
-    - { name: moving_forward_1, on_enter: 'on_enter_moving_forward'}
-    - { name: moving_forward_2, on_enter: 'on_enter_moving_forward'}
-    - { name: turn_1, on_enter: 'on_enter_turn'}
-    - { name: turn_2, on_enter: 'on_enter_turn'}
+    - { name: moving_forward_1 }
+    - { name: moving_forward_2 }
+    - { name: turn_1 }
+    - { name: turn_2 }
     - { name: done }
 
   transitions:
