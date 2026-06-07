@@ -78,7 +78,7 @@ class PrequalificationStateMachine(BaseStateMachine):
         )
 
         if not success:
-            self.ros_node.get_logger().error("Failed to send forward movement command")
+            self.ros_node.get_logger().error("Failed to send turn command")
             self.queued_method = self.abort
 
 
