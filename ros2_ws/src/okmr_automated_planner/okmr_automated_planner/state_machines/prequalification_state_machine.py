@@ -6,28 +6,6 @@ from okmr_msgs.msg import MovementCommand, MissionCommand
 
 class PrequalificationStateMachine(BaseStateMachine):
 
-    PARAMETERS = [
-        {
-            "name": "distance_forward",
-            "value": 13.0,
-            "descriptor": "distance to move forward",
-        },
-        {
-            "name": "distance_down",
-            "value": 1.0,
-            "descriptor": "distance to move down",
-        },
-        {
-            "name": "turn",
-            "value": 90,
-            "descriptor": "turn",
-        },
-        {
-            "name": "distance_small",
-            "value": 0.5, #probs will need to be asjusted durign tests
-            "description": "distance to move past the marker between turns"
-        }
-
     ]
 
     def __init__(self, *args, **kwargs):

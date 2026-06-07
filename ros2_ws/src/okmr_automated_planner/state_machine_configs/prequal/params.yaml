@@ -10,4 +10,5 @@ automated_planner:
     qualifying:
       distance_forward: 13.0 # distance to gate = 3m, dist from gate to marker = 10m
       distance_down: 1.0
-      distancer_small: 0.5 # actually have no idea how large it will need to be
+      distance_small: 0.5 # actually have no idea how large it will need to be
+      turn: 90.0
