@@ -73,7 +73,7 @@ class PrequalificationStateMachine(BaseStateMachine):
 
         success = self.movement_client.send_movement_command(
             movement_msg,
-            on_success=self.moving_forward_done,
+            on_success=self.turn_done,
             on_failure=self.abort,
         )
 
