@@ -19,6 +19,6 @@ __all__ = [
     'QualificationStateMachine',
     'SemifinalStateMachine',
     'RotatingScanStateMachine',
-    'SidewaysScanStateMachine'
-    
+    'SidewaysScanStateMachine',
+    'PrequalificationStateMachine'
 ]
