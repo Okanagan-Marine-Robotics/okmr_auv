@@ -9,6 +9,7 @@ qualifying:
     - { name: moving_forward_2, on_enter: 'on_enter_moving_forward'}
     - { name: turn_1, on_enter: 'on_enter_turn'}
     - { name: turn_2, on_enter: 'on_enter_turn'}
+    - { name: done }
 
   transitions:
     #- { trigger: initialized, source: initializing, dest: moving_down }
