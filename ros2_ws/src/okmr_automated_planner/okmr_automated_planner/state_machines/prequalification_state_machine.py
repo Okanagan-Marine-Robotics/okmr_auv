@@ -34,11 +34,15 @@ class PrequalificationStateMachine(BaseStateMachine):
         self.ros_node.get_logger().info(f"Distance down: {self.distance_down}")
 
         self.rotation = self.get_local_parameter("turn")
+        self.ros_node.get_logger().info(f"Each turn is: {self.rotation} degrees")
         
         self.distance_small = self.get_local_parameter("distance_small")
+        self.ros_node.get_logger().info(f"Small distance: {self.distance_small}")
 
     def on_enter_initializing(self):
+        self.ros_node.get_logger().info("Initializing prequalification state machine...")
         self.queued_method = self.initialized
+        pass
 
     def on_enter_moving_down(self):
         movement_msg = MovementCommand()
@@ -70,6 +74,12 @@ class PrequalificationStateMachine(BaseStateMachine):
             self.ros_node.get_logger().error("Failed to send small forward movement command")
             self.queued_method = self.abort
 
+    def on_enter_moving_forward_1(self):
+        self.on_enter_moving_forward()
+
+    def on_enter_moving_forward_2(self):
+        self.on_enter_moving_forward()
+
     def on_enter_moving_forward(self):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
@@ -85,6 +95,12 @@ class PrequalificationStateMachine(BaseStateMachine):
             self.ros_node.get_logger().error("Failed to send forward movement command")
             self.queued_method = self.abort
     
+    def on_enter_turn_1(self):
+        self.on_enter_turn()
+
+    def on_enter_turn_2(self):
+        self.on_enter_turn()
+
     def on_enter_turn(self):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE

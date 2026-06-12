@@ -11,7 +11,7 @@ automated_planner:
       mission_altitude: 0.5 # Most likely is overridden by root
 
     prequalification:
-      distance_forward: 1.0 # distance to gate = 3m, dist from gate to marker = 10m
+      distance_forward: 13.0 # distance to gate = 3m, dist from gate to marker = 10m
       distance_down: 3.0
       distance_small: 0.5 # actually have no idea how large it will need to be
       turn: 90.0

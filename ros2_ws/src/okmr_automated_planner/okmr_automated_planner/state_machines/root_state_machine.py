@@ -511,5 +511,10 @@ class RootStateMachine(BaseStateMachine):
             "Failed to send surface movement command",
         )
 
+    def on_enter_prequalification(self):
+        self.start_current_state_sub_machine(
+            success_callback=self.prequalification_done, fail_callback=self.abort
+        )
+
     def on_completion(self):
         self.ros_node.get_logger().info(make_green_log("Root State Machine Exiting"))

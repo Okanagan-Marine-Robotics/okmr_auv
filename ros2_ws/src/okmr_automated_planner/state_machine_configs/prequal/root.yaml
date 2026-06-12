@@ -5,6 +5,7 @@ root:
     - { name: enabling_subsystems}
     - { name: sinking_start }
     - { name: prequalification, config_path: "task_state_machines/prequalification.yaml"}
+    - { name: surfacing }
     - { name: done }
 
   transitions:
@@ -12,5 +13,6 @@ root:
     - { trigger: mission_start_received, source: waiting_for_mission_start, dest: enabling_subsystems }
     - { trigger: enabling_subsystems_done, source: enabling_subsystems, dest: sinking_start }
     - { trigger: sinking_start_done, source: sinking_start, dest: prequalification }
-    - { trigger: prequalification_done, source: prequalification, dest: done }
+    - { trigger: prequalification_done, source: prequalification, dest: surfacing }
+    - { trigger: surfacing_done, source: surfacing, dest: done }
 
