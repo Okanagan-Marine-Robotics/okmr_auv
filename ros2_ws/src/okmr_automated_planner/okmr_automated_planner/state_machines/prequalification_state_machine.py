@@ -45,6 +45,7 @@ class PrequalificationStateMachine(BaseStateMachine):
         pass
 
     def on_enter_moving_down(self):
+        # not used, use root's sinking instead pls
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
         movement_msg.translation.z = -self.distance_down

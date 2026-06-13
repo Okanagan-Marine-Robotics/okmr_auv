@@ -10,8 +10,7 @@ prequalification:
     - { name: done }
 
   transitions:
-    - { trigger: initialized, source: initializing, dest: moving_down }
-    - { trigger: moving_down_done, source: moving_down, dest: moving_forward_1 }
+    - { trigger: initialized, source: initializing, dest: moving_forward_1 }
     - { trigger: moving_forward_done, source: moving_forward_1, dest: turn_1 }
     - { trigger: turn_done, source: turn_1, dest: moving_small }
     - { trigger: moving_small_done, source: moving_small, dest: turn_2 }
