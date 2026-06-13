@@ -516,5 +516,10 @@ class RootStateMachine(BaseStateMachine):
             success_callback=self.prequalification_done, fail_callback=self.abort
         )
 
+    def on_enter_doing_gate_task(self):
+        self.start_current_state_sub_machine(
+            success_callback=self.doing_gate_task_done, fail_callback=self.abort
+        )
+
     def on_completion(self):
         self.ros_node.get_logger().info(make_green_log("Root State Machine Exiting"))
