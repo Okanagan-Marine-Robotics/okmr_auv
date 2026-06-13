@@ -8,7 +8,7 @@ class PrequalificationStateMachine(BaseStateMachine):
 
     PARAMETERS = [
         {"name": "distance_forward",
-         "value": 1.0,
+         "value": 13.0,
          "descriptor": "E"
          },
          {"name": "distance_small",
@@ -17,7 +17,7 @@ class PrequalificationStateMachine(BaseStateMachine):
          },
          {"name": "distance_down",
          "value": 1.0,
-         "descriptor": "E"
+         "descriptor": "Unused"
          },
          {"name": "turn",
          "value": 90.0,
