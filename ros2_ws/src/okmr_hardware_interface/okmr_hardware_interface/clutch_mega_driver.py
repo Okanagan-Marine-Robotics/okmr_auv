@@ -4,8 +4,17 @@ import rclpy
 from rclpy.node import Node
 from okmr_msgs.msg import MotorThrottle, MissionCommand, ControlMode, ServoCommand, ActuatorCommand
 import serial  # Import pyserial
+import seaport as sp
 import time
 
+#Constants for seaport channel IDs
+MOTOR = 1
+SERVO = 2
+ACTUATOR = 3
+KILL = 4
+LEAK = 5
+#Note the esp32 bridge documentation has some channels defined but as we are currently modifying the clutch driver
+#TODO put these into a .yaml file once seaport is working
 
 class SerialOutputNode(Node):
     def __init__(self):
@@ -35,9 +44,17 @@ class SerialOutputNode(Node):
         try:
             self.serial_port = serial.Serial(serial_port_path, baud_rate, timeout=1)
             self.get_logger().info("Serial port opened successfully.")
+            self.seaport=sp.Seaport(self.serial_port)
+            self.seaport.subscribe(KILL, lambda data: self.killswitch_callback(data))
+            self.seaport.subscribe(LEAK, lambda data: self.leak_sensor_callback(data))
+
+            self.seaport.start()
+
         except serial.SerialException as e:
             self.get_logger().error(f"Failed to open serial port: {e}")
             self.serial_port = None
+            self.seaport = None
+
 
         self.subscription = self.create_subscription(
             MotorThrottle, "/motor_throttle", self.throttle_callback, 10
@@ -61,127 +78,103 @@ class SerialOutputNode(Node):
         self.timer = self.create_timer(1.0 / polling_rate, self.read_serial_callback)
         self.serial_buffer = ""
         self.last_killswitch_state = False
-
-    def servo_command_callback(self, msg):
+    
+    def check_coms(self):
         if not self.serial_port or not self.serial_port.is_open:
             self.get_logger().error("Serial port is not open.")
             return
+        elif self.seaport is None:
+            self.get_logger().error("Seaport is None")
+            return
 
+    def servo_command_callback(self, msg):
+        self.check_coms()
+            
         try:
-            servo_index = msg.index + 100
-            serial_msg = f"{servo_index}<{round(msg.pwm, 2)}\n"
-            self.serial_port.write(serial_msg.encode("utf-8"))
-        except serial.SerialException as e:
+            self.seaport.publish(SERVO,{
+                'index':msg.index,
+                'pwm':round(msg.pwm, 2)
+            })
+        except Exception as e:
             self.get_logger().error(f"Error writing servo command to serial port: {e}")
 
     def actuator_command_callback(self, msg):
-        if not self.serial_port or not self.serial_port.is_open:
-            self.get_logger().error("Serial port is not open.")
-            return
+        self.check_coms()
 
         try:
-            actuator_index = msg.index + 200
             state_value = 1 if msg.state else 0
-            serial_msg = f"{actuator_index}<{state_value}\n"
-            self.serial_port.write(serial_msg.encode("utf-8"))
-        except serial.SerialException as e:
+            self.seaport.publish(ACTUATOR,{
+                'index':msg.index,
+                'state':state_value
+            })
+        except Exception as e:
             self.get_logger().error(f"Error writing actuator command to serial port: {e}")
 
     def throttle_callback(self, msg):
-        if not self.serial_port or not self.serial_port.is_open:
-            self.get_logger().error("Serial port is not open.")
-            return
+        self.check_coms()
 
         try:
             for i, throttle_value in enumerate(msg.throttle):
                 remapped_index = self.motor_index_remapping[i]
-                serial_msg = f"{remapped_index}<{round(throttle_value,2)}\n"
-                self.serial_port.write(serial_msg.encode("utf-8"))
-        except serial.SerialException as e:
-            self.get_logger().error(f"Error writing to serial port: {e}")
+                self.seaport.publish(MOTOR,{
+                    'index':remapped_index,
+                    'trottle':round(throttle_value,2)
+                })
+        except Exception as e:
+            self.get_logger().error(f"Error writing motor throttle to serial port: {e}")
+    
+    def killswitch_callback(self, data):
+        position = data['value']
+        killswitch_active = (
+            position == 1
+        )  # disarmed / switch open (pin HIGH because its pullup)
+        if killswitch_active and not self.last_killswitch_state:
+            self.get_logger().warn("KILLSWITCH ACTIVATED!")
 
-    def read_serial_callback(self):
-        if not self.serial_port or not self.serial_port.is_open:
-            return
+        if not killswitch_active and self.last_killswitch_state:
+            self.get_logger().warn("MISSION START RECEIVED!")
+            mission_msg = MissionCommand()
+            for i in range(3):
+                mission_msg.command = MissionCommand.START_MISSION
+                self.mission_publisher.publish(mission_msg)
+                time.sleep(0.1)
 
-        try:
-            if self.serial_port.in_waiting > 0:
-                data = self.serial_port.read(self.serial_port.in_waiting).decode(
-                    "utf-8"
-                )
-                self.serial_buffer += data
+        if killswitch_active:
+            # Send KILL_MISSION and OFF mode
+            mission_msg = MissionCommand()
+            mission_msg.command = MissionCommand.KILL_MISSION
+            # self.mission_publisher.publish(mission_msg)
 
-                # Process complete lines
-                while "\n" in self.serial_buffer:
-                    line, self.serial_buffer = self.serial_buffer.split("\n", 1)
-                    self.process_serial_line(line.strip())
+            control_msg = ControlMode()
+            control_msg.header.stamp = self.get_clock().now().to_msg()
+            control_msg.control_mode = ControlMode.OFF
+            # self.control_mode_publisher.publish(control_msg)
 
-        except serial.SerialException as e:
-            self.get_logger().error(f"Error reading from serial port: {e}")
-        except UnicodeDecodeError as e:
-            self.get_logger().error(f"Error decoding serial data: {e}")
-            self.serial_buffer = ""  # Clear buffer on decode error
-            # Clear serial port input buffer to flush corrupted data
-            if self.serial_port and self.serial_port.is_open:
-                self.serial_port.reset_input_buffer()
+        self.last_killswitch_state = killswitch_active
 
-    def process_serial_line(self, line):
-        if "<" in line:
-            try:
-                parts = line.split("<")
-                if len(parts) == 2:
-                    sensor_type = parts[0]
-                    value = int(parts[1])
+    def leak_sensor_callback(self, data):
+        value = data['value']
+        if value > self.leak_threshold:
+            self.get_logger().fatal(
+                f"LEAK DETECTED! Sensor reading: {value}, threshold: {self.leak_threshold}",
+                throttle_duration_sec=1.0,
+            )
 
-                    if sensor_type == "killswitch":
-                        killswitch_active = (
-                            value == 1
-                        )  # disarmed / switch open (pin HIGH because its pullup)
-                        if killswitch_active and not self.last_killswitch_state:
-                            self.get_logger().warn("KILLSWITCH ACTIVATED!")
+            # Send KILL_MISSION and OFF mode
+            mission_msg = MissionCommand()
+            mission_msg.command = MissionCommand.KILL_MISSION
+            self.mission_publisher.publish(mission_msg)
 
-                        if not killswitch_active and self.last_killswitch_state:
-                            self.get_logger().warn("MISSION START RECEIVED!")
-                            mission_msg = MissionCommand()
-                            for i in range(3):
-                                mission_msg.command = MissionCommand.START_MISSION
-                                self.mission_publisher.publish(mission_msg)
-                                time.sleep(0.1)
+            control_msg = ControlMode()
+            control_msg.header.stamp = self.get_clock().now().to_msg()
+            control_msg.control_mode = ControlMode.OFF
+            self.control_mode_publisher.publish(control_msg)
 
-                        if killswitch_active:
-                            # Send KILL_MISSION and OFF mode
-                            mission_msg = MissionCommand()
-                            mission_msg.command = MissionCommand.KILL_MISSION
-                            # self.mission_publisher.publish(mission_msg)
-
-                            control_msg = ControlMode()
-                            control_msg.header.stamp = self.get_clock().now().to_msg()
-                            control_msg.control_mode = ControlMode.OFF
-                            # self.control_mode_publisher.publish(control_msg)
-
-                        self.last_killswitch_state = killswitch_active
-
-                    elif sensor_type == "leak":
-                        if value > self.leak_threshold:
-                            self.get_logger().fatal(
-                                f"LEAK DETECTED! Sensor reading: {value}, threshold: {self.leak_threshold}",
-                                throttle_duration_sec=1.0,
-                            )
-
-                            # Send KILL_MISSION and OFF mode
-                            mission_msg = MissionCommand()
-                            mission_msg.command = MissionCommand.KILL_MISSION
-                            self.mission_publisher.publish(mission_msg)
-
-                            control_msg = ControlMode()
-                            control_msg.header.stamp = self.get_clock().now().to_msg()
-                            control_msg.control_mode = ControlMode.OFF
-                            self.control_mode_publisher.publish(control_msg)
-
-            except ValueError as e:
-                self.get_logger().warn(f"Error parsing serial line '{line}': {e}")
 
     def destroy_node(self):
+        #Stop seaport
+        if self.seaport and self.seaport.running:
+            self.seaport.stop()
         # Close serial port if open
         if self.serial_port and self.serial_port.is_open:
             self.serial_port.close()
