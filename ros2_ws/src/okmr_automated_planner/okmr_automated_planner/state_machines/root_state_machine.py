@@ -158,9 +158,16 @@ class RootStateMachine(BaseStateMachine):
         self.post_gate_pose = None
         
     def on_enter_waiting(self):
-        self.ros_node.get_logger().info("Root waiting " + str(self.initial_wait_time) + "s")
-        time.sleep(self.initial_wait_time)
-        self.queued_method = self.waiting_done
+        self.ros_node.get_logger().info(f"Root waiting {self.initial_wait_time}s")
+        if self.initial_wait_time <= 0.0:
+            self.queued_method = self.waiting_done
+            return
+        self.add_timer("initial_wait", self.initial_wait_time, self.handle_wait_timer)
+        
+    def handle_wait_timer(self):
+        self.ros_node.get_logger().info("Initial wait complete")
+        self.remove_timer("initial_wait")
+        self.waiting_done()
 
     def on_enter_initializing(self):
         # check system state
