@@ -9,6 +9,11 @@ class RootStateMachine(BaseStateMachine):
 
     PARAMETERS = [
         {
+            "name": "initial_wait_time",
+            "value": 0.0,
+            "descriptor": "Time to wait in seconds before starting mission after receiving start command",
+        },
+        {
             "name": "gate_distance",
             "value": 5.0,
             "descriptor": "distance to move forward through gate",
@@ -112,6 +117,7 @@ class RootStateMachine(BaseStateMachine):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.initial_wait_time = self.get_local_parameter("initial_wait_time")
         self.gate_distance = self.get_local_parameter("gate_distance")
         self.turn_marker_one_angle = self.get_local_parameter("turn_marker_one_angle")
         self.turn_marker_two_angle = self.get_local_parameter("turn_marker_two_angle")
@@ -150,6 +156,11 @@ class RootStateMachine(BaseStateMachine):
         self.servo_index = self.get_local_parameter("servo_index")
 
         self.post_gate_pose = None
+        
+    def on_enter_waiting(self):
+        self.ros_node.get_logger().info("Root waiting " + str(self.initial_wait_time) + "s")
+        time.sleep(self.initial_wait_time)
+        self.queued_method = self.waiting_done
 
     def on_enter_initializing(self):
         # check system state
