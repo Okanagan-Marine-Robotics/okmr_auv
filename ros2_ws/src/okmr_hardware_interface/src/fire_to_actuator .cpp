@@ -31,7 +31,7 @@ class FireToActuatorNode : public rclcpp::Node {
         u_int8_t tube_number = msg->tube_number;
         if (tube_number > NUM_ACTUATORS) {
             RCLCPP_ERROR (this->get_logger (), "Failed to fire torpedo, invalid tube number: %d", tube_number);
-            hrow std::runtime_error("Invalid tube number requested!");
+            throw std::runtime_error("Invalid tube number requested!");
         }
         if (tube_number < NUM_ACTUATORS) {
             actuator_msg->index = msg->tube_number;
