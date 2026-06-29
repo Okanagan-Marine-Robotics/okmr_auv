@@ -2,6 +2,8 @@
 #include <okmr_msgs/msg/fire_torpedo_command.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <stdexcept>
+#include <thread>
+#include <chrono>
 
 u_int8_t NUM_ACTUATORS = 2;
 
@@ -33,16 +35,29 @@ class FireToActuatorNode : public rclcpp::Node {
             RCLCPP_ERROR (this->get_logger (), "Failed to fire torpedo, invalid tube number: %d", tube_number);
             throw std::runtime_error("Invalid tube number requested!");
         }
-        if (tube_number < NUM_ACTUATORS) {
-            actuator_msg->index = msg->tube_number;
-            actuator_pub_->publish (*actuator_msg);
-            return;
-        }
-        for (u_int8_t i = 0; i < NUM_ACTUATORS; ++i) {
-            actuator_msg->index = i;
-            actuator_pub_->publish (*actuator_msg);
-        }
-        RCLCPP_DEBUG (this->get_logger (), "Published actuator commands");
+        
+        std::thread([this, tube_number]() {
+            auto fire_tube = [&](uint8_t index) {
+                actuator_msg->index = index;
+                actuator_pub_->publish (*actuator_msg);
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+                actuator_msg->state = false;
+                actuator_pub_->publish (*actuator_msg);
+                return;
+            }
+
+            if (tube_number < NUM_ACTUATORS) {
+                fire_tube(tube_number);
+            } else {
+                for (u_int8_t i = 0; i < NUM_ACTUATORS; ++i) {
+                    fire_tube(i);
+                }
+            }
+
+            RCLCPP_DEBUG (this->get_logger (), "Published actuator commands");
+        }).detach();
     }
 };
 
