@@ -1,4 +1,7 @@
 geometry_msgs/Vector3 targetPose #Where the end effector should be moved to. Relative to current sub position
+bool gripperState
+bool OPEN=False
+bool CLOSED=True
 ---
 int8 exit_status
 int8 TARGET_REACHED=0
