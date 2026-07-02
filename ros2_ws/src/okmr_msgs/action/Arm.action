@@ -1,0 +1,9 @@
+geometry_msgs/Vector3 targetPose #Where the end effector should be moved to. Relative to current sub position
+---
+int8 exit_status
+int8 TARGET_REACHED=0
+int8 TIMEOUT=1
+---
+int8 current_status
+int8 JOINTS_MOVING=0
+int8 WAITING_FOR_SUB_REPOSITION=1
