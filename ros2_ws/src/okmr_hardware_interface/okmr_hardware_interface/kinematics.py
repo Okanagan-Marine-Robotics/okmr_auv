@@ -51,10 +51,10 @@ class KinematicsService(Node):
         
 
 
-def main(): #TODO add entry points for client and server
+def main(args=None): #TODO add entry points for client and server
 
     try:
-        with rclpy.init():
+        with rclpy.init(args=args):
             kin_service = KinematicsService()
             rclpy.spin(kin_service)
 

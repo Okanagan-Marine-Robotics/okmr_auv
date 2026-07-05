@@ -20,6 +20,9 @@ from okmr_msgs.srv import ArmTarget
 import time
 
 SERVO_MOVE_RATE = 60.0 #deg/s, placeholder value for now, need to find actual servo spec
+SERVO_PWM_MIN = 125
+SERVO_PWM_MAX = 600
+SERVO_RANGE = 180
 
 class ArmActionServer(Node):
 
@@ -33,11 +36,30 @@ class ArmActionServer(Node):
             Arm,
             'arm_movement',
             self.arm_callback)
+        
         self.cli = self.create_client(ArmTarget, 'arm_kinematics')
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('kinematics service not available, waiting again...')
         self.req = ArmTarget.Request()
+        
+        self.servo_pub = self.create_publisher(
+               ServoCommand, "/servo_command", 10)
+        
+        for i in range(len(self.default_poses)): #Move the arm to default position to ensure consistency
+            serv_msg = ServoCommand()
+            serv_msg.index = i
+            serv_msg.pwm = self.ang_to_pwm(self.default_poses[i])
+            self.servo_pub.publish(serv_msg)
+        
 
+    def ang_to_pwm(self, angle):
+        if angle < 0:
+            angle = 0
+        if angle > SERVO_RANGE:
+            angle = SERVO_RANGE
+        pwm = SERVO_PWM_MIN + (SERVO_PWM_MAX-SERVO_PWM_MIN)*(angle/SERVO_RANGE)
+        return pwm
+        
 
     async def arm_callback(self, goal):
         target = goal.request.targetPose
@@ -57,23 +79,23 @@ class ArmActionServer(Node):
         movement_time = max_ang_dif/SERVO_MOVE_RATE
 
         feedback_msg = Arm.Feedback()
-        feedback_msg.status = 0
+        feedback_msg.status = Arm.JOINTS_MOVING
         goal.publish_feedback(feedback_msg)
-
-        time.sleep(movement_time)
 
         for i in range(len(joints)):
              self.current_poses[i] = joints[i]
+             #TODO servo index remapping may be needed
+             serv_msg = ServoCommand()
+             serv_msg.index = i
+             serv_msg.pwm = self.ang_to_pwm(joints[i])
+             self.servo_pub.publish(serv_msg)
+        
+        time.sleep(movement_time) #TODO non-blocking delay
+             
         
         result = Arm.Result()
-        result.exitStatus = 0
+        result.exitStatus = Arm.TARGET_REACHED
         return result
-             
-
-
-
-
-
 
 
 def main(args=None):
