@@ -1,14 +1,23 @@
 /*
-This is the Dropper Action Server, hence 'drop'.cpp
-tomi shittu (mostly copied from hakim's torpedo action server)
+This is the Dropper Action Server
+tomi shittu (main reference: https://docs.ros.org/en/foxy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html)
 6/29/2026
 */
 
-#include <okmr_msgs/msg/actuator_command.hpp> // do i need to make a new msg file for dropper? only attribute would be the message header
-#include <rclcpp/rclcpp.hpp>
-#include <stdexcept>
+#include <functional>
+#include <memory>
 #include <thread>
-#include <chrono>
+
+#include "okmr_msgs/action/dropper.hpp" // okmr_msgs::action::Dropper
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "rclcpp_components/register_node_macro.hpp"
+
+#include "dropper_action_cpp/visibility_control.h"
+
+
+// ------------ CONFIDENCE ABOVE. REVISION PENDING BELOW ------------
+
 
 class DropNode : public rclcpp::Node
 {

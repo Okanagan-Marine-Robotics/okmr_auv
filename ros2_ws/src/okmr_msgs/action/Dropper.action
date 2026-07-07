@@ -1,0 +1,12 @@
+bool dropper_state
+bool OPEN=False
+bool CLOSED=True
+---
+int8 exit_status
+int8 SUCCESS=0
+int8 TIMEOUT=1
+---
+int8 current_status
+int8 idle=0
+int8 dropping=1
+int8 dropped=2
