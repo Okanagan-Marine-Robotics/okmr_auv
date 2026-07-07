@@ -16,7 +16,7 @@ QUESTIONS
 > make sure that redundancy with execution function doesn't cause problems
 
 NEXT STEPS
-> mitigate that lazy sleep timer part
+> mitigate that lazy sleep timer part (likely with parallel thread?)
 */
 
 #include <functional>
