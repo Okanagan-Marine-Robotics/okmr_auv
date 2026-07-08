@@ -13,15 +13,17 @@ SOMETHING TO NOTE
 QUESTIONS
 > ask where /drop publisher is; make sure communication protocol is consistent
 > confirm that the dropper is servo 0
-> make sure that redundancy with execution function doesn't cause problems
+> make sure that redundancy with execution function doesn't cause problems 
+    >> shouldnt be a problem though thanks to atomicity implementation
 
 NEXT STEPS
-> mitigate that lazy sleep timer part (likely with parallel thread?)
+> consider replacing sleep(1) with ROS2 TimerBase (not very necessary given parallel thread implementation)
 */
 
 #include <functional>
 #include <memory>
 #include <thread>
+#include <atomic>
 
 #include "okmr_msgs/action/dropper.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -29,6 +31,9 @@ NEXT STEPS
 #include "rclcpp_components/register_node_macro.hpp"
 
 #include "dropper_action_cpp/visibility_control.h"
+
+u_int8_t SERVO_INDEX = 0;
+
 
 namespace dropper_action_cpp
 {
@@ -63,12 +68,13 @@ namespace dropper_action_cpp
         }
 
     private:
-
         rclcpp_action::Server<Dropper>::SharedPtr action_server_;
 
         rclcpp::Subscription<okmr_msgs::msg::DropCmd>::SharedPtr drop_sub_;
         rclcpp::Publisher<okmr_msgs::msg::ActuatorCommand>::SharedPtr actuator_pub_;
         
+        std::atomic<bool> dropping_{false}; // used for atomicity
+
         // GOAL RESPONSE - TO BE REVISED FOR CONSISTENCY
         // Currently accepts all goals
         rclcpp_action::GoalResponse handle_goal(
@@ -107,18 +113,19 @@ namespace dropper_action_cpp
             auto feedback = std::make_shared<Dropper::Feedback>();
             auto result = std::make_shared<Dropper::Result>();
 
-            DROP_IT(); // helper function that actually sends the actuator command. see below
+            DROP_IT();
 
             result->result = true;
             RCLCPP_INFO(this->get_logger(), "Goal succeeded");
             goal_handle->succeed(result);
         }
 
+        
         void drop_topic_callback(const okmr_msgs::msg::DropCmd::SharedPtr msg)
         {
             (void)msg;
             RCLCPP_INFO(this->get_logger(), "Received /drop topic message");
-            DROP_IT();
+            std::thread(&DropNode::DROP_IT, this).detach();
         }
 
         /* 
@@ -128,15 +135,26 @@ namespace dropper_action_cpp
         */
         void DROP_IT()
         {
+            // implementing mutex to prevent race condition between threads
+            bool expected = false;
+            if (!dropping_.compare_exchange_strong(expected, true)) {
+                RCLCPP_WARN(this->get_logger(), "Drop already in progress, ignoring");
+                return;
+            }
+
             auto actuator_msg = std::make_shared<okmr_msgs::msg::ActuatorCommand>();
             actuator_msg->state = true;
-            actuator_msg->index = 0; // Assuming the dropper is servo 0. TO CONFIRM
+            actuator_msg->index = SERVO_INDEX;
 
             actuator_pub_->publish(*actuator_msg);
-            RCLCPP_DEBUG(this->get_logger(), "Published actuator commands");
+            RCLCPP_DEBUG(this->get_logger(), "DROPPER ON - Command Published");
 
-            sleep(1); // LAZY AND BAD, NEEDS IMPROVEMENT
+            sleep(1);
             actuator_msg->state = false;
+            actuator_pub_->publish(*actuator_msg);
+            RCLCPP_DEBUG(this->get_logger(), "DROPPER OFF - Command Published");
+
+            dropping_ = false;
         }
     };
 
