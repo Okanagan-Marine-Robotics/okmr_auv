@@ -18,6 +18,7 @@ QUESTIONS
 
 NEXT STEPS
 > consider replacing sleep(1) with ROS2 TimerBase (not very necessary given parallel thread implementation)
+> feedback publishing could be improved if desired
 */
 
 #include <functional>
@@ -81,7 +82,7 @@ namespace dropper_action_cpp
             const rclcpp_action::GoalUUID &uuid,
             std::shared_ptr<const Dropper::Goal> goal)
         {
-            RCLCPP_INFO(this->get_logger(), "Received goal request with order %d", goal->order);
+            RCLCPP_INFO(this->get_logger(), "Received goal request with order %d", goal->dropper_state);
             (void)uuid;
             return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
         }
@@ -115,7 +116,7 @@ namespace dropper_action_cpp
 
             DROP_IT();
 
-            result->result = true;
+            result->exit_status = Dropper::Result::SUCCESS;
             RCLCPP_INFO(this->get_logger(), "Goal succeeded");
             goal_handle->succeed(result);
         }
