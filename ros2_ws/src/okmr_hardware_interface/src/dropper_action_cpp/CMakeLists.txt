@@ -10,7 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(okmr_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(rclcpp_components REQUIRED)
+# find_package(rclcpp_components REQUIRED) # currently unused
 
 # allows the action server to compile
 add_executable(dropper_action_server
