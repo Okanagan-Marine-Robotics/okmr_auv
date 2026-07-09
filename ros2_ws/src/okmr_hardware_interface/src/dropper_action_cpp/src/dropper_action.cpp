@@ -20,7 +20,7 @@ QUESTIONS
 > confirm that the dropper is servo 0
 
 NEXT STEPS
-> consider replacing sleep(1) with ROS2 TimerBase (not very necessary given parallel thread implementation)
+> consider replacing sleep(1) with ROS2 TimerBase (not necessary given parallel thread implementation)
 > feedback publishing could be improved if desired
 */
 
@@ -28,15 +28,16 @@ NEXT STEPS
 #include <memory>
 #include <thread>
 #include <atomic>
+#include <cstdint>
 
 #include "okmr_msgs/action/dropper.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "rclcpp_components/register_node_macro.hpp"
+//#include "rclcpp_components/register_node_macro.hpp" // currently unused
 
 #include "dropper_action_cpp/visibility_control.h"
 
-u_int8_t SERVO_INDEX = 0;
+constexpr uint8_t SERVO_INDEX = 0; // constexpr = basically a static variable
 
 
 namespace dropper_action_cpp
@@ -114,8 +115,10 @@ namespace dropper_action_cpp
             RCLCPP_INFO(this->get_logger(), "Executing goal");
             rclcpp::Rate loop_rate(1);
             const auto goal = goal_handle->get_goal();
+            /* currently unused
             auto feedback = std::make_shared<Dropper::Feedback>();
             auto result = std::make_shared<Dropper::Result>();
+            */
 
             DROP_IT();
 
