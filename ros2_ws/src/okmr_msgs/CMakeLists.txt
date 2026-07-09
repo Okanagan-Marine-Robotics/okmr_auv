@@ -35,6 +35,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     msg/SemanticDepth.msg
     msg/ServoCommand.msg
     msg/ActuatorCommand.msg
+    msg/DropCmd.msg
     msg/DetectedObject.msg
     msg/EnvironmentData.msg
     srv/FindObject.srv

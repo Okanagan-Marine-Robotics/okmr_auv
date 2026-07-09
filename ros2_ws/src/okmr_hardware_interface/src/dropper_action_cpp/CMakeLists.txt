@@ -7,10 +7,26 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(dropper_action_interface REQUIRED)
+find_package(okmr_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
+
+# allows the action server to compile
+add_executable(dropper_action_server
+  src/dropper_action.cpp)
+target_include_directories(dropper_action_server PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(dropper_action_server
+  "okmr_msgs"
+  "rclcpp"
+  "rclcpp_action"
+  "rclcpp_components")
+install(TARGETS
+  dropper_action_server
+  DESTINATION lib/${PROJECT_NAME})
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

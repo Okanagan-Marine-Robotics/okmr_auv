@@ -9,12 +9,15 @@ SOMETHING TO NOTE
   The definitive desired structure should be discussed, and then the code revised as needed.
   The tradtional action server structure is better because it allows for feedback and cancellation, but the topic 
   callback structure is simpler and more specific to our implementation.
+    TLDR; WE CAN FREELY ACTUATE THE DROPPER THROUGH EITHER THE ACTION SERVER OR TOPIC CALLBACK,
+    INTERCHANGEABLY WITHOUT CONCERN FOR RACE CONDITIONS OR REDUNDACY
+
+> i kinda superhard referenced the visibility file and the CMakeLists; if there are compilation issues during testing,
+  these are the first places id re-assess
 
 QUESTIONS
 > ask where /drop publisher is; make sure communication protocol is consistent
 > confirm that the dropper is servo 0
-> make sure that redundancy with execution function doesn't cause problems 
-    >> shouldnt be a problem though thanks to atomicity implementation
 
 NEXT STEPS
 > consider replacing sleep(1) with ROS2 TimerBase (not very necessary given parallel thread implementation)
@@ -44,7 +47,7 @@ namespace dropper_action_cpp
         using Dropper = okmr_msgs::action::Dropper;
         using GoalHandleDropper = rclcpp_action::ServerGoalHandle<Dropper>;
 
-        ACTION_TUTORIALS_CPP_PUBLIC
+        DROPPER_ACTION_CPP_PUBLIC
         explicit DropNode(const rclcpp::NodeOptions &options = rclcpp::NodeOptions())
             : Node("drop_node", options)
         {
