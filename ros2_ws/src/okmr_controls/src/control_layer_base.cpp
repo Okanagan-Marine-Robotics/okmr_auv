@@ -13,6 +13,13 @@ ControlLayerBase::ControlLayerBase (const std::string& node_name, int8_t control
       current_control_mode_ (okmr_msgs::msg::ControlMode::OFF) {
     declare_parameters ();
 
+    const std::vector<std::string> axis_names = {"x_linear",  "y_linear",  "z_linear",
+                                                 "x_angular", "y_angular", "z_angular"};
+    for (size_t i = 0; i < axis_names.size (); ++i) {
+        debug_pubs_[i] = this->create_publisher<okmr_msgs::msg::PidDebug> (
+            "~/" + axis_names[i] + "/pid_debug", 10);
+    }
+
     param_callback_handle_ = this->add_on_set_parameters_callback (
         std::bind (&ControlLayerBase::on_parameter_change, this, std::placeholders::_1));
 
@@ -60,6 +67,17 @@ ControlLayerBase::compute_layer_command (const geometry_msgs::msg::Vector3& line
     angular_output.x = controllers_[X_ANGULAR].compute_command (angular_error.x, dt);
     angular_output.y = controllers_[Y_ANGULAR].compute_command (angular_error.y, dt);
     angular_output.z = controllers_[Z_ANGULAR].compute_command (angular_error.z, dt);
+
+    for (size_t i = 0; i < controllers_.size (); ++i) {
+        auto s = controllers_[i].get_state ();
+        okmr_msgs::msg::PidDebug dbg;
+        dbg.error = s.error;
+        dbg.p_term = s.p_term;
+        dbg.i_term = s.i_term;
+        dbg.d_term = s.d_term;
+        dbg.output = s.output;
+        debug_pubs_[i]->publish (dbg);
+    }
 
     return std::make_pair (linear_output, angular_output);
 }

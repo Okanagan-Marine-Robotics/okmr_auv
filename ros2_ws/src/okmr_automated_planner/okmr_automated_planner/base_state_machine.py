@@ -284,12 +284,12 @@ class BaseStateMachine(Machine):
 
     def add_timer(self, name: str, duration, callback):
         timer = self.ros_node.create_timer(duration, callback)
-        self._timers["f{self.machine_name}_{name}"] = timer
+        self._timers[f"{self.machine_name}_{name}"] = timer
         return timer
 
     def remove_timer(self, name):
-        self.ros_node.destroy_timer(self._timers[name])
-        self._timers.pop(name)
+        self.ros_node.destroy_timer(self._timers[f"{self.machine_name}_{name}"])
+        self._timers.pop(f"{self.machine_name}_{name}")
 
     def add_service_client(self, service_type, service_name):
         cli = self.ros_node.create_client(service_type, service_name)
