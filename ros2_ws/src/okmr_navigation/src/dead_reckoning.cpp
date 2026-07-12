@@ -249,6 +249,25 @@ class DeadReckoningNode : public rclcpp::Node {
         for (int i = 0; i < 4; i++) {
             dvl_beams[i] = msg->beam_distances[i];
         }
+
+        // Fuse altitude into the Z position estimate once per DVL sample
+        // (not per dead-reckoning update cycle - see integrate_pose()).
+        double dvl_altitude = 0.0;
+        int valid_beams = 0;
+        for (int i = 0; i < 4; i++) {
+            if (dvl_beams[i] > 0.0) {  // Only use valid beam readings
+                dvl_altitude += dvl_beams[i];
+                valid_beams++;
+            }
+        }
+
+        if (valid_beams > 0) {
+            dvl_altitude /= valid_beams;  // Average the valid beam distances
+
+            // Apply complementary filter for altitude estimation
+            translation_estimate.z = dvl_altitude_filter_alpha_ * dvl_altitude +
+                                     (1.0 - dvl_altitude_filter_alpha_) * translation_estimate.z;
+        }
     }
 
     void get_pose_twist_accel_callback (
@@ -434,22 +453,25 @@ class DeadReckoningNode : public rclcpp::Node {
         double ay = linear_accel.y;
         double az = linear_accel.z;
         double magnitude = sqrt (ax * ax + ay * ay + az * az);
+
+        double alpha = complementary_filter_alpha_;
+
+        // accel_pitch/accel_roll are only valid when linear_acceleration is
+        // (approximately) gravity alone. Under thrust, magnitude departs from
+        // 9.81 m/s^2 and the accel-derived tilt is meaningless - fall back to
+        // pure gyro integration for this cycle rather than blending in noise.
+        constexpr double kGravity = 9.81;
+        constexpr double kAccelTolerance = 1.0;  // m/s^2
+        if (std::abs (magnitude - kGravity) > kAccelTolerance) {
+            alpha = 1.0;
+        }
+
         ax /= magnitude;
         ay /= magnitude;
         az /= magnitude;
 
-        double alpha = complementary_filter_alpha_;
-
         double accel_pitch = atan2 (-ax, sqrt (ay * ay + az * az));
         double accel_roll = atan2 (ay, az);
-
-        // RCLCPP_INFO(this->get_logger(), "pitch: %f \t roll: %f", accel_pitch * 180.0 / M_PI,
-        // accel_roll * 180.0 / M_PI);
-
-        if (std::abs (accel_pitch) * 180.0 / M_PI > 80.0 ||
-            std::abs (accel_roll) * 180.0 / M_PI > 80.0) {
-            // alpha = 1.0;
-        }
 
         // Complementary filter for attitude
         rotation_estimate.y = alpha * (rotation_estimate.y + current_twist.twist.angular.y * dt) +
@@ -470,24 +492,6 @@ class DeadReckoningNode : public rclcpp::Node {
         translation_estimate.x += translation_update.x ();
         translation_estimate.y += translation_update.y ();
         translation_estimate.z += translation_update.z ();
-
-        // Calculate average altitude from DVL beam distances
-        double dvl_altitude = 0.0;
-        int valid_beams = 0;
-        for (int i = 0; i < 4; i++) {
-            if (dvl_beams[i] > 0.0) {  // Only use valid beam readings
-                dvl_altitude += dvl_beams[i];
-                valid_beams++;
-            }
-        }
-
-        if (valid_beams > 0) {
-            dvl_altitude /= valid_beams;  // Average the valid beam distances
-
-            // Apply complementary filter for altitude estimation
-            translation_estimate.z = dvl_altitude_filter_alpha_ * dvl_altitude +
-                                     (1.0 - dvl_altitude_filter_alpha_) * translation_estimate.z;
-        }
 
         // Update pose message
         current_pose.pose.orientation = tf2::toMsg (q);

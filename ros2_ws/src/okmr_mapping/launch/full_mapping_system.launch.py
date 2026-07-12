@@ -3,10 +3,26 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 
 
 def generate_launch_description():
+    sim_mode_arg = DeclareLaunchArgument(
+        "sim_mode",
+        default_value="false",
+        description="Whether to run in simulation mode (true) or real hardware mode (false)",
+    )
+
+    rgb_topic = PythonExpression(
+        ["'/camera1/camera1/image_raw' if '", LaunchConfiguration("sim_mode"), "' == 'true' else '/camera/camera/color/image_raw'"]
+    )
+    depth_topic = PythonExpression(
+        ["'/camera1/camera1/image_depth' if '", LaunchConfiguration("sim_mode"), "' == 'true' else '/camera/camera/depth/image_rect_raw'"]
+    )
+    camera_info_topic = PythonExpression(
+        ["'/camera1/camera1/depth_camera_info' if '", LaunchConfiguration("sim_mode"), "' == 'true' else '/camera/camera/depth/camera_info'"]
+    )
+
     # Launch front facing depth_to_pointcloud node
     front_depth_to_pointcloud_node = Node(
         package="okmr_mapping",
@@ -22,10 +38,10 @@ def generate_launch_description():
             }
         ],
         remappings=[
-            ("/rgb", "/camera/camera/color/image_raw"),
-            ("/depth", "/camera/camera/depth/image_rect_raw"),
+            ("/rgb", rgb_topic),
+            ("/depth", depth_topic),
             ("/mask", "/labeled_image"),
-            ("/camera_info", "/camera/camera/depth/camera_info"),
+            ("/camera_info", camera_info_topic),
             ("/pointcloud", "/camera1/pointcloud"),
         ],
     )
@@ -53,6 +69,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            sim_mode_arg,
             front_depth_to_pointcloud_node,
             # bottom_depth_to_pointcloud_node,
         ]

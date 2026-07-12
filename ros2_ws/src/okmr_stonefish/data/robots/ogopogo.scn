@@ -102,102 +102,103 @@
     </sensor>
 
     <actuator name="ThrusterFLI" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="0.20 -0.10 0.05" rpy="0.0 -1.5708 0.0"/>
+        <origin xyz="0.16 -0.20 0.0" rpy="0.0 -1.5708 0.0"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
 
     <actuator name="ThrusterFRI" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="0.20 0.10 0.05" rpy="0.0 -1.5708 0.0"/>
+        <origin xyz="0.16 0.20 0.0" rpy="0.0 -1.5708 0.0"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
 
     <actuator name="ThrusterBLI" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="-0.20 -0.10 0.05" rpy="0.0 -1.5708 0.0"/>
+        <origin xyz="-0.16 -0.20 0.0" rpy="0.0 -1.5708 0.0"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
 
     <actuator name="ThrusterBRI" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="-0.20 0.10 0.05" rpy="0.0 -1.5708 0.0"/>
+        <origin xyz="-0.16 0.20 0.0" rpy="0.0 -1.5708 0.0"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
 
     <actuator name="ThrusterFLO" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="0.25 -0.15 0.05" rpy="0.0 0.0 0.45"/>
+        <origin xyz="0.3175 -0.24 0.0" rpy="0.0 0.0 0.5236"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
 
     <actuator name="ThrusterFRO" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="0.25 0.15 0.05" rpy="0.0 0.0 -0.45"/>
+        <origin xyz="0.3175 0.24 0.0" rpy="0.0 0.0 -0.5236"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
 
     <actuator name="ThrusterBLO" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="-0.25 -0.15 0.05" rpy="0.0 0.0 -0.45"/>
+        <origin xyz="-0.3175 -0.24 0.0" rpy="0.0 0.0 -0.5236"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
 
     <actuator name="ThrusterBRO" type="simple_thruster">
-        <specs lower_thrust_limit="-7.0" upper_thrust_limit="7.0" inverted="false"/>
+        <specs lower_thrust_limit="-17.4" upper_thrust_limit="14.7" inverted="true"/>
         <propeller right="true">
             <mesh filename="objects/propeller.obj" scale="0.3"/>
             <material name="Aluminium"/>
             <look name="Gray"/>
         </propeller>
-        <origin xyz="-0.25 0.15 0.05" rpy="0.0 0.0 0.45"/>
+        <origin xyz="-0.3175 0.24 0.0" rpy="0.0 0.0 -2.6180"/>
         <link name="Base"/>
         <watchdog timeout="1.0"/>
     </actuator>
-    
+
     <ros_subscriber thrusters="/stonefish/thruster_setpoints"/>
+    <ros_publisher thrusters="/stonefish/thruster_state"/>
 
     <world_transform xyz="0.0 0.0 0.0" rpy="0.0 1.57 0.0"/>
 </robot>

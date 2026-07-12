@@ -1,18 +1,18 @@
 thrust_allocator:
   ros__parameters:
-    # Positions are in meters from center of mass, directions are unit vectors 
+    # Positions are in meters from center of mass, directions are unit vectors
     # normalized in the thrust allocator so its ok to use more readable values for direction)
-    
+
     #inner motors
     motor_0_position: [0.16, 0.20, 0.0]
     motor_0_direction: [0.0, 0.0, 1.0]
-    
+
     motor_1_position: [0.16, -0.20, 0.0]
     motor_1_direction: [0.0, 0.0, 1.0]
-    
+
     motor_2_position: [-0.16, 0.20, 0.0]
     motor_2_direction: [0.0, 0.0, 1.0]
-    
+
     motor_3_position: [-0.16, -0.20, 0.00]
     motor_3_direction: [0.0, 0.0, 1.0]
 
@@ -21,16 +21,16 @@ thrust_allocator:
     #left
     motor_4_position: [0.3175, 0.24, 0.0]
     motor_4_direction: [0.866, -0.5, 0.0]
-    
+
     #right
     motor_5_position: [0.3175, -0.24, 0.0]
     motor_5_direction: [0.866, 0.5, 0.0]
-    
+
     #back
     #left
     motor_6_position: [-0.3175, 0.24, 0.0]
     motor_6_direction: [-0.866, -0.5, 0.0]
-    
+
     #right
     motor_7_position: [-0.3175, -0.24, 0.0]
-    motor_7_direction: [0.866, -0.5, 0.0]
+    motor_7_direction: [-0.866, 0.5, 0.0]

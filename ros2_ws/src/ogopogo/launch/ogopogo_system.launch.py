@@ -1,6 +1,6 @@
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
-from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, PythonExpression
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 from launch.conditions import IfCondition, UnlessCondition
@@ -63,6 +63,10 @@ def generate_launch_description():
         description="Enable debug mode for all nodes that use it",
     )
 
+    control_params_folder = PythonExpression(
+        ["'sim' if '", LaunchConfiguration("sim_mode"), "' == 'true' else 'default'"]
+    )
+
     root_config_arg = DeclareLaunchArgument(
         "root_config",
         default_value="test.yaml",
@@ -95,8 +99,18 @@ def generate_launch_description():
                 }.items(),
                 condition=IfCondition(LaunchConfiguration("sim_mode")),
             ),
-            IncludeLaunchDescription(full_control_stack_launch),
-            IncludeLaunchDescription(full_navigation_stack_launch),
+            IncludeLaunchDescription(
+                full_control_stack_launch,
+                launch_arguments={
+                    "folder": control_params_folder,
+                }.items(),
+            ),
+            IncludeLaunchDescription(
+                full_navigation_stack_launch,
+                launch_arguments={
+                    "sim_mode": LaunchConfiguration("sim_mode"),
+                }.items(),
+            ),
             IncludeLaunchDescription(
                 full_object_detection_system_launch,
                 launch_arguments={
@@ -107,6 +121,7 @@ def generate_launch_description():
                 full_mapping_system_launch,
                 launch_arguments={
                     "use_semantic_subscriber": "false",
+                    "sim_mode": LaunchConfiguration("sim_mode"),
                 }.items(),
             ),
             IncludeLaunchDescription(

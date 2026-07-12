@@ -203,11 +203,19 @@ class RelativePoseTargetServer : public rclcpp::Node {
                 roll = current_goal_eulers_.x;
             }
             yaw = hold_yaw_;
-        } else {
+        } else if (current_goal_pose_msg_.copy_orientation) {
             yaw =
                 atan2 (current_goal_pose_msg_.pose.position.y - current_pose_msg_.pose.position.y,
                        current_goal_pose_msg_.pose.position.x - current_pose_msg_.pose.position.x) *
                 (180.0 / M_PI);
+        } else {
+            // Pure translation goal (copy_orientation=false): hold the heading we had
+            // when this goal was issued instead of turning to face the goal position.
+            // The bearing-to-goal calculation above is unstable as the vehicle nears
+            // alignment on one axis (it swings toward +-90 deg as that axis's remaining
+            // distance approaches zero), which was causing large, deterministic,
+            // unwanted rotations during straight-line MOVE_RELATIVE commands.
+            yaw = current_goal_eulers_.z;
         }
 
         // Create and publish RelativePose target message
