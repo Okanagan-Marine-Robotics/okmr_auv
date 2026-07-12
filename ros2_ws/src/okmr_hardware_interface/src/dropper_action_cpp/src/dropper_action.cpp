@@ -17,11 +17,16 @@ SOMETHING TO NOTE
 
 QUESTIONS
 > ask where /drop publisher is; make sure communication protocol is consistent
-> confirm that the dropper is servo 0
 
 NEXT STEPS
 > consider replacing sleep(1) with ROS2 TimerBase (not necessary given parallel thread implementation)
-> feedback publishing could be improved if desired
+
+REAL NEXT STEPS - COMP
+> DROP_IT should return false if anything fails, and then the bool should be passed to the result msg
+> implement feedback and repsonse
+> implement a temp variable for ball count; whenever sub turns back on it resets to 0. if count = 2, NOBALLS
+> cancellation FIX IT. IT DOES NOTHING RN
+> goal parameter is decorative - drops no matter what. fix that...
 */
 
 #include <functional>
@@ -37,7 +42,8 @@ NEXT STEPS
 
 #include "dropper_action_cpp/visibility_control.h"
 
-constexpr uint8_t SERVO_INDEX = 0; // constexpr = basically a static variable
+constexpr uint8_t SERVO_INDEX = 4; // constexpr = basically a static variable
+                                   // servo index matches firmware.ino
 
 
 namespace dropper_action_cpp
@@ -115,19 +121,28 @@ namespace dropper_action_cpp
             RCLCPP_INFO(this->get_logger(), "Executing goal");
             rclcpp::Rate loop_rate(1);
             const auto goal = goal_handle->get_goal();
-            /* currently unused
+
             auto feedback = std::make_shared<Dropper::Feedback>();
             auto result = std::make_shared<Dropper::Result>();
-            */
 
-            DROP_IT();
+            feedback->current_status = Dropper::Feedback::dropping;
+            goal_handle->publish_feedback(feedback);
+
+            if (!DROP_IT()) {
+                result->exit_status = Dropper::Result::TIMEOUT;
+                RCLCPP_ERROR(this->get_logger(), "Goal failed");
+                goal_handle->abort(result);
+                return;
+            }
 
             result->exit_status = Dropper::Result::SUCCESS;
+            feedback->current_status = Dropper::Feedback::idle;
             RCLCPP_INFO(this->get_logger(), "Goal succeeded");
             goal_handle->succeed(result);
+            goal_handle->publish_feedback(feedback); 
+
         }
 
-        
         void drop_topic_callback(const okmr_msgs::msg::DropCmd::SharedPtr msg)
         {
             (void)msg;
@@ -140,13 +155,13 @@ namespace dropper_action_cpp
         action server structure AND the more familiar structure we've been using, this helper function will allow us to 
         execute the actuator command from either the topic callback or the action server callback, whichever one we want!
         */
-        void DROP_IT()
+        bool DROP_IT()
         {
             // implementing mutex to prevent race condition between threads
             bool expected = false;
             if (!dropping_.compare_exchange_strong(expected, true)) {
                 RCLCPP_WARN(this->get_logger(), "Drop already in progress, ignoring");
-                return;
+                return false;
             }
 
             auto actuator_msg = std::make_shared<okmr_msgs::msg::ActuatorCommand>();
@@ -162,6 +177,7 @@ namespace dropper_action_cpp
             RCLCPP_DEBUG(this->get_logger(), "DROPPER OFF - Command Published");
 
             dropping_ = false;
+            return true;
         }
     };
 
