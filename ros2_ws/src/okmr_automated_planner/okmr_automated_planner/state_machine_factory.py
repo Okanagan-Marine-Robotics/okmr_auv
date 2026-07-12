@@ -8,7 +8,7 @@ from okmr_automated_planner import state_machines
 class StateMachineFactory:
     @staticmethod
     def createMachineFromConfig(
-        config_yaml: str, ros_node, config_base_path=None
+        config_yaml: str, ros_node, config_share_path=None, config_folder=None
     ) -> "BaseStateMachine":
         """
         Creates a state machine based on the provided YAML configuration file.
@@ -24,8 +24,10 @@ class StateMachineFactory:
         """
         # Construct full path using base path if provided
         full_config_path = config_yaml
-        if config_base_path:
-            full_config_path = os.path.join(config_base_path, config_yaml)
+        if config_folder:
+            full_config_path = os.path.join(config_folder , config_yaml)
+        if config_share_path:
+            full_config_path = os.path.join(config_share_path, full_config_path)
             ros_node.get_logger().debug(f"Using full config path: {full_config_path}")
 
         if not os.path.exists(full_config_path):
@@ -49,7 +51,7 @@ class StateMachineFactory:
                 sub_config_path = state_dict["config_path"]
                 # Recursively create the sub-machine with the same config base path
                 sub_machine = StateMachineFactory.createMachineFromConfig(
-                    sub_config_path, ros_node, config_base_path
+                    sub_config_path, ros_node, config_share_path
                 )
                 sub_machine.name = state_dict[
                     "name"

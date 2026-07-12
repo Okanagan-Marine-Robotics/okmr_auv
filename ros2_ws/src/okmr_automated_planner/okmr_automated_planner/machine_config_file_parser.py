@@ -3,7 +3,7 @@ from okmr_automated_planner.state_node import StateNode
 from okmr_automated_planner.base_state_machine import BaseStateMachine
 
 class MachineConfigFileParser:
-    _allowed_state_keys = ['name', 'timeout', 'config_path']
+    _allowed_state_keys = ['name', 'timeout', 'config_path', 'movement', 'task']
     _allowed_transition_keys = ['trigger', 'source', 'dest']
 
     def __init__(self, yaml_path):
@@ -22,6 +22,9 @@ class MachineConfigFileParser:
 
         for state in config.get('states', []):
             if self.isValidStateDict(state):
+                if state.get('task') is not None and state.get('task') == True:
+                    state = {**state, 'config_path': f"task_state_machines/{state['name']}.yaml"}
+
                 self._states.append(state)
         
         for transition in config.get('transitions', []):
@@ -31,6 +34,9 @@ class MachineConfigFileParser:
     def isValidStateDict(self, state):
         if 'name' not in state:
             raise ValueError(f"{self.name}\tState dictionary missing required 'name' field: {state}")
+        
+        if 'task' in state and 'movement' in state:
+            raise ValueError(f"{self.name}\tState '{state['name']}'. Subtasks cannot have a movement in their state definition.")
 
         for key in state:
             if key not in self._allowed_state_keys:

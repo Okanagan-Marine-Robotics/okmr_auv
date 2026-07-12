@@ -1,0 +1,14 @@
+automated_planner:
+  ros__parameters:
+
+    state_timeout_check_period: 0.1
+
+    root:
+      mission_altitude: 0.5
+      initial_wait_time: 0.5
+
+    prequalification:
+      distance_forward: 13.0 # distance to gate = 3m, dist from gate to marker = 10m
+      distance_down: 3.0 # deprecated
+      distance_small: 0.5 # actually have no idea how large it will need to be
+      turn: 90.0

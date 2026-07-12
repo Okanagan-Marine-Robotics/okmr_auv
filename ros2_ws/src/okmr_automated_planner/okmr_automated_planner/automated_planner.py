@@ -12,7 +12,8 @@ class AutomatedPlannerNode(Node):
     #hardcoded parameters to declare on startup
     PARAMETERS = [
         {'name': 'state_timeout_check_period', 'value': 0.5, 'descriptor': 'How often to check if the current state should timeout'},
-        {'name': 'config_base_path', 'value': '', 'descriptor': 'Base path for all configuration files, usually share directory/state_machine_configs/dev'},
+        {'name': 'config_share_path', 'value': '', 'descriptor': 'Base path for all configuration files, usually share directory/state_machine_configs'},
+        {'name': 'config_folder', 'value': '', 'descriptor': 'Actual machine name. i.e dev, competition.'},
         {'name': 'root_config', 'value': 'root.yaml', 'descriptor': 'Root configuration file name (relative to config_base_path)'}
     ]
 
@@ -39,18 +40,20 @@ class AutomatedPlannerNode(Node):
 def main():
     rclpy.init()
     master_node = AutomatedPlannerNode()
-    config_base_path = master_node.get_parameter("config_base_path").value
+    config_share_path = master_node.get_parameter("config_share_path").value
+    config_folder = master_node.get_parameter("config_folder").value
     root_config = master_node.get_parameter("root_config").value
     root_state_machine = None
 
-    master_node.get_logger().info(f"Using config base path: {config_base_path}")
+    master_node.get_logger().info(f"Using config base path: {config_share_path}")
     master_node.get_logger().info(f"Using root config: {make_green_log(root_config)}")
 
     try:
         root_state_machine = StateMachineFactory.createMachineFromConfig(
             root_config, 
             master_node,
-            config_base_path
+            config_share_path,
+            config_folder
         )
         # root_state_machine.fail_callback =  
         #root_state_machine.done_callback = lamda: 
