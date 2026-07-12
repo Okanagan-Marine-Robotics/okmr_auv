@@ -14,10 +14,13 @@ class DvlDriverNode(Node):
         super().__init__("dvl_driver")
         self.dvl_publisher = self.create_publisher(Dvl, "/dvl", 10)
 
-        # Declare ROS2 parameter for beam range threshold
-        self.declare_parameter("beam_range_threshold", 0.8)
-        self.beam_range_threshold = (
-            self.get_parameter("beam_range_threshold")
+        # New implementation using beam "jump" threshold instead of "range"
+        # Instead of "Spatial" filtering, this approach uses "Temporal" filtering 
+        # The difference is instead of comparing the state of all 4 beams 
+        # We just watch out for a jump threshold (Currently set at 1.0) from SPECIFIC beam ticks - ideal for pool testing (not open water)
+        self.declare_parameter("beam_jump_threshold", 1.0)
+        self.beam_jump_threshold = (
+            self.get_parameter("beam_jump_threshold")
             .get_parameter_value()
             .double_value
         )
@@ -27,7 +30,7 @@ class DvlDriverNode(Node):
         self.last_vy = 0.0
         self.last_vz = 0.0
 
-        # Store previous beam distances for outlier rejection
+        # Store previous beam distances for independent outlier rejection
         self.last_d1 = 0.0
         self.last_d2 = 0.0
         self.last_d3 = 0.0
@@ -84,24 +87,25 @@ class DvlDriverNode(Node):
                     self.last_vy = vy
                     self.last_vz = vz
 
-                # DVL beam distance validation
-                beam_distances = [d1, d2, d3, d4]
-                beam_range = max(beam_distances) - min(beam_distances)
+                # -- Temporal Implementation (DVL Independent Beam Distance Validation) --
+                
+                validated_distances = []
+                current_beams = [d1, d2, d3, d4]
+                last_beams = [self.last_d1, self.last_d2, self.last_d3, self.last_d4]
+                beam_names = ["D1", "D2", "D3", "D4"]
 
-                if beam_range > self.beam_range_threshold:
-                    self.get_logger().warn(
-                        f"DVL beam range too large ({beam_range:.3f} m), using previous values - D1: {self.last_d1:.3f}, D2: {self.last_d2:.3f}, D3: {self.last_d3:.3f}, D4: {self.last_d4:.3f}",
-                        throttle_duration_sec=1.0,
-                    )
-                    d1 = self.last_d1
-                    d2 = self.last_d2
-                    d3 = self.last_d3
-                    d4 = self.last_d4
-                else:
-                    self.last_d1 = d1
-                    self.last_d2 = d2
-                    self.last_d3 = d3
-                    self.last_d4 = d4
+                for current_d, last_d, b_name in zip(current_beams, last_beams, beam_names):
+                    # Initialize first values then check for any spikes
+                    if last_d != 0.0 and abs(current_d - last_d) > self.beam_jump_threshold:
+                        self.get_logger().debug(f"DVL {b_name} jump too large. Revert to previous: {last_d:.3f} m")
+                        validated_distances.append(last_d)
+                    else:
+                        validated_distances.append(current_d)
+
+                # Unpack validated distances to class variables and message variables
+                self.last_d1, self.last_d2, self.last_d3, self.last_d4 = validated_distances
+                d1, d2, d3, d4 = validated_distances
+                # ---------------------------------------------------------
 
                 # Create DVL message
                 dvl_msg = Dvl()
@@ -126,7 +130,7 @@ class DvlDriverNode(Node):
 
                 dvl_msg.figure_of_merit = fom
 
-                # Set beam distances
+                # Set validated beam distances
                 dvl_msg.beam_distances = [d1, d2, d3, d4]
 
                 # Set additional data
@@ -141,11 +145,6 @@ class DvlDriverNode(Node):
                     f"DVL data parsed successfully - VX: {vx:.3f}, VY: {vy:.3f}, VZ: {vz:.3f}, FOM: {fom:.3f}"
                 )
 
-                # Output the extracted variables
-                # print(f"VX: {vx}, VY: {vy}, VZ: {vz}")
-                # print(f"D1: {d1}, D2: {d2}, D3: {d3}, D4: {d4}")
-                # https://support.nortekgroup.com/hc/en-us/article_attachments/19558106638620
-                # mode 358
             else:
                 self.get_logger().debug(
                     f"DVL packet parsing failed - no regex matches found"
