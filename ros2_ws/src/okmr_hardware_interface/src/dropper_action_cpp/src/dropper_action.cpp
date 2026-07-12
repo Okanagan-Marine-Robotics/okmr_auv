@@ -3,37 +3,36 @@ This is the Dropper Action Server
 tomi shittu (main reference: https://docs.ros.org/en/foxy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html)
 07/07/2026
 
-SOMETHING TO NOTE
-> indecision (or arguably, foresight,) led to a convoluted code structure that implements both a traditional
-  ROS2 action server structure, AND one that calls the execute function directly from a topic callback.
-  The definitive desired structure should be discussed, and then the code revised as needed.
-  The tradtional action server structure is better because it allows for feedback and cancellation, but the topic 
-  callback structure is simpler and more specific to our implementation.
-    TLDR; WE CAN FREELY ACTUATE THE DROPPER THROUGH EITHER THE ACTION SERVER OR TOPIC CALLBACK,
-    INTERCHANGEABLY WITHOUT CONCERN FOR RACE CONDITIONS OR REDUNDACY
 
+SOME NOTES
+> subscriber actuator removed (commented out); you have to use the traditional action server interface now
+> the REAL goal handling is done at the beginning of the execution function. this way we can receive descriptive exit statuses
+  that tell us why we arent dropping
+> no goal canceling cuz we'd never need it. can be implemented later if some need is found 
 > i kinda superhard referenced the visibility file and the CMakeLists; if there are compilation issues during testing,
   these are the first places id re-assess
 
-QUESTIONS
-> ask where /drop publisher is; make sure communication protocol is consistent
+REAL NEXT STEPS - COMP
+> DONE - DROP_IT should return false if anything fails, and then the bool should be passed to the result msg
+> DONE - implement a temp variable for ball count; whenever sub turns back on it resets to 0. if count = 2, NOBALLS
+> DONE -  put 'already firing' block in goal handling instead of drop_it()
+> NVM - implement real goal acceptance and cancellation
+> DONE & NVM - implement feedback and response
 
-NEXT STEPS
+SECONDARY NEXT STEPS
 > consider replacing sleep(1) with ROS2 TimerBase (not necessary given parallel thread implementation)
 
-REAL NEXT STEPS - COMP
-> DROP_IT should return false if anything fails, and then the bool should be passed to the result msg
-> implement feedback and repsonse
-> implement a temp variable for ball count; whenever sub turns back on it resets to 0. if count = 2, NOBALLS
-> cancellation FIX IT. IT DOES NOTHING RN
-> goal parameter is decorative - drops no matter what. fix that...
+WHERE I LEFT OFF - 12:16AM DAY 2
+> DONE - IMPLEMENT ATOMICITY IN EXECUTE FUNCTION; see what claude said
+> ask claude whether it thinks its a great idea to move the execution error handling to the actual
+goal handling part    
 */
 
 #include <functional>
 #include <memory>
 #include <thread>
-#include <atomic>
 #include <cstdint>
+#include <mutex>
 
 #include "okmr_msgs/action/dropper.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -44,6 +43,7 @@ REAL NEXT STEPS - COMP
 
 constexpr uint8_t SERVO_INDEX = 4; // constexpr = basically a static variable
                                    // servo index matches firmware.ino
+constexpr uint8_t MAX_BALL_COUNT = 2;
 
 
 namespace dropper_action_cpp
@@ -79,12 +79,14 @@ namespace dropper_action_cpp
         }
 
     private:
+        int balls_dropped = 0; // pause asff
         rclcpp_action::Server<Dropper>::SharedPtr action_server_;
 
         rclcpp::Subscription<okmr_msgs::msg::DropCmd>::SharedPtr drop_sub_;
         rclcpp::Publisher<okmr_msgs::msg::ActuatorCommand>::SharedPtr actuator_pub_;
         
-        std::atomic<bool> dropping_{false}; // used for atomicity
+        // atomic friend
+        std::mutex drop_mutex_;  
 
         // GOAL RESPONSE - TO BE REVISED FOR CONSISTENCY
         // Currently accepts all goals
@@ -125,45 +127,55 @@ namespace dropper_action_cpp
             auto feedback = std::make_shared<Dropper::Feedback>();
             auto result = std::make_shared<Dropper::Result>();
 
+            // implementing atomicity (RAII WRAPPER) to prevent race condition between threads
+            std::unique_lock<std::mutex> lock(drop_mutex_, std::try_to_lock);
+            if (!lock.owns_lock()) {
+                RCLCPP_WARN(this->get_logger(), "Drop already in progress. Rejecting goal");
+                result->exit_status = Dropper::Result::TIMEOUT;
+                goal_handle->abort(result);
+                return;
+            }
+
+            if (balls_dropped >= MAX_BALL_COUNT) {
+                result->exit_status = Dropper::Result::NOBALLS;
+                feedback->current_status = Dropper::Feedback::idle;
+                RCLCPP_WARN(this->get_logger(), "No more balls");
+                goal_handle->abort(result);
+                goal_handle->publish_feedback(feedback);
+                return;
+            } 
+
             feedback->current_status = Dropper::Feedback::dropping;
             goal_handle->publish_feedback(feedback);
-
+            
             if (!DROP_IT()) {
                 result->exit_status = Dropper::Result::TIMEOUT;
                 RCLCPP_ERROR(this->get_logger(), "Goal failed");
                 goal_handle->abort(result);
                 return;
-            }
+            } 
 
             result->exit_status = Dropper::Result::SUCCESS;
             feedback->current_status = Dropper::Feedback::idle;
             RCLCPP_INFO(this->get_logger(), "Goal succeeded");
             goal_handle->succeed(result);
             goal_handle->publish_feedback(feedback); 
-
+            balls_dropped++;
         }
 
+        /*  SUBSCRIBER ACUATOR; DONT USE THIS ANYMORE! but keeping it in case of testing etc
         void drop_topic_callback(const okmr_msgs::msg::DropCmd::SharedPtr msg)
         {
+            // CHECK BALL COUNT
             (void)msg;
             RCLCPP_INFO(this->get_logger(), "Received /drop topic message");
             std::thread(&DropNode::DROP_IT, this).detach();
         }
+        */ 
 
-        /* 
-        now, this is the part that actually sends the state and index message. since this program (indecisively) combines the traditional
-        action server structure AND the more familiar structure we've been using, this helper function will allow us to 
-        execute the actuator command from either the topic callback or the action server callback, whichever one we want!
-        */
+        // the part that actually sends the state and index message
         bool DROP_IT()
         {
-            // implementing mutex to prevent race condition between threads
-            bool expected = false;
-            if (!dropping_.compare_exchange_strong(expected, true)) {
-                RCLCPP_WARN(this->get_logger(), "Drop already in progress, ignoring");
-                return false;
-            }
-
             auto actuator_msg = std::make_shared<okmr_msgs::msg::ActuatorCommand>();
             actuator_msg->state = true;
             actuator_msg->index = SERVO_INDEX;
@@ -176,7 +188,6 @@ namespace dropper_action_cpp
             actuator_pub_->publish(*actuator_msg);
             RCLCPP_DEBUG(this->get_logger(), "DROPPER OFF - Command Published");
 
-            dropping_ = false;
             return true;
         }
     };
