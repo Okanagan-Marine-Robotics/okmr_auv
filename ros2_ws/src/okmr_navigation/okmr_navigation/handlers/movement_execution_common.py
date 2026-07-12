@@ -111,10 +111,10 @@ def call_distance_service(service_name):
     Both use the same DistanceFromGoal message format.
     """
     node = NavigatorActionServer.get_instance()
-    
+
     try:
-        client = node.create_client(DistanceFromGoal, service_name)
-        
+        client = node.get_client(service_name, DistanceFromGoal)
+
         # Wait for service to be available
         if not client.wait_for_service(timeout_sec=2.0):
             node.get_logger().error(f'{service_name} service not available after 2s timeout')

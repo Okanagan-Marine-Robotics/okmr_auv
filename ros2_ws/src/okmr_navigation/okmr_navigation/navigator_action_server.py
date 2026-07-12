@@ -28,6 +28,7 @@ class NavigatorActionServer(Node):
         self._cached_goal_handle = None  # this is the only goal handle allowed to run
         self._goal_lock = Lock()
         self._cached_publishers = {}  # Dictionary to store reusable publishers
+        self._cached_clients = {}  # Dictionary to store reusable service clients
         self._action_server = ActionServer(
             self,
             Movement,
@@ -60,6 +61,19 @@ class NavigatorActionServer(Node):
                 msg_type, topic_name, qos
             )
         return self._cached_publishers[topic_name]
+
+    def get_client(self, srv_name, srv_type):
+        """Get or create a service client for the given service name.
+
+        Creating a fresh client on every call is a known ROS2 anti-pattern -
+        each new client has to rediscover the service over DDS before a
+        request can reliably be matched to its response, which can produce
+        stale/cached-looking results under load. Reuse one persistent client
+        per service instead.
+        """
+        if srv_name not in self._cached_clients:
+            self._cached_clients[srv_name] = self.create_client(srv_type, srv_name)
+        return self._cached_clients[srv_name]
 
     @classmethod
     def get_instance(cls, command_handlers=None, test_command_handlers=None):

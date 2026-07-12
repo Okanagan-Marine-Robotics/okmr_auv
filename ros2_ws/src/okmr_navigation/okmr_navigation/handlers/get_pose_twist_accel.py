@@ -1,3 +1,4 @@
+import rclpy
 from okmr_msgs.srv import GetPoseTwistAccel
 from okmr_navigation.navigator_action_server import NavigatorActionServer
 
@@ -23,19 +24,23 @@ def get_current_accel():
 def _call_get_pose_twist_accel_service():
     """Helper function to call the GetPoseTwistAccel service"""
     node = NavigatorActionServer.get_instance()
-    
+
     try:
-        client = node.create_client(GetPoseTwistAccel, '/get_pose_twist_accel')
-        
+        client = node.get_client('/get_pose_twist_accel', GetPoseTwistAccel)
+
         # Wait for service to be available
         if not client.wait_for_service(timeout_sec=2.0):
             node.get_logger().error('get_pose_twist_accel service not available after 2s timeout')
             return None
         
-        # Make the blocking service call
+        # Async call + explicit spin, rather than the synchronous client.call() -
+        # that blocking form can return a stale/queued response when invoked
+        # from inside a callback on the node's own executor thread.
         request = GetPoseTwistAccel.Request()
-        response = client.call(request)
-        
+        future = client.call_async(request)
+        rclpy.spin_until_future_complete(node, future, timeout_sec=2.0)
+        response = future.result()
+
         # Check response
         if response is not None and hasattr(response, 'success') and response.success:
             return response
