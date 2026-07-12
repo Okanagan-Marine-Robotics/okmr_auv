@@ -19,6 +19,13 @@ class PidController {
 
     void reset ();
 
+    // When true, the derivative term wraps (error - prev_error) into [-180, 180]
+    // before dividing by dt. Required for angle errors in degrees, which can jump
+    // by ~360 deg across the wrap boundary (e.g. +179 -> -179) even though the
+    // true rate of change is small - without this, that wrap produces a huge
+    // spurious derivative spike.
+    void set_angular (bool is_angular);
+
     void set_gains (double p_gain, double i_gain, double d_gain, double i_min = -1.0,
                     double i_max = 1.0, double u_min = -1.0, double u_max = 1.0,
                     bool clamp_values = false);
@@ -53,6 +60,7 @@ class PidController {
     double cmd_;
 
     bool first_run_;
+    bool is_angular_;
 };
 
 }  // namespace okmr_controls

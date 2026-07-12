@@ -20,6 +20,10 @@ ControlLayerBase::ControlLayerBase (const std::string& node_name, int8_t control
             "~/" + axis_names[i] + "/pid_debug", 10);
     }
 
+    controllers_[X_ANGULAR].set_angular (true);
+    controllers_[Y_ANGULAR].set_angular (true);
+    controllers_[Z_ANGULAR].set_angular (true);
+
     param_callback_handle_ = this->add_on_set_parameters_callback (
         std::bind (&ControlLayerBase::on_parameter_change, this, std::placeholders::_1));
 

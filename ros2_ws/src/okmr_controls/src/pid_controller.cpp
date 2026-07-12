@@ -19,7 +19,8 @@ PidController::PidController ()
       d_error_ (0.0),
       prev_error_ (0.0),
       cmd_ (0.0),
-      first_run_ (true) {}
+      first_run_ (true),
+      is_angular_ (false) {}
 
 PidController::PidController (double p_gain, double i_gain, double d_gain, double i_min,
                               double i_max, double u_min, double u_max, bool clamp_values)
@@ -36,7 +37,8 @@ PidController::PidController (double p_gain, double i_gain, double d_gain, doubl
       d_error_ (0.0),
       prev_error_ (0.0),
       cmd_ (0.0),
-      first_run_ (true) {}
+      first_run_ (true),
+      is_angular_ (false) {}
 
 PidController::~PidController () {}
 
@@ -59,7 +61,14 @@ double PidController::compute_command (double error, std::chrono::nanoseconds dt
     i_term_ = std::clamp (i_term_, i_min_ / (i_gain_ + 1e-6), i_max_ / (i_gain_ + 1e-6));
 
     // Derivative term
-    d_error_ = (error - prev_error_) / dt_sec;
+    double error_delta = error - prev_error_;
+    if (is_angular_) {
+        // Wrap into [-180, 180] so crossing the wrap boundary (e.g. +179 -> -179)
+        // doesn't register as a ~360 deg spike.
+        while (error_delta > 180.0) error_delta -= 360.0;
+        while (error_delta < -180.0) error_delta += 360.0;
+    }
+    d_error_ = error_delta / dt_sec;
 
     // PID command
     cmd_ = p_gain_ * p_error_ + i_gain_ * i_term_ + d_gain_ * d_error_;
@@ -74,6 +83,8 @@ double PidController::compute_command (double error, std::chrono::nanoseconds dt
 
     return cmd_;
 }
+
+void PidController::set_angular (bool is_angular) { is_angular_ = is_angular; }
 
 void PidController::reset () {
     p_error_ = 0.0;

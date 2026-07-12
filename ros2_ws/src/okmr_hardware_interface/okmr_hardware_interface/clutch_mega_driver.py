@@ -62,6 +62,10 @@ class SerialOutputNode(Node):
         self.serial_buffer = ""
         self.last_killswitch_state = False
 
+    def _write(self, msg: str):
+        self.get_logger().debug(f"TX: {msg!r}")
+        self.serial_port.write(msg.encode("utf-8"))
+
     def servo_command_callback(self, msg):
         if not self.serial_port or not self.serial_port.is_open:
             self.get_logger().error("Serial port is not open.")
@@ -70,7 +74,7 @@ class SerialOutputNode(Node):
         try:
             servo_index = msg.index + 100
             serial_msg = f"{servo_index}<{round(msg.pwm, 2)}\n"
-            self.serial_port.write(serial_msg.encode("utf-8"))
+            self._write(serial_msg)
         except serial.SerialException as e:
             self.get_logger().error(f"Error writing servo command to serial port: {e}")
 
@@ -83,7 +87,7 @@ class SerialOutputNode(Node):
             actuator_index = msg.index + 200
             state_value = 1 if msg.state else 0
             serial_msg = f"{actuator_index}<{state_value}\n"
-            self.serial_port.write(serial_msg.encode("utf-8"))
+            self._write(serial_msg)
         except serial.SerialException as e:
             self.get_logger().error(f"Error writing actuator command to serial port: {e}")
 
@@ -96,7 +100,7 @@ class SerialOutputNode(Node):
             for i, throttle_value in enumerate(msg.throttle):
                 remapped_index = self.motor_index_remapping[i]
                 serial_msg = f"{remapped_index}<{round(throttle_value,2)}\n"
-                self.serial_port.write(serial_msg.encode("utf-8"))
+                self._write(serial_msg)
         except serial.SerialException as e:
             self.get_logger().error(f"Error writing to serial port: {e}")
 
@@ -109,6 +113,7 @@ class SerialOutputNode(Node):
                 data = self.serial_port.read(self.serial_port.in_waiting).decode(
                     "utf-8"
                 )
+                self.get_logger().debug(f"RX: {data!r}")
                 self.serial_buffer += data
 
                 # Process complete lines

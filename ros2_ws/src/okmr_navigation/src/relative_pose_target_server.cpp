@@ -82,6 +82,15 @@ class RelativePoseTargetServer : public rclcpp::Node {
         current_goal_pose_msg_ = *msg;
         hold_mode_ = false;
         current_goal_eulers_ = euler_from_quaternion (msg->pose.orientation);
+
+        // Bearing computed once, from pose at command time -> goal position.
+        // Held fixed during the approach so it can't destabilize near alignment
+        // (recomputing live caused the atan2 bearing to swing toward +-90 deg
+        // as remaining distance on one axis approached zero).
+        initial_bearing_ =
+            atan2 (msg->pose.position.y - current_pose_msg_.pose.position.y,
+                  msg->pose.position.x - current_pose_msg_.pose.position.x) *
+            (180.0 / M_PI);
     }
 
     void current_pose_callback (const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
@@ -204,10 +213,9 @@ class RelativePoseTargetServer : public rclcpp::Node {
             }
             yaw = hold_yaw_;
         } else if (current_goal_pose_msg_.copy_orientation) {
-            yaw =
-                atan2 (current_goal_pose_msg_.pose.position.y - current_pose_msg_.pose.position.y,
-                       current_goal_pose_msg_.pose.position.x - current_pose_msg_.pose.position.x) *
-                (180.0 / M_PI);
+            // Bearing computed once in goal_pose_callback() and held fixed for the
+            // approach, rather than recomputed live every cycle - see comment there.
+            yaw = initial_bearing_;
         } else {
             // Pure translation goal (copy_orientation=false): hold the heading we had
             // when this goal was issued instead of turning to face the goal position.
@@ -297,6 +305,7 @@ class RelativePoseTargetServer : public rclcpp::Node {
 
     // Member Variables
     float hold_yaw_ = 0.0;
+    double initial_bearing_ = 0.0;
     bool hold_mode_ = false;
     double update_frequency_;
     double holding_radius_;

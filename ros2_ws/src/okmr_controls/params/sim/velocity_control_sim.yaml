@@ -1,8 +1,0 @@
-velocity_control_layer:
-    ros__parameters:
-        x_angular.p_gain: 1.0
-        x_linear.p_gain: 4.0
-        y_angular.p_gain: 0.5
-        y_linear.p_gain: 4.0
-        z_angular.p_gain: 1.0
-        z_linear.p_gain: 4.0
