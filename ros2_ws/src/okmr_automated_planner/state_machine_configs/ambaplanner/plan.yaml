@@ -6,21 +6,27 @@ root:
     - { name: enabling_subsystems}
     - { name: sinking_start }
 
+    - { name: stage_open, task: 'stage'}
+    - { name: stage_close, task: 'stage'}
+
     - { name: prequalification, task: true}
 
     - { name: surfacing }
     - { name: done }
 
   transitions:
-    - { trigger: initialized, source: initializing, dest: waiting_for_mission_start}
-    - { trigger: mission_start_received, source: waiting_for_mission_start, dest: waiting }
-    - { trigger: waiting_done, source: waiting, dest: enabling_subsystems }
-    - { trigger: enabling_subsystems_done, source: enabling_subsystems, dest: sinking_start }
-    - { trigger: sinking_start_done, source: sinking_start, dest: prequalification }
+
+    - { trigger: initialized, source: initializing, dest: stage_open }
+    - { trigger: stage_open_done, source: stage_open, dest: prequalification}
 
 
-    - { trigger: prequalification_done, source: prequalification, dest: surfacing }
+    #- { trigger: initialized, source: initializing, dest: waiting_for_mission_start}
+    #- { trigger: mission_start_received, source: waiting_for_mission_start, dest: waiting }
+    #- { trigger: waiting_done, source: waiting, dest: enabling_subsystems }
+    #- { trigger: enabling_subsystems_done, source: enabling_subsystems, dest: sinking_start }
+    #- { trigger: sinking_start_done, source: sinking_start, dest: prequalification }
 
 
-    - { trigger: surfacing_done, source: surfacing, dest: done }
+    - { trigger: prequalification_done, source: prequalification, dest: stage_close }
+    - { trigger: stage_close_done, source: stage_close, dest: done }
 

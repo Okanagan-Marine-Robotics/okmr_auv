@@ -5,6 +5,8 @@ automated_planner:
 
     root:
       mission_altitude: 0.5
+    
+    stage:
       initial_wait_time: 0.5
 
     prequalification:

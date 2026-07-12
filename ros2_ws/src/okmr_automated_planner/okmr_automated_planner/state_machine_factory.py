@@ -77,7 +77,8 @@ class StateMachineFactory:
             "semifinal": state_machines.SemifinalStateMachine,
             "rotating_scan": state_machines.RotatingScanStateMachine,
             "sideways_scan": state_machines.SidewaysScanStateMachine,
-            "prequalification": state_machines.PrequalificationStateMachine
+            "prequalification": state_machines.PrequalificationStateMachine,
+            "stage": state_machines.Stage
         }
 
         if not machine_name in config_to_class_dict.keys():

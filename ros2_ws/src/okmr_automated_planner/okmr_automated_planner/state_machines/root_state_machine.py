@@ -528,6 +528,17 @@ class RootStateMachine(BaseStateMachine):
             self.surface_done,
             "Failed to send surface movement command",
         )
+        
+    def on_enter_stage_open(self):
+        
+        self.start_current_state_sub_machine(
+            success_callback=self.stage_open_done, fail_callback=self.abort
+        )
+        
+    def on_enter_stage_close(self):
+        self.current_sub_machine.stage_close(
+            success_callback=self.stage_close_done, fail_callback=self.abort
+        )
 
     def on_enter_prequalification(self):
         self.start_current_state_sub_machine(

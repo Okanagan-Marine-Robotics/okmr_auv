@@ -22,9 +22,6 @@ class MachineConfigFileParser:
 
         for state in config.get('states', []):
             if self.isValidStateDict(state):
-                if state.get('task') is not None and state.get('task') == True:
-                    state = {**state, 'config_path': f"task_state_machines/{state['name']}.yaml"}
-
                 self._states.append(state)
         
         for transition in config.get('transitions', []):
