@@ -1,6 +1,7 @@
 """
 Common execution logic for movement handlers to avoid code duplication
 """
+import rclpy
 from okmr_msgs.action import Movement
 from okmr_msgs.srv import DistanceFromGoal
 from okmr_navigation.navigator_action_server import NavigatorActionServer
@@ -120,10 +121,14 @@ def call_distance_service(service_name):
             node.get_logger().error(f'{service_name} service not available after 2s timeout')
             return None
         
-        # Make the blocking service call
+        # Async call + explicit spin, rather than the synchronous client.call() -
+        # that blocking form can return a stale/queued response when invoked
+        # from inside a callback on the node's own executor thread.
         request = DistanceFromGoal.Request()
-        response = client.call(request)
-        
+        future = client.call_async(request)
+        rclpy.spin_until_future_complete(node, future, timeout_sec=2.0)
+        response = future.result()
+
         # Return tuple of translation and orientation differences
         if response is not None:
             return (response.translation_differences, response.orientation_differences)
