@@ -1,4 +1,5 @@
-geometry_msgs/Vector3 targetPose #Where the end effector should be moved to. Relative to current sub position
+#geometry_msgs/Vector3 targetPose #For more advanced arm #Where the end effector should be moved to. Relative to current sub position
+float64 targetDistance
 bool gripperState
 bool OPEN=False
 bool CLOSED=True
@@ -6,6 +7,7 @@ bool CLOSED=True
 int8 exit_status
 int8 TARGET_REACHED=0
 int8 TIMEOUT=1
+int8 UNEXPECTED_JOINT_AMOUNT=2
 ---
 int8 current_status
 int8 JOINTS_MOVING=0

@@ -35,7 +35,7 @@ class KinematicsService(Node):
             grip_angle = GRIPPER_FULL_CLOSE
         
         target_dist = math.sqrt(target.x**2+target.y**2+target.z**2) #Currently assuming millimeters for target units
-        in_reach = target_dist<= self.max_reach
+        in_reach = target_dist <= self.max_reach #Arm action server sould also check this but left here if other nodes call the service
         arm_angle = 0
         if not in_reach:
             arm_angle = SERVO_TRAVEL #Put the arm at full extension
