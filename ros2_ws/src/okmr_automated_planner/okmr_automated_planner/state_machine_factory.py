@@ -8,7 +8,7 @@ from okmr_automated_planner import state_machines
 class StateMachineFactory:
     @staticmethod
     def createMachineFromConfig(
-        config_yaml: str, ros_node, config_share_path=None, config_folder=None
+        ros_node, config_yaml: str, config_share_path=None, config_folder=None
     ) -> "BaseStateMachine":
         """
         Creates a state machine based on the provided YAML configuration file.
@@ -25,17 +25,16 @@ class StateMachineFactory:
         # Construct full path using base path if provided
         full_config_path = config_yaml
         if config_folder:
-            full_config_path = os.path.join(config_folder , config_yaml)
+            full_config_path = os.path.join(config_folder, config_yaml)
         if config_share_path:
             full_config_path = os.path.join(config_share_path, full_config_path)
             ros_node.get_logger().debug(f"Using full config path: {full_config_path}")
-
         if not os.path.exists(full_config_path):
             ros_node.get_logger().fatal(f"Config file not found: {full_config_path}")
             raise ValueError(f"Config file not found: {full_config_path}")
 
         # Parse the configuration file
-        config_parser = MachineConfigFileParser(full_config_path)
+        config_parser = MachineConfigFileParser(full_config_path, config_share_path, config_folder)
         machine_name = config_parser.name
         states = config_parser.get_states()
         transitions = config_parser.get_transitions()
@@ -51,14 +50,21 @@ class StateMachineFactory:
                 sub_config_path = state_dict["config_path"]
                 # Recursively create the sub-machine with the same config base path
                 sub_machine = StateMachineFactory.createMachineFromConfig(
-                    sub_config_path, ros_node, config_share_path
+                    ros_node, sub_config_path
                 )
                 sub_machine.name = state_dict[
                     "name"
                 ]  # setting the name = state_name allows for the same config to be used multiple times with unique parameters names
                 # ex. can have finding_marker used twice in root.yaml, but with different parameters
                 state_node.sub_machine = sub_machine
-
+            
+            if 'task' in state_dict:
+                file = state_dict['task'] + ".yaml"
+                sub_config_path = os.path.join(config_share_path, "task_state_machines", file)
+                sub_machine = StateMachineFactory.createMachineFromConfig(
+                    ros_node, sub_config_path
+                )
+            
             # if theres a timeout in the config, set it for the StateNode
             if "timeout" in state_dict:
                 state_node.timeout = state_dict["timeout"]

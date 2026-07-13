@@ -9,7 +9,7 @@ root:
     - { name: stage_open, task: 'stage'}
     - { name: stage_close, task: 'stage'}
 
-    - { name: prequalification, task: true}
+    - { name: prequalification, task: 'prequalification'}
 
     - { name: surfacing }
     - { name: done }

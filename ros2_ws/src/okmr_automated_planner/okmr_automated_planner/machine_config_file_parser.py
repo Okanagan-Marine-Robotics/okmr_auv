@@ -6,8 +6,10 @@ class MachineConfigFileParser:
     _allowed_state_keys = ['name', 'timeout', 'config_path', 'movement', 'task']
     _allowed_transition_keys = ['trigger', 'source', 'dest']
 
-    def __init__(self, yaml_path):
+    def __init__(self, yaml_path, config_share_path=None, config_folder=None):
         self.yaml_path = yaml_path
+        self.config_share_path = config_share_path
+        self.config_folder = config_folder
         self.name = ""
         self._states = []#list of disctionaries [{name: 'a', timeout: 10, config_path: "xyz/abc"}, ...]
         self._transitions = [] #list of dictionaries {trigger: 'doneA', source: 'a', dest: 'b'}

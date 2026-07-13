@@ -50,8 +50,8 @@ def main():
 
     try:
         root_state_machine = StateMachineFactory.createMachineFromConfig(
-            root_config, 
             master_node,
+            root_config,
             config_share_path,
             config_folder
         )

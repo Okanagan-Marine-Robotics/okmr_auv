@@ -234,6 +234,10 @@ class BaseStateMachine(Machine):
     def _start_sub_machine(
         self, sub_machine, success_callback=None, fail_callback=None
     ):
+        if sub_machine is None:
+            self.ros_node.get_logger().warn(f"{self.get_state(self.state).name} initializing Sub machine: {sub_machine} is None")
+            return
+        
         self.current_sub_machine = sub_machine
 
         sub_machine.success_callback = success_callback
