@@ -1,4 +1,3 @@
-import math
 from transitions import Machine
 from okmr_automated_planner.state_node import StateNode
 from okmr_automated_planner.base_state_machine import BaseStateMachine
@@ -14,6 +13,11 @@ class CoinFlipStateMachine(BaseStateMachine):
         {"name": "back_beams", "value": [2, 3], "descriptor": "List of indices for back DVL beams"},
         {"name": "left_beams", "value": [0, 2], "descriptor": "List of indices for left DVL beams"},
         {"name": "right_beams", "value": [1, 3], "descriptor": "List of indices for right DVL beams"},
+
+        {"name": "min_wall_detection_delta", "value": 0.5, "descriptor": "Minimum beam distance difference (m) between an axis's two beams required to trust that axis detected the start wall; tune down for shallow test tanks"},
+
+        {"name": "orientation_timeout_sec", "value": 15.0, "descriptor": "Max time to complete the submerge + turn movement"},
+        {"name": "gate_timeout_sec", "value": 15.0, "descriptor": "Max time to complete the forward move through the gate"},
     ]
 
     def __init__(self, name, ros_node, success_callback=None, fail_callback=None, *args, **kwargs):
@@ -70,70 +74,85 @@ class CoinFlipStateMachine(BaseStateMachine):
         left_avg = sum(beams[i] for i in left_idx) / len(left_idx)
         right_avg = sum(beams[i] for i in right_idx) / len(right_idx)
 
-        self.orientation_determined = True
+        # The start wall sits close (~0.3m) to one side of the AUV. Whichever axis
+        # (front/back or left/right) shows a large imbalance is the axis facing the
+        # wall: TAILS if it's the front/back axis, HEADS if it's the left/right axis.
+        front_back_delta = abs(front_avg - back_avg)
+        left_right_delta = abs(left_avg - right_avg)
+        min_delta = self.get_local_parameter("min_wall_detection_delta")
 
-        if front_avg < back_avg:
+        self.orientation_determined = True
+        self.remove_subscription("/dvl")
+
+        if front_back_delta < min_delta and left_right_delta < min_delta:
+            self.ros_node.get_logger().warn(
+                f"[{self.machine_name}]: Unclear DVL readings "
+                f"(front/back delta={front_back_delta:.2f}, left/right delta={left_right_delta:.2f}). "
+                f"Defaulting to HEADS."
+            )
+            self.determined_heads()
+        elif front_back_delta >= left_right_delta:
             self.ros_node.get_logger().info(f"[{self.machine_name}]: Orientation Determined -> TAILS")
             self.determined_tails()
-        elif right_avg < left_avg:
-            self.ros_node.get_logger().info(f"[{self.machine_name}]: Orientation Determined -> HEADS")
-            self.determined_heads()
         else:
-            self.ros_node.get_logger().warn(f"[{self.machine_name}]: Unclear DVL readings. Defaulting to HEADS.")
+            self.ros_node.get_logger().info(f"[{self.machine_name}]: Orientation Determined -> HEADS")
             self.determined_heads()
 
     def on_enter_executing_heads(self):
         self.ros_node.get_logger().info(f"[{self.machine_name}]: Executing HEADS sequence (Submerge + 90 deg turn).")
         
         cmd = MovementCommand()
-        cmd.command = "MOVE_RELATIVE"
+        cmd.command = MovementCommand.MOVE_RELATIVE
         cmd.translation.z = self.get_local_parameter("submerge_depth")
-        # 90 degrees in radians for RPY rotation logic
-        cmd.rotation.z = math.radians(90.0) 
-        
-        self.movement_client.send_movement_command(
+        cmd.rotation.z = 90.0
+        cmd.timeout_sec = self.get_local_parameter("orientation_timeout_sec")
+
+        success = self.movement_client.send_movement_command(
             movement_command=cmd,
-            on_success=self._on_movement_success,
+            on_success=self.movement_completed,
             on_failure=self.abort
         )
+
+        if not success:
+            self.ros_node.get_logger().error(f"[{self.machine_name}]: Failed to send HEADS movement command.")
+            self.queued_method = self.abort
 
     def on_enter_executing_tails(self):
         self.ros_node.get_logger().info(f"[{self.machine_name}]: Executing TAILS sequence (Submerge + 180 deg turn).")
         
         cmd = MovementCommand()
-        cmd.command = "MOVE_RELATIVE"
+        cmd.command = MovementCommand.MOVE_RELATIVE
         cmd.translation.z = self.get_local_parameter("submerge_depth")
-        # 180 degrees in radians for RPY rotation logic
-        cmd.rotation.z = math.radians(180.0) 
-        
-        self.movement_client.send_movement_command(
+        cmd.rotation.z = 180.0
+        cmd.timeout_sec = self.get_local_parameter("orientation_timeout_sec")
+
+        success = self.movement_client.send_movement_command(
             movement_command=cmd,
-            on_success=self._on_movement_success,
+            on_success=self.movement_completed,
             on_failure=self.abort
         )
+
+        if not success:
+            self.ros_node.get_logger().error(f"[{self.machine_name}]: Failed to send TAILS movement command.")
+            self.queued_method = self.abort
 
     def on_enter_moving_to_gate(self):
         self.ros_node.get_logger().info(f"[{self.machine_name}]: Moving forward to pass the gate.")
         
         cmd = MovementCommand()
-        cmd.command = "MOVE_RELATIVE"
+        cmd.command = MovementCommand.MOVE_RELATIVE
         cmd.translation.x = self.get_local_parameter("gate_forward_distance")
-        
-        self.movement_client.send_movement_command(
+        cmd.timeout_sec = self.get_local_parameter("gate_timeout_sec")
+
+        success = self.movement_client.send_movement_command(
             movement_command=cmd,
-            on_success=self._on_gate_passed_success,
+            on_success=self.gate_passed,
             on_failure=self.abort
         )
 
-    def _on_movement_success(self):
-        """Callback fired when the initial submerge/turn action completes successfully."""
-        self.ros_node.get_logger().info(f"[{self.machine_name}]: Orientation movement complete.")
-        self.queued_method = self.movement_completed
-
-    def _on_gate_passed_success(self):
-        """Callback fired when the AUV successfully drives through the gate."""
-        self.ros_node.get_logger().info(f"[{self.machine_name}]: Gate passed successfully.")
-        self.queued_method = self.gate_passed
+        if not success:
+            self.ros_node.get_logger().error(f"[{self.machine_name}]: Failed to send gate movement command.")
+            self.queued_method = self.abort
 
     def on_completion(self):
         """Cleanup resources before handing control back to the master state machine."""
