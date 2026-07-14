@@ -9,6 +9,7 @@ from .semifinal_state_machine import SemifinalStateMachine
 from .rotating_scan_state_machine import RotatingScanStateMachine
 from .sideways_scan_state_machine import SidewaysScanStateMachine
 from .prequalification_state_machine import PrequalificationStateMachine
+from .coin_flip_state_machine import CoinFlipStateMachine
 
 __all__ = [
     'RootStateMachine',
