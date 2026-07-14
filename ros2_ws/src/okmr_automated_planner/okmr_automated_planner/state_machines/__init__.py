@@ -23,4 +23,5 @@ __all__ = [
     'RotatingScanStateMachine',
     'SidewaysScanStateMachine',
     'PrequalificationStateMachine'
+    'CoinFlipStateMachine
 ]
