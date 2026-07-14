@@ -1,0 +1,9 @@
+name: "coin_flip_state_machine"
+parameters:
+  submerge_depth: -1.0
+  gate_forward_distance: 5.0
+  turn_speed: 0.5
+  front_beams: [0, 1]
+  back_beams: [2, 3]
+  left_beams: [0, 2]
+  right_beams: [1, 3]
