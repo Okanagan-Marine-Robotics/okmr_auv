@@ -76,6 +76,7 @@ class StateMachineFactory:
             "rotating_scan": state_machines.RotatingScanStateMachine,
             "sideways_scan": state_machines.SidewaysScanStateMachine,
             "prequalification": state_machines.PrequalificationStateMachine
+            "coin_flip_state_machine": state_machines.CoinFlipStateMachine,
         }
 
         if not machine_name in config_to_class_dict.keys():
