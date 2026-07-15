@@ -20,6 +20,16 @@ class Stage(BaseStateMachine):
 
         self.post_gate_pose = None
         
+    def on_enter_stage_open_done(self):
+        self.success_callback()
+
+    def on_enter_stage_close(self):
+        self.queued_method = self.stage_closing
+
+    def on_enter_initializing(self):
+        # transition to waiting for mission start
+        self.queued_method = self.initialized
+
     def on_enter_waiting(self):
         self.ros_node.get_logger().info(f"Root waiting {self.initial_wait_time}s")
         if self.initial_wait_time <= 0.0:
@@ -32,16 +42,6 @@ class Stage(BaseStateMachine):
         self.remove_timer("initial_wait")
         self.waiting_done()
         
-    def on_enter_stage_open_done(self):
-        self.success_callback()
-
-    def on_enter_stage_close(self):
-        self.queued_method = self.stage_closing
-
-    def on_enter_initializing(self):
-        # transition to waiting for mission start
-        self.queued_method = self.initialized
-
     def _pose_callback(self, future):
         try:
             response = future.result()

@@ -530,7 +530,6 @@ class RootStateMachine(BaseStateMachine):
         )
         
     def on_enter_stage_open(self):
-        
         self.start_current_state_sub_machine(
             success_callback=self.stage_open_done, fail_callback=self.abort
         )
