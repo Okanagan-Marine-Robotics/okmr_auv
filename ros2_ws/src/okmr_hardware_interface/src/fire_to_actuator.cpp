@@ -34,7 +34,7 @@ public:
 
         this->action_server_ = rclcpp_action::create_server<FireTorpedo>(
             this,
-            "fire_torpedo",
+            "/fire_torpedo",
             std::bind(&FireToActuatorNode::handle_goal, this, _1, _2),
             std::bind(&FireToActuatorNode::handle_cancel, this, _1),
             std::bind(&FireToActuatorNode::handle_accepted, this, _1)
@@ -47,6 +47,7 @@ private:
     rclcpp_action::Server<FireTorpedo>::SharedPtr action_server_;
     rclcpp::Publisher<okmr_msgs::msg::ActuatorCommand>::SharedPtr actuator_pub_;
     std::mutex fire_mutex_;
+    std::atomic<bool> is_firing{false};
 
     rclcpp_action::GoalResponse handle_goal(
         const rclcpp_action::GoalUUID &uuid,
@@ -59,8 +60,13 @@ private:
             RCLCPP_WARN(this->get_logger(), "Rejected: Invalid tube number requested: %d", goal->tube_number);
             return rclcpp_action::GoalResponse::REJECT;
         }
+        
+        if (is_firing_.load()) {
+            (this->get_logger(), "Rejected: A firing sequence is already in progress.");
+            return rclcpp_action::GoalResponse::REJECT;
+        }
 
-        return rclcpp_action::GoalResponse::SUCCESS;
+        return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
     }
 
     rclcpp_action::CancelResponse handle_cancel(
@@ -68,7 +74,7 @@ private:
     {
         RCLCPP_INFO(this->get_logger(), "Received request to cancel torpedo fire sequence");
         (void)goal_handle;
-        return rclcpp_action::CancelResponse::ACCEPT;
+        return rclcpp_action::CancelResponse::REJECT;
     }
 
     /*
@@ -84,26 +90,18 @@ private:
     void execute(const std::shared_ptr<GoalHandleFireTorpedo> goal_handle)
     {
         RCLCPP_INFO(this->get_logger(), "Executing torpedo firing sequence");
+        is_firing_.store(true);
         
         const auto goal = goal_handle->get_goal();
         auto feedback = std::make_shared<FireTorpedo::Feedback>();
         auto result = std::make_shared<FireTorpedo::Result>();
 
         std::unique_lock<std::mutex> lock(fire_mutex_, std::try_to_lock);
-        if (!lock.owns_lock()) {
-            RCLCPP_WARN(this->get_logger(), "Firing sequence already in progress! Aborting request.");
-            result->exit_status = FireTorpedo::Result::TIMEOUT;
-            goal_handle->abort(result);
-            return;
-        }
+
 
         uint8_t tube_number = goal->tube_number;
 
         auto fire_tube = [&](uint8_t index) -> bool {
-            if (goal_handle->is_canceling()) {
-                return false;
-            }
-
             auto actuator_msg = std::make_shared<okmr_msgs::msg::ActuatorCommand>();
             
             actuator_msg->index = index;
@@ -118,7 +116,7 @@ private:
             return true;
         };
 
-        bool success = true;
+        bool success = false;
         
         if (tube_number < NUM_ACTUATORS) {
             feedback->current_status = FireTorpedo::Feedback::FIRING;
@@ -145,10 +143,11 @@ private:
             result->exit_status = FireTorpedo::Result::TIMEOUT;
             feedback->current_status = FireTorpedo::Feedback::IDLE;
             RCLCPP_WARN(this->get_logger(), "Torpedo firing sequence was cancelled or failed");
-            goal_handle->canceled(result);
+            goal_handle->abort(result);
         }
         
         goal_handle->publish_feedback(feedback);
+        is_firing_.store(false);
     }
 };
 
