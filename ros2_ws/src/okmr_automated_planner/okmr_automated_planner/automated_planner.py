@@ -29,6 +29,10 @@ class AutomatedPlannerNode(Node):
         Declare a parameter and automatically create a getter method for it.
         allows you to call get_{parameter_name}() to fetch value 
         """
+        
+        if self.has_parameter(name):
+            return self.get_parameter(name)
+        
         descriptor = ParameterDescriptor(type=Parameter.Type.from_parameter_value(value),
                                                       description=description)
         result = self.declare_parameter(name, value, descriptor, ignore_override)
