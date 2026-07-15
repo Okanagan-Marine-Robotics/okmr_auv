@@ -13,7 +13,7 @@ pose_control_layer:
         z_angular.p_gain: 2.2
         z_angular.i_gain: 0.2
         z_angular.i_min: -0.5
-        z_angular.d_gain: 0.01
+        z_angular.d_gain: 0.05
         z_linear.p_gain: 2.0
         z_linear.i_gain: 0.1
         z_linear.i_min: -0.3

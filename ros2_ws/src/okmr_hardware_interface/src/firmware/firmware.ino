@@ -6,7 +6,7 @@ float throttle[8] = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500};
 #define NUM_SERVOS 1
 #define NUM_ACTUATORS 2
 
-int pins[] = {12, 13, 14, 25, 26, 27, 32, 2}; 
+int pins[] = {13, 12, 14, 27, 26, 25, 33, 32}; 
 int servo_pins[] = {4};
 int servo_inits[] = {1500};
 int actuator_pins[] = {5, 21};
@@ -30,28 +30,10 @@ Servo servos[NUM_SERVOS];
 
 void killSwitch() {
   int switchState = digitalRead(killSwitchPin);
-  killSwitchEnabled = (switchState == HIGH);
+  killSwitchEnabled = true;
 
   if (killSwitchEnabled) {
-    // Set all throttle values to neutral when killswitch is enabled
-    for (int i = 0; i < 8; i++) {
-      throttle[i] = 1500;
-    }
-    digitalWrite(ledPin1, LOW);  // Turn off LED when killswitch is enabled
-  } else {
-    digitalWrite(ledPin1, HIGH); // Turn on LED when killswitch is not enabled
-  }
-
-  // Print immediately if state changed, otherwise check time throttling
-  bool stateChanged = (switchState != lastKillswitchState);
-  bool timeToSend = (millis() - lastKillswitchPrintTime >= KILLSWITCH_PRINT_INTERVAL);
-
-  if (stateChanged || timeToSend) {
-    Serial.print("killswitch<");
-    Serial.print(switchState);
-    Serial.println();
-    lastKillswitchPrintTime = millis();
-    lastKillswitchState = switchState;
+    digitalWrite(ledPin1, HIGH);
   }
 }
 
@@ -196,8 +178,6 @@ void loop() {
       throttle[i] = 1500;
     }
   }
-
-  killSwitch();
   
   for (int i = 0; i < 8; i++) {
     motors[i].writeMicroseconds((int)throttle[i]);

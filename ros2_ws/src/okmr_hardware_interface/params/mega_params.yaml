@@ -3,4 +3,4 @@ clutch_mega_driver:
     serial_port: '/dev/ttyUSB0'
     baud_rate: 115200
     polling_rate: 100.0
-    motor_index_remapping: [1,4,0,2,5,6,7,3]
+    motor_index_remapping: [0, 3, 6, 7, 5, 2, 4, 1]

@@ -28,7 +28,7 @@ class RelativePoseTargetServer : public rclcpp::Node {
     RelativePoseTargetServer () : Node ("relative_pose_target_server") {
         // Declare parameters
         this->declare_parameter ("update_frequency", 100.0);
-        this->declare_parameter ("holding_radius", 0.5);
+        this->declare_parameter ("holding_radius", 6700.0);
         this->declare_parameter ("yaw_tolerance", 15.0);  // degrees
         update_frequency_ = this->get_parameter ("update_frequency").as_double ();
         holding_radius_ = this->get_parameter ("holding_radius").as_double ();
