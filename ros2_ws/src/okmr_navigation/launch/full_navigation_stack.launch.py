@@ -27,7 +27,7 @@ def generate_launch_description():
                 remappings=[
                     ("/imu", "/ogopogo/front/imu"),
                 ],
-                parameters=[],
+                parameters=[dead_reckoning_params],
             ),
             Node(
                 package="okmr_navigation",
