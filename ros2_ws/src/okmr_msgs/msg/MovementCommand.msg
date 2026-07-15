@@ -77,4 +77,7 @@ int8 BARREL_ROLL = 7
 
 int8 SET_ALTITUDE = 8
 
-
+int8 BBL_DVL = 9
+    # Beam based 'lignment: Align back two beams on the DVL to the wall of the pool. Ideal for orienting in a cardinal direction
+    # before a course
+    # 
