@@ -2,6 +2,7 @@ import rclpy
 from threading import Lock
 
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
+from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 
@@ -29,6 +30,13 @@ class NavigatorActionServer(Node):
         self._goal_lock = Lock()
         self._cached_publishers = {}  # Dictionary to store reusable publishers
         self._cached_clients = {}  # Dictionary to store reusable service clients
+        # Service clients get their own callback group, separate from the
+        # action server's. Both otherwise fall into rclpy's default (mutually
+        # exclusive) group, which deadlocks a blocking service call made from
+        # inside execute_callback: the response callback can't run until
+        # execute_callback returns, but execute_callback is waiting on the
+        # response. Reentrant lets the response be processed concurrently.
+        self._service_callback_group = ReentrantCallbackGroup()
         self._action_server = ActionServer(
             self,
             Movement,
@@ -72,7 +80,9 @@ class NavigatorActionServer(Node):
         per service instead.
         """
         if srv_name not in self._cached_clients:
-            self._cached_clients[srv_name] = self.create_client(srv_type, srv_name)
+            self._cached_clients[srv_name] = self.create_client(
+                srv_type, srv_name, callback_group=self._service_callback_group
+            )
         return self._cached_clients[srv_name]
 
     @classmethod

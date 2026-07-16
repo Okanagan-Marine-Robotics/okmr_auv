@@ -1,6 +1,6 @@
 accel_control_layer:
   ros__parameters:
-    update_frequency: 200.0
+    update_frequency: 100.0
     kbuoyancy: 0.95
     kdrag_x: 0.0
     kdrag_y: 0.0
@@ -10,5 +10,5 @@ accel_control_layer:
     kmass_roll: 0.05
     kmass_x: 5.0
     kmass_y: 8.0
-    kmass_yaw: 0.02
+    kmass_yaw: 0.2
     kmass_z: 5.0
