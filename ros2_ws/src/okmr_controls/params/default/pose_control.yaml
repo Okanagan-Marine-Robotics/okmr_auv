@@ -11,8 +11,12 @@ pose_control_layer:
         y_linear.u_max: 0.2
         y_linear.u_min: -0.2
         z_angular.p_gain: 2.2
+        z_angular.i_gain: 0.2
+        z_angular.i_min: -0.5
         z_angular.d_gain: 0.01
         z_linear.p_gain: 2.0
+        z_linear.i_gain: 0.1
+        z_linear.i_min: -0.3
         z_linear.u_max: 0.5
         z_linear.u_min: -0.5
         z_linear.clamp_values: true

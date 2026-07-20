@@ -51,6 +51,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     srv/SetInferenceCamera.srv
     msg/VoxelGrid.msg
     msg/Classes.msg
+    msg/PidDebug.msg
     action/Movement.action
     action/Dropper.action
   DEPENDENCIES sensor_msgs geometry_msgs std_msgs)
