@@ -35,6 +35,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     msg/SemanticDepth.msg
     msg/ServoCommand.msg
     msg/ActuatorCommand.msg
+    msg/DropCmd.msg
     msg/DetectedObject.msg
     msg/EnvironmentData.msg
     srv/FindObject.srv
@@ -52,6 +53,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     msg/Classes.msg
     msg/PidDebug.msg
     action/Movement.action
+    action/Dropper.action
   DEPENDENCIES sensor_msgs geometry_msgs std_msgs)
 
 if(BUILD_TESTING)
