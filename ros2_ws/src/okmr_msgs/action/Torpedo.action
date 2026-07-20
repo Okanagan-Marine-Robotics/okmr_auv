@@ -1,0 +1,13 @@
+uint8 tube_number # request
+uint8 LEFT_TORPEDO=0
+uint8 RIGHT_TORPEDO=1
+uint8 BOTH_TORPEDOS=2
+---
+uint8 exit_status # result
+uint8 SUCCESS=0
+uint8 MAPPING_ERR=1
+uint8 TIMEOUT=2
+---
+uint8 current_status # feedback
+uint8 IDLE=0
+uint8 FIRING=1
