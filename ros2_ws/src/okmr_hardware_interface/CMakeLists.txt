@@ -10,15 +10,33 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(okmr_msgs REQUIRED)
+find_package(rclcpp_action REQUIRED)
 
 include_directories(include)
 
 add_executable(thrust_to_pwm_node
   src/thrust_to_pwm.cpp
 )
+
+add_executable(fire_torpedo_server
+  src/fire_to_actuator.cpp
+)
+
 ament_target_dependencies(thrust_to_pwm_node
   rclcpp
   okmr_msgs
+)
+
+ament_target_dependencies(fire_torpedo_server
+  okmr_msgs
+  rclcpp
+  rclcpp_action
+)
+
+#Include local headers for now should be removed or altered once resolved
+target_include_directories(fire_torpedo_server PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 # Install Python package
@@ -27,6 +45,7 @@ ament_python_install_package(${PROJECT_NAME})
 # Install C++ executables
 install(TARGETS
   thrust_to_pwm_node
+  fire_torpedo_server
   DESTINATION lib/${PROJECT_NAME}
 )
 
