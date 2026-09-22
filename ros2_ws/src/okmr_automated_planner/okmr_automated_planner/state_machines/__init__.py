@@ -8,6 +8,7 @@ from .qualification_state_machine import QualificationStateMachine
 from .semifinal_state_machine import SemifinalStateMachine
 from .rotating_scan_state_machine import RotatingScanStateMachine
 from .sideways_scan_state_machine import SidewaysScanStateMachine
+from .prequalification_state_machine import PrequalificationStateMachine
 
 __all__ = [
     'RootStateMachine',
@@ -19,6 +20,6 @@ __all__ = [
     'QualificationStateMachine',
     'SemifinalStateMachine',
     'RotatingScanStateMachine',
-    'SidewaysScanStateMachine'
-    
+    'SidewaysScanStateMachine',
+    'PrequalificationStateMachine'
 ]

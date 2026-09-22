@@ -7,27 +7,22 @@ from okmr_msgs.msg import MovementCommand, MissionCommand
 class PrequalificationStateMachine(BaseStateMachine):
 
     PARAMETERS = [
-        {
-            "name": "distance_forward",
-            "value": 13.0,
-            "descriptor": "distance to move forward",
-        },
-        {
-            "name": "distance_down",
-            "value": 1.0,
-            "descriptor": "distance to move down",
-        },
-        {
-            "name": "turn",
-            "value": 90,
-            "descriptor": "turn",
-        },
-        {
-            "name": "distance_small",
-            "value": 0.5, #probs will need to be asjusted durign tests
-            "description": "distance to move past the marker between turns"
-        }
-
+        {"name": "distance_forward",
+         "value": 13.0,
+         "descriptor": "E"
+         },
+         {"name": "distance_small",
+         "value": 0.5,
+         "descriptor": "E"
+         },
+         {"name": "distance_down",
+         "value": 1.0,
+         "descriptor": "Unused"
+         },
+         {"name": "turn",
+         "value": 90.0,
+         "descriptor": "E"
+         }
     ]
 
     def __init__(self, *args, **kwargs):
@@ -39,10 +34,18 @@ class PrequalificationStateMachine(BaseStateMachine):
         self.ros_node.get_logger().info(f"Distance down: {self.distance_down}")
 
         self.rotation = self.get_local_parameter("turn")
+        self.ros_node.get_logger().info(f"Each turn is: {self.rotation} degrees")
         
         self.distance_small = self.get_local_parameter("distance_small")
+        self.ros_node.get_logger().info(f"Small distance: {self.distance_small}")
+
+    def on_enter_initializing(self):
+        self.ros_node.get_logger().info("Initializing prequalification state machine...")
+        self.queued_method = self.initialized
+        pass
 
     def on_enter_moving_down(self):
+        # not used, use root's sinking instead pls
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
         movement_msg.translation.z = -self.distance_down
@@ -72,6 +75,12 @@ class PrequalificationStateMachine(BaseStateMachine):
             self.ros_node.get_logger().error("Failed to send small forward movement command")
             self.queued_method = self.abort
 
+    def on_enter_moving_forward_1(self):
+        self.on_enter_moving_forward()
+
+    def on_enter_moving_forward_2(self):
+        self.on_enter_moving_forward()
+
     def on_enter_moving_forward(self):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
@@ -87,6 +96,12 @@ class PrequalificationStateMachine(BaseStateMachine):
             self.ros_node.get_logger().error("Failed to send forward movement command")
             self.queued_method = self.abort
     
+    def on_enter_turn_1(self):
+        self.on_enter_turn()
+
+    def on_enter_turn_2(self):
+        self.on_enter_turn()
+
     def on_enter_turn(self):
         movement_msg = MovementCommand()
         movement_msg.command = MovementCommand.MOVE_RELATIVE
@@ -94,12 +109,12 @@ class PrequalificationStateMachine(BaseStateMachine):
 
         success = self.movement_client.send_movement_command(
             movement_msg,
-            on_success=self.moving_forward_done,
+            on_success=self.turn_done,
             on_failure=self.abort,
         )
 
         if not success:
-            self.ros_node.get_logger().error("Failed to send forward movement command")
+            self.ros_node.get_logger().error("Failed to send turn command")
             self.queued_method = self.abort
 
 

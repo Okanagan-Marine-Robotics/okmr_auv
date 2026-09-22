@@ -1,3 +1,8 @@
 dead_reckoning_node:
     ros__parameters:
       dvl_altitude_filter_alpha: 0.05
+      dvl_accel_smoothing_alpha: 0.85
+      angular_accel_filter_alpha: 0.3
+      angular_vel_filter_alpha: 0.3
+      dvl_velocity_alpha: 0.3
+      holding_radius: 6700.0

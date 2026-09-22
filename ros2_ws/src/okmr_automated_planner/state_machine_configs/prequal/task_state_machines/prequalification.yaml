@@ -1,18 +1,18 @@
-qualifying:
+prequalification:
   states:
-    - { name: moving_forward }
-    - { name: moving_small }
+    - { name: initializing }
     - { name: moving_down }
-    - { name: turn }
-    - { name: surfacing }
+    - { name: moving_forward_1 }
+    - { name: turn_1 }
+    - { name: moving_small }
+    - { name: turn_2 }
+    - { name: moving_forward_2 }
+    - { name: done }
 
   transitions:
-    - { trigger: initialized, source: initializing, dest: moving_down }
-    - { trigger: moving_down_done, source: moving_down, dest: moving_forward }
-    - { trigger: moving_forward_done, source: moving_forward, dest: turn }
-    - { trigger: turn_done, source: turn, dest: moving_small }
-    - { trigger: moving_small_done, source: moving_small, dest: turn }
-    - { trigger: turn_done, source: turn, dest: moving_forward }
-    - { trigger: moving_forward_done, source: moving_forward, dest: surfacing }
-    - { trigger: surfacing_done, source: surfacing, dest: done }
-
+    - { trigger: initialized, source: initializing, dest: moving_forward_1 }
+    - { trigger: moving_forward_done, source: moving_forward_1, dest: turn_1 }
+    - { trigger: turn_done, source: turn_1, dest: moving_small }
+    - { trigger: moving_small_done, source: moving_small, dest: turn_2 }
+    - { trigger: turn_done, source: turn_2, dest: moving_forward_2 }
+    - { trigger: moving_forward_done, source: moving_forward_2, dest: done }

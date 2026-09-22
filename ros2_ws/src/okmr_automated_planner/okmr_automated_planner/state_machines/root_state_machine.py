@@ -9,6 +9,11 @@ class RootStateMachine(BaseStateMachine):
 
     PARAMETERS = [
         {
+            "name": "initial_wait_time",
+            "value": 0.0,
+            "descriptor": "Time to wait in seconds before starting mission after receiving start command",
+        },
+        {
             "name": "gate_distance",
             "value": 5.0,
             "descriptor": "distance to move forward through gate",
@@ -112,6 +117,7 @@ class RootStateMachine(BaseStateMachine):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.initial_wait_time = self.get_local_parameter("initial_wait_time")
         self.gate_distance = self.get_local_parameter("gate_distance")
         self.turn_marker_one_angle = self.get_local_parameter("turn_marker_one_angle")
         self.turn_marker_two_angle = self.get_local_parameter("turn_marker_two_angle")
@@ -150,6 +156,18 @@ class RootStateMachine(BaseStateMachine):
         self.servo_index = self.get_local_parameter("servo_index")
 
         self.post_gate_pose = None
+        
+    def on_enter_waiting(self):
+        self.ros_node.get_logger().info(f"Root waiting {self.initial_wait_time}s")
+        if self.initial_wait_time <= 0.0:
+            self.queued_method = self.waiting_done
+            return
+        self.add_timer("initial_wait", self.initial_wait_time, self.handle_wait_timer)
+        
+    def handle_wait_timer(self):
+        self.ros_node.get_logger().info("Initial wait complete")
+        self.remove_timer("initial_wait")
+        self.waiting_done()
 
     def on_enter_initializing(self):
         # check system state
@@ -509,6 +527,16 @@ class RootStateMachine(BaseStateMachine):
             self.surface_done,
             self.surface_done,
             "Failed to send surface movement command",
+        )
+
+    def on_enter_prequalification(self):
+        self.start_current_state_sub_machine(
+            success_callback=self.prequalification_done, fail_callback=self.abort
+        )
+
+    def on_enter_doing_gate_task(self):
+        self.start_current_state_sub_machine(
+            success_callback=self.doing_gate_task_done, fail_callback=self.abort
         )
 
     def on_completion(self):

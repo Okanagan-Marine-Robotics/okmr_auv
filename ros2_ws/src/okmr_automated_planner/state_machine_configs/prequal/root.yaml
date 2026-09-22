@@ -2,12 +2,19 @@ root:
   states:
     - { name: initializing, timeout: 30} #if initialization is taking too long we should abort
     - { name: waiting_for_mission_start} 
+    - { name: waiting }
     - { name: enabling_subsystems}
+    - { name: sinking_start }
     - { name: prequalification, config_path: "task_state_machines/prequalification.yaml"}
+    - { name: surfacing }
+    - { name: done }
 
   transitions:
-    - { trigger: initializing_done, source: initializing, dest: waiting_for_mission_start}
-    - { trigger: mission_start_received, source: waiting_for_mission_start, dest: enabling_subsystems }
-    - { trigger: enabling_subsystems_done, source: enabling_subsystems, dest: prequalification }
-    - { trigger: prequalification_done, source: prequalification, dest: waiting_for_mission_start }
+    - { trigger: initialized, source: initializing, dest: waiting_for_mission_start}
+    - { trigger: mission_start_received, source: waiting_for_mission_start, dest: waiting }
+    - { trigger: waiting_done, source: waiting, dest: enabling_subsystems }
+    - { trigger: enabling_subsystems_done, source: enabling_subsystems, dest: sinking_start }
+    - { trigger: sinking_start_done, source: sinking_start, dest: prequalification }
+    - { trigger: prequalification_done, source: prequalification, dest: surfacing }
+    - { trigger: surfacing_done, source: surfacing, dest: done }
 

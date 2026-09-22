@@ -4,6 +4,7 @@
 #include <array>
 #include <geometry_msgs/msg/vector3.hpp>
 #include <okmr_msgs/msg/control_mode.hpp>
+#include <okmr_msgs/msg/pid_debug.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <utility>
 
@@ -43,6 +44,7 @@ class ControlLayerBase : public rclcpp::Node {
     };
 
     std::array<PidController, 6> controllers_;
+    std::array<rclcpp::Publisher<okmr_msgs::msg::PidDebug>::SharedPtr, 6> debug_pubs_;
 
     rclcpp::TimerBase::SharedPtr update_timer_;
     std::chrono::nanoseconds last_update_time_;

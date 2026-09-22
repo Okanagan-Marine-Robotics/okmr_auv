@@ -84,6 +84,10 @@ void PidController::reset () {
     first_run_ = true;
 }
 
+PidController::PidState PidController::get_state () const {
+    return {p_error_, p_gain_ * p_error_, i_gain_ * i_term_, d_gain_ * d_error_, cmd_};
+}
+
 void PidController::set_gains (double p_gain, double i_gain, double d_gain, double i_min,
                                double i_max, double u_min, double u_max, bool clamp_values) {
     p_gain_ = p_gain;
