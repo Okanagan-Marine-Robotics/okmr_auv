@@ -31,31 +31,7 @@ class DoingGateTaskStateMachine(BaseStateMachine):
         pass
 
     def on_enter_approaching_gate(self):
-        movement_msg = MovementCommand()
-        movement_msg.command = MovementCommand.MOVE_RELATIVE
-        movement_msg.translation.x = self.approaching_distance
-
-        success = self.movement_client.send_movement_command(
-            movement_msg,
-            on_success=self.approaching_gate_done,
-            on_failure=self.abort,
-        )
-
-        if not success:
-            self.ros_node.get_logger().error("failed to send forward movement command")
-            self.queued_method = self.abort
+        self.move_relative(self.approaching_gate_done, x=self.approaching_distance)
 
     def on_enter_passing_gate(self):
-        movement_msg = MovementCommand()
-        movement_msg.command = MovementCommand.MOVE_RELATIVE
-        movement_msg.translation.x = self.passing_distance
-
-        success = self.movement_client.send_movement_command(
-            movement_msg,
-            on_success=self.passing_gate_done,
-            on_failure=self.abort,
-        )
-
-        if not success:
-            self.ros_node.get_logger().error("failed to send passing movement command")
-            self.queued_method = self.abort
+        self.move_relative(self.passing_gate_done,x=self.passing_distance)
