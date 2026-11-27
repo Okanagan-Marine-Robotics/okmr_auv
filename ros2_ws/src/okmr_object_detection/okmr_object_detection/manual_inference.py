@@ -3,6 +3,7 @@ import onnxruntime as ort
 import numpy as np
 import cv2
 import os
+import torch
 
 
 def sigmoid(x):
@@ -174,17 +175,23 @@ class YOLOSegONNX:
             # mask = cv2.resize(mask, (W0, int(H0)))
             # bin_mask = (mask > mask_thresh).astype(np.uint8) * 255
             # mask
-            mask_logit = masks[i]
-            mask = sigmoid(mask_logit)
-            # Apply the 1.333 ratio to height to correct for 480->640 scaling
-            corrected_height = int(H0 * 1.333)
-            mask = cv2.resize(mask, (W0, corrected_height))
-            # Center crop back to original height (480)
-            if corrected_height > H0:
-                start_y = (corrected_height - H0) // 2
-                end_y = start_y + H0
-                mask = mask[start_y:end_y, :]
-            bin_mask = (mask > mask_thresh).astype(np.uint8) * 255
+            mask = sigmoid(masks[i])
+            # proto is in letterboxed input space (stride 4): upsample to input as shown online
+            # size, strip the letterbox padding, then resize to original image
+            in_w, in_h = Wp * 4, Hp * 4
+            mask = cv2.resize(mask, (in_w, in_h))
+            top, left = int(round(pad_y)), int(round(pad_x))
+            bottom = int(round(pad_y + H0 * scale))
+            right = int(round(pad_x + W0 * scale))
+            mask = mask[top:bottom, left:right]
+            mask = cv2.resize(mask, (W0, H0))
+
+            # keep only the pixels inside this detection's box
+            bx1, by1 = max(x1, 0), max(y1, 0)
+            bx2, by2 = min(x2, W0), min(y2, H0)
+            box_mask = np.zeros_like(mask)
+            box_mask[by1:by2, bx1:bx2] = mask[by1:by2, bx1:bx2]
+            bin_mask = (box_mask > mask_thresh).astype(np.uint8) * 255
 
             # overlay green
             colored = np.zeros_like(out)
@@ -197,6 +204,7 @@ class YOLOSegONNX:
                 )
 
         return out
+
 
     def infer(
         self,

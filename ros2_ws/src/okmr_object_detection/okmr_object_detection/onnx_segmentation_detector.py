@@ -29,9 +29,9 @@ class OnnxSegmentationDetector(ObjectDetectorNode):
         self.declare_parameter(
             "providers",
             [
-                # "TensorrtExecutionProvider",
+                "TensorrtExecutionProvider",
                 "CUDAExecutionProvider",
-                # "CPUExecutionProvider",
+                "CPUExecutionProvider",
             ],
         )
         self.declare_parameter("debug", True)
